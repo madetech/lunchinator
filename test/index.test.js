@@ -6,6 +6,10 @@ const app = require("../index");
 chai.use(chaiHttp);
 
 describe("Index", function() {
+  after(async function() {
+    app.stop();
+  });
+
   it("works", function() {
     chai
       .request(app)
