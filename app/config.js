@@ -8,7 +8,7 @@ if (!("error" in result)) {
 } else {
   // Used in CI/Prod
   envs = {};
-  Object(process.env).keys.map(key => (envs[key] = process.env[key]));
+  Object.keys(process.env).map(key => (envs[key] = process.env[key]));
 }
 
 if (envs.VALID_SLACK_USER_IDS) {
