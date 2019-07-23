@@ -34,6 +34,8 @@ describe("ReceiveNewLunchCycleSlashCommand", function() {
     ThenANewLunchCycleIsCreated();
     ThenALunchCyclePreviewIsSentToUser();
   });
+
+  xit("cannot create a new lunch cycle when the user is not valid", function() {});
 });
 
 function GivenAValidNewLunchCycleSlashCommand() {
