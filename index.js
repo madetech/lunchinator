@@ -4,7 +4,9 @@ const port = 3000;
 
 app.get("/", (req, res) => res.send("Hello World!"));
 
-const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+const server = app.listen(port, () =>
+  console.log(`Example app listening on port ${port}!`)
+);
 
 function stop() {
   server.close();
