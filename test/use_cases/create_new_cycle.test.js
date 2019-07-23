@@ -4,14 +4,14 @@ const chai = require("chai");
 const sinon = require("sinon");
 const sinonChai = require("sinon-chai");
 const LunchCycle = require("@app/domain/lunch_cycle");
-const CreateNewCycle = require("@app/use_cases/create_new_cycle");
+const CreateNewLunchCycle = require("@app/use_cases/create_new_lunch_cycle");
 const expect = chai.expect;
 chai.use(sinonChai);
 
-describe("CreateNewCycle", function() {
-  it("create a new cycle", function() {
+describe("CreateNewLunchCycle", function() {
+  it("create a new lunch cycle", function() {
     const gatewaySpy = { create: sinon.spy() };
-    const useCase = new CreateNewCycle({ gateway: gatewaySpy });
+    const useCase = new CreateNewLunchCycle({ gateway: gatewaySpy });
 
     useCase.execute();
 

@@ -1,7 +1,7 @@
 require("module-alias/register");
 const LunchCycle = require("@app/domain/lunch_cycle");
 
-class CreateNewCycle {
+class CreateNewLunchCycle {
   constructor(options) {
     this.gateway = options.gateway;
   }
@@ -11,4 +11,4 @@ class CreateNewCycle {
   }
 }
 
-module.exports = CreateNewCycle;
+module.exports = CreateNewLunchCycle;
