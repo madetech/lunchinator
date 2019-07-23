@@ -2,6 +2,9 @@
   "dependencies": {
     "express": "^4.17.1"
   },
+  "engines": {
+    "node": "12.X"
+  },
   "name": "lunchinator",
   "description": "",
   "version": "0.0.1",
