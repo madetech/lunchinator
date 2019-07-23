@@ -1,5 +1,5 @@
 require("module-alias/register");
-const LunchCycle = require("@app/domain/lunch_cycle");
+const LunchCycle = require("@domain/lunch_cycle");
 
 class CreateNewLunchCycle {
   constructor(options) {

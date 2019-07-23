@@ -3,8 +3,8 @@ require("module-alias/register");
 const chai = require("chai");
 const sinon = require("sinon");
 const sinonChai = require("sinon-chai");
-const LunchCycle = require("@app/domain/lunch_cycle");
-const CreateNewLunchCycle = require("@app/use_cases/create_new_lunch_cycle");
+const LunchCycle = require("@domain/lunch_cycle");
+const CreateNewLunchCycle = require("@use_cases/create_new_lunch_cycle");
 const expect = chai.expect;
 chai.use(sinonChai);
 

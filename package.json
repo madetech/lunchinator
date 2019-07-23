@@ -38,6 +38,8 @@
   "homepage": "https://github.com/madetech/lunchinator#readme",
   "_moduleAliases": {
     "@root": ".",
-    "@app": "app"
+    "@app": "app",
+    "@domain": "app/domain",
+    "@use_cases": "app/use_cases"
   }
 }

@@ -1,7 +1,9 @@
+require("module-alias/register");
+
 const chai = require("chai");
 const expect = chai.expect;
 const chaiHttp = require("chai-http");
-const app = require("../../index");
+const app = require("@root/index");
 
 chai.use(chaiHttp);
 
