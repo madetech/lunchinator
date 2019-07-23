@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "module-alias": "^2.2.0"
   },
   "engines": {
     "node": "12.X"
@@ -34,5 +35,9 @@
   "bugs": {
     "url": "https://github.com/madetech/lunchinator/issues"
   },
-  "homepage": "https://github.com/madetech/lunchinator#readme"
+  "homepage": "https://github.com/madetech/lunchinator#readme",
+  "_moduleAliases": {
+    "@root": ".",
+    "@app": "app"
+  }
 }
