@@ -19,7 +19,8 @@
     "nock": "^10.0.6",
     "prettier": "^1.18.2",
     "prettier-eslint": "^9.0.0",
-    "sinon": "^7.3.2"
+    "sinon": "^7.3.2",
+    "sinon-chai": "^3.3.0"
   },
   "scripts": {
     "test": "mocha \"test/**/*.test.js\""
