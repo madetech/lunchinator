@@ -1,8 +1,5 @@
-require("module-alias/register");
-
-const chai = require("chai");
+const { expect } = require("../test_helper");
 const IsValidLunchinatorUser = require("@use_cases/is_valid_lunchinator_user");
-const expect = chai.expect;
 
 describe("IsValidLunchinatorUser", function() {
   it("check lunchinator user is valid", function() {

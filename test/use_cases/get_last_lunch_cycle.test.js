@@ -1,7 +1,4 @@
-require("module-alias/register");
-
-const chai = require("chai");
-const expect = chai.expect;
+const { expect } = require("../test_helper");
 const GetLastLunchCycle = require("@use_cases/get_last_lunch_cycle");
 
 describe("GetLastLunchCycle", function() {

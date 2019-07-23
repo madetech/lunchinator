@@ -1,11 +1,8 @@
-require("module-alias/register");
-
-const chai = require("chai");
+const { expect } = require("../test_helper");
 const IsValidLunchinatorUser = require("@use_cases/is_valid_lunchinator_user");
 const CreateNewLunchCycle = require("@use_cases/create_new_lunch_cycle");
 const GetLastLunchCycle = require("@use_cases/get_last_lunch_cycle");
 const SendLunchCyclePreview = require("@use_cases/send_lunch_cycle_preview");
-const expect = chai.expect;
 
 class FakeInMemoryLunchCycleGateway {
   constructor() {

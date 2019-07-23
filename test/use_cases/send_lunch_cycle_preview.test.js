@@ -1,12 +1,6 @@
-require("module-alias/register");
-
-const chai = require("chai");
-const expect = chai.expect;
-const sinon = require("sinon");
-const sinonChai = require("sinon-chai");
+const { expect, sinon } = require("../test_helper");
 const SendLunchCyclePreview = require("@use_cases/send_lunch_cycle_preview");
 const SlackMessage = require("@domain/slack_message");
-chai.use(sinonChai);
 
 describe("SendLunchCyclePreview", function() {
   it("send lunch cycle preview", function() {
