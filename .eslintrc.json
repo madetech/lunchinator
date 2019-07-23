@@ -14,5 +14,5 @@
     "ecmaVersion": 2018
   },
   "rules": {},
-  "plugins": ["mocha"]
+  "plugins": ["prettier", "mocha"]
 }
