@@ -3,7 +3,7 @@ const LunchCycle = require("@domain/lunch_cycle");
 
 class CreateNewLunchCycle {
   constructor(options) {
-    this.gateway = options.gateway;
+    this.lunchCycleGateway = options.lunchCycleGateway;
     this.isValidLunchinatorUser = options.isValidLunchinatorUser;
   }
 
@@ -11,7 +11,7 @@ class CreateNewLunchCycle {
     var isValidUserResponse = this.isValidLunchinatorUser.execute({ userId: request.userId });
 
     if (isValidUserResponse.isValid) {
-      const lunchCycle = this.gateway.create(new LunchCycle());
+      const lunchCycle = this.lunchCycleGateway.create(new LunchCycle());
 
       return { lunchCycle };
     }

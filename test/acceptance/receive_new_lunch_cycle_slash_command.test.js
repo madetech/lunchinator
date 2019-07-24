@@ -26,13 +26,18 @@ class FakeSlackGateway {
   }
 }
 
-let fakeGateway;
+class FakeInMemoryRestaurantsGateway {}
+
+let fakeLunchCycleGateway;
+let fakeRestaurantsGateway;
 let slashCommandParams;
-let theLunchCycleWeCreatedResponse;
+let createNewLunchCycleResponse;
+let getNewLunchCycleRestaurantsResponse;
 
 describe("ReceiveNewLunchCycleSlashCommand", function() {
   beforeEach(function() {
-    fakeGateway = new FakeInMemoryLunchCycleGateway();
+    fakeLunchCycleGateway = new FakeInMemoryLunchCycleGateway();
+    fakeRestaurantsGateway = new FakeInMemoryRestaurantsGateway();
   });
 
   it("can create a new lunch cycle", function() {
@@ -75,7 +80,7 @@ describe("ReceiveNewLunchCycleSlashCommand", function() {
 });
 
 function GivenALunchCycleExists() {
-  fakeGateway.create(new LunchCycle());
+  fakeLunchCycleGateway.create(new LunchCycle());
 }
 
 function GivenANewLunchCycleCommand() {
@@ -84,14 +89,14 @@ function GivenANewLunchCycleCommand() {
 
 function WhenANewLunchCycleIsCreated() {
   var useCase = new CreateNewLunchCycle({
-    gateway: fakeGateway,
+    lunchCycleGateway: fakeLunchCycleGateway,
     isValidLunchinatorUser: new IsValidLunchinatorUser()
   });
-  theLunchCycleWeCreatedResponse = useCase.execute({ userId: slashCommandParams.user_id });
+  createNewLunchCycleResponse = useCase.execute({ userId: slashCommandParams.user_id });
 }
 
 function ThenANewLunchCycleIsCreated() {
-  expect(theLunchCycleWeCreatedResponse.lunchCycle).to.not.be.null;
+  expect(createNewLunchCycleResponse.lunchCycle).to.not.be.null;
 }
 
 function ThenTheUserIsValid() {
@@ -113,7 +118,7 @@ function ThenTheUserIsNotValid() {
 }
 
 function ThenANewLunchCycleIsNotCreated() {
-  expect(theLunchCycleWeCreatedResponse.lunchCycle).to.be.null;
+  expect(createNewLunchCycleResponse.lunchCycle).to.be.null;
 }
 
 function ThenALunchCyclePreviewIsSent() {
@@ -124,5 +129,5 @@ function ThenALunchCyclePreviewIsSent() {
 }
 
 function ThenTheTotalCountOfLunchCyclesIs(count) {
-  expect(count).to.eq(fakeGateway.count());
+  expect(count).to.eq(fakeLunchCycleGateway.count());
 }

@@ -8,7 +8,7 @@ describe("CreateNewLunchCycle", function() {
     const gatewaySpy = { create: sinon.fake.returns(lunchCycleDummy) };
     const fakeIsValidLunchinatorUser = { execute: sinon.fake.returns({ isValid: true }) };
     const useCase = new CreateNewLunchCycle({
-      gateway: gatewaySpy,
+      lunchCycleGateway: gatewaySpy,
       isValidLunchinatorUser: fakeIsValidLunchinatorUser
     });
 
