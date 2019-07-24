@@ -63,7 +63,11 @@ describe("ReceiveNewLunchCycleSlashCommand", function() {
     ThenANewLunchCycleIsNotCreated();
   });
 
-  it("can send a preview message", function() {});
+  it("can send a preview message", function() {
+    GivenANewLunchCycleCommand();
+    WhenANewLunchCycleIsCreated();
+    ThenALunchCyclePreviewIsSent();
+  });
 });
 
 function GivenANewLunchCycleCommand() {
@@ -80,14 +84,14 @@ function WhenANewLunchCycleIsCreated() {
 
 function ThenANewLunchCycleIsCreated() {
   var useCase = new GetLastLunchCycle({ gateway: fakeGateway });
-  var lunchCycle = useCase.execute().lastLunchCycle;
-  expect(lunchCycle).to.equal(theLunchCycleWeCreatedResponse.lunchCycle);
+  var response = useCase.execute();
+  expect(response.lastLunchCycle).to.equal(theLunchCycleWeCreatedResponse.lunchCycle);
 }
 
 function ThenTheUserIsValid() {
   var useCase = new IsValidLunchinatorUser();
-  var { isValid } = useCase.execute({ userId: slashCommandParams.user_id });
-  expect(isValid).to.be.true;
+  var response = useCase.execute({ userId: slashCommandParams.user_id });
+  expect(response.isValid).to.be.true;
 }
 
 function GivenANewLunchCycleCommandWithInvalidUser() {
@@ -98,8 +102,8 @@ function GivenANewLunchCycleCommandWithInvalidUser() {
 
 function ThenTheUserIsNotValid() {
   var useCase = new IsValidLunchinatorUser();
-  var { isValid } = useCase.execute({ userId: slashCommandParams.user_id });
-  expect(isValid).to.be.false;
+  var response = useCase.execute({ userId: slashCommandParams.user_id });
+  expect(response.isValid).to.be.false;
 }
 
 function ThenANewLunchCycleIsNotCreated() {
@@ -108,9 +112,9 @@ function ThenANewLunchCycleIsNotCreated() {
   expect(response.lastLunchCycle).to.be.null;
 }
 
-function ThenALunchCyclePreviewIsSentToUser() {
+function ThenALunchCyclePreviewIsSent() {
   var fakeSlackGateway = new FakeSlackGateway();
   var useCase = new SendLunchCyclePreview({ gateway: fakeSlackGateway });
-  var sent = useCase.execute().slackResponse;
-  expect(sent).to.be.true;
+  var response = useCase.execute();
+  expect(response.slackResponse).to.be.true;
 }
