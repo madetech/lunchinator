@@ -22,7 +22,7 @@ class FakeInMemoryLunchCycleGateway {
 
 let fakeGateway;
 let slashCommandParams;
-let theLunchCycleWeCreated;
+let theLunchCycleWeCreatedResponse;
 
 describe("ReceiveNewLunchCycleSlashCommand", function() {
   beforeEach(function() {
@@ -71,13 +71,13 @@ function WhenTheCommandIsFromAValidUser() {
 
 function WhenANewLunchCycleIsCreated() {
   var useCase = new CreateNewLunchCycle({ gateway: fakeGateway });
-  theLunchCycleWeCreated = useCase.execute();
+  theLunchCycleWeCreatedResponse = useCase.execute();
 }
 
 function ThenANewLunchCycleIsCreated() {
   var useCase = new GetLastLunchCycle({ gateway: fakeGateway });
   var lunchCycle = useCase.execute().lastLunchCycle;
-  expect(lunchCycle).to.equal(theLunchCycleWeCreated);
+  expect(lunchCycle).to.equal(theLunchCycleWeCreatedResponse.lunchCycle);
 }
 
 class FakeSlackGateway {

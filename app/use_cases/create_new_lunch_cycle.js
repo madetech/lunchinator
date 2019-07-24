@@ -7,7 +7,8 @@ class CreateNewLunchCycle {
   }
 
   execute() {
-    return this.gateway.create(new LunchCycle());
+    const lunchCycle = this.gateway.create(new LunchCycle());
+    return { lunchCycle };
   }
 }
 
