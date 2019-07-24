@@ -13,6 +13,12 @@ class InMemoryLunchCycleGateway {
     return [...this.lunchCycles];
   }
 
+  findPrevious(lunchCycle) {
+    return this.all()
+      .reverse()
+      .find(currentLunchCycle => currentLunchCycle.id < lunchCycle.id);
+  }
+
   count() {
     return this.lunchCycles.length;
   }

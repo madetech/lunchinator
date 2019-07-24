@@ -15,9 +15,22 @@ class FakeSlackGateway {
   }
 }
 
-class FakeInMemoryRestaurantsGateway {}
+class FakeInMemoryRestaurantsGateway {
+  constructor() {
+    this.restaurants = [
+      { name: "restaurant1", dietaries: [Dietary.Vegan, Dietary.Meat] },
+      { name: "restaurant2", dietaries: [Dietary.Meat] },
+      { name: "restaurant3", dietaries: [Dietary.Vegan, Dietary.Meat] },
+      { name: "restaurant4", dietaries: [Dietary.Meat] }
+    ];
+  }
 
-let fakeLunchCycleGateway;
+  all() {
+    return this.restaurants;
+  }
+}
+
+let inMemoryLunchCycleGateway;
 let fakeRestaurantsGateway;
 let slashCommandParams;
 let createNewLunchCycleResponse;
@@ -65,10 +78,22 @@ describe("ReceiveNewLunchCycleSlashCommand", function() {
     GivenANewLunchCycleCommand();
     WhenANewLunchCycleIsCreated();
     WhenWeGetTheRestaurants();
-    ThenTheRestaurantsWillBe([
-      { name: "restaurant1", dietaries: [Dietary.Vegan, Dietary.Meat] },
-      { name: "restaurant2", dietaries: [Dietary.Meat] }
-    ]);
+    ThenTheRestaurantsWillBe(fakeRestaurantsGateway.all());
+  });
+
+  describe("when there is a previous lunch cycle with restaurants", function() {
+    it("can get the restaurants for the new lunch cycle", function() {
+      GivenALunchCycleExistsWithRestaurants(fakeRestaurantsGateway.all().slice(0, 2));
+      GivenANewLunchCycleCommand();
+      WhenANewLunchCycleIsCreated();
+      WhenWeGetTheRestaurants();
+      ThenTheRestaurantsWillBe(
+        fakeRestaurantsGateway
+          .all()
+          .slice(2, 4)
+          .concat(fakeRestaurantsGateway.all())
+      );
+    });
   });
 
   it("can send a preview message", function() {
@@ -78,6 +103,10 @@ describe("ReceiveNewLunchCycleSlashCommand", function() {
   });
 });
 
+function GivenALunchCycleExistsWithRestaurants(restaurants) {
+  inMemoryLunchCycleGateway.create(new LunchCycle({ restaurants: restaurants }));
+}
+
 function WhenWeGetTheRestaurants() {
   var useCase = new GetNewLunchCycleRestaurants({
     restaurantsGateway: fakeRestaurantsGateway,
@@ -85,7 +114,9 @@ function WhenWeGetTheRestaurants() {
       lunchCycleGateway: inMemoryLunchCycleGateway
     })
   });
-  getNewLunchCycleRestaurantsResponse = useCase.execute();
+  getNewLunchCycleRestaurantsResponse = useCase.execute(
+    inMemoryLunchCycleGateway.all().slice(-1)[0]
+  );
 }
 
 function ThenTheRestaurantsWillBe(expected) {
