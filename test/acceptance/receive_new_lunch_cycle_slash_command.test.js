@@ -65,7 +65,7 @@ function GivenAValidNewLunchCycleSlashCommand() {
 
 function WhenTheCommandIsFromAValidUser() {
   var useCase = new IsValidLunchinatorUser(slashCommandParams);
-  var isValid = useCase.execute();
+  var isValid = useCase.execute().isValid;
   expect(isValid).to.be.true;
 }
 

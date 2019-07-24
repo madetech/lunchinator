@@ -5,7 +5,7 @@ describe("IsValidLunchinatorUser", function() {
   it("check lunchinator user is valid", function() {
     const useCase = new IsValidLunchinatorUser({ user_id: config.VALID_SLACK_USER_IDS[0] });
 
-    expect(useCase.execute()).to.be.true;
+    expect(useCase.execute().isValid).to.be.true;
   });
 
   it("returns false if there are no valid Slack users", function() {
@@ -13,12 +13,12 @@ describe("IsValidLunchinatorUser", function() {
     const useCase = new IsValidLunchinatorUser({ user_id: userId });
 
     sinon.stub(config, "VALID_SLACK_USER_IDS").get(() => []);
-    expect(useCase.execute()).to.be.false;
+    expect(useCase.execute().isValid).to.be.false;
   });
 
   it("returns false if it is not a valid Slack user", function() {
     const useCase = new IsValidLunchinatorUser({ user_id: "BogusID" });
 
-    expect(useCase.execute()).to.be.false;
+    expect(useCase.execute().isValid).to.be.false;
   });
 });
