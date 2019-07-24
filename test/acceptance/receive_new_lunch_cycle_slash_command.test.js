@@ -1,8 +1,8 @@
 const { expect } = require("../test_helper");
 const SlashCommandFactory = require("./slash_command_factory");
+const LunchCycle = require("@domain/lunch_cycle");
 const IsValidLunchinatorUser = require("@use_cases/is_valid_lunchinator_user");
 const CreateNewLunchCycle = require("@use_cases/create_new_lunch_cycle");
-const GetLastLunchCycle = require("@use_cases/get_last_lunch_cycle");
 const SendLunchCyclePreview = require("@use_cases/send_lunch_cycle_preview");
 
 class FakeInMemoryLunchCycleGateway {
@@ -15,14 +15,8 @@ class FakeInMemoryLunchCycleGateway {
     return lunchCycle;
   }
 
-  last() {
-    const [last] = this.lunchCycles.slice(-1);
-
-    if (last === undefined) {
-      return null;
-    }
-
-    return last;
+  count() {
+    return this.lunchCycles.length;
   }
 }
 
@@ -57,10 +51,20 @@ describe("ReceiveNewLunchCycleSlashCommand", function() {
     ThenTheUserIsNotValid();
   });
 
-  it("cannot create a new lunch cycle when the user is not valid", function() {
-    GivenANewLunchCycleCommandWithInvalidUser();
-    WhenANewLunchCycleIsCreated();
-    ThenANewLunchCycleIsNotCreated();
+  describe("cannot create a new lunch cycle when the user is not valid", function() {
+    it("where there is not an existing lunch cycle", function() {
+      GivenANewLunchCycleCommandWithInvalidUser();
+      WhenANewLunchCycleIsCreated();
+      ThenANewLunchCycleIsNotCreated();
+    });
+
+    it("where there are existing lunch cycles", function() {
+      GivenALunchCycleExists();
+      GivenANewLunchCycleCommandWithInvalidUser();
+      WhenANewLunchCycleIsCreated();
+      ThenANewLunchCycleIsNotCreated();
+      ThenTheTotalCountOfLunchCyclesIs(1);
+    });
   });
 
   it("can send a preview message", function() {
@@ -69,6 +73,10 @@ describe("ReceiveNewLunchCycleSlashCommand", function() {
     ThenALunchCyclePreviewIsSent();
   });
 });
+
+function GivenALunchCycleExists() {
+  fakeGateway.create(new LunchCycle());
+}
 
 function GivenANewLunchCycleCommand() {
   slashCommandParams = new SlashCommandFactory().getCommand();
@@ -113,4 +121,8 @@ function ThenALunchCyclePreviewIsSent() {
   var useCase = new SendLunchCyclePreview({ gateway: fakeSlackGateway });
   var response = useCase.execute();
   expect(response.slackResponse).to.be.true;
+}
+
+function ThenTheTotalCountOfLunchCyclesIs(count) {
+  expect(count).to.eq(fakeGateway.count());
 }
