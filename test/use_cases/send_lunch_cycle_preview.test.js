@@ -4,13 +4,12 @@ const SlackMessage = require("@domain/slack_message");
 
 describe("SendLunchCyclePreview", function() {
   it("send lunch cycle preview", function() {
-    const gatewaySpy = { sendMessage: sinon.spy() };
+    const gatewaySpy = { sendMessage: sinon.fake.returns(true) };
     const useCase = new SendLunchCyclePreview({ gateway: gatewaySpy });
 
-    useCase.execute();
+    const response = useCase.execute();
 
-    expect(gatewaySpy.sendMessage).to.have.been.calledWith(
-      sinon.match.instanceOf(SlackMessage)
-    );
+    expect(gatewaySpy.sendMessage).to.have.been.calledWith(sinon.match.instanceOf(SlackMessage));
+    expect(response.slackResponse).to.equal(true);
   });
 });

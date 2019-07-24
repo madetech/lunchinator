@@ -89,6 +89,6 @@ class FakeSlackGateway {
 function ThenALunchCyclePreviewIsSentToUser() {
   var fakeSlackGateway = new FakeSlackGateway();
   var useCase = new SendLunchCyclePreview({ gateway: fakeSlackGateway });
-  var sent = useCase.execute();
+  var sent = useCase.execute().slackResponse;
   expect(sent).to.be.true;
 }

@@ -7,7 +7,8 @@ class SendLunchCyclePreview {
   }
 
   execute() {
-    return this.gateway.sendMessage(new SlackMessage());
+    const slackResponse = this.gateway.sendMessage(new SlackMessage());
+    return { slackResponse };
   }
 }
 
