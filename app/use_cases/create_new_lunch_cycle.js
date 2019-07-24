@@ -7,7 +7,7 @@ class CreateNewLunchCycle {
   }
 
   execute() {
-    this.gateway.create(new LunchCycle());
+    return this.gateway.create(new LunchCycle());
   }
 }
 
