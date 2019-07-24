@@ -1,4 +1,5 @@
 const { expect } = require("../test_helper");
+const SlashCommandFactory = require("./slash_command_factory");
 const IsValidLunchinatorUser = require("@use_cases/is_valid_lunchinator_user");
 const CreateNewLunchCycle = require("@use_cases/create_new_lunch_cycle");
 const GetLastLunchCycle = require("@use_cases/get_last_lunch_cycle");
@@ -20,6 +21,12 @@ class FakeInMemoryLunchCycleGateway {
   }
 }
 
+class FakeSlackGateway {
+  sendMessage(slackMessage) {
+    return true;
+  }
+}
+
 let fakeGateway;
 let slashCommandParams;
 let theLunchCycleWeCreatedResponse;
@@ -30,43 +37,32 @@ describe("ReceiveNewLunchCycleSlashCommand", function() {
   });
 
   it("can create a new lunch cycle", function() {
-    GivenAValidNewLunchCycleSlashCommand();
-    WhenTheCommandIsFromAValidUser();
+    GivenANewLunchCycleCommand();
     WhenANewLunchCycleIsCreated();
     ThenANewLunchCycleIsCreated();
-    ThenALunchCyclePreviewIsSentToUser();
+  });
+
+  it("can check for a valid user", function() {
+    GivenANewLunchCycleCommand();
+    ThenTheUserIsValid();
+  });
+
+  it("can check for an invalid user", function() {
+    GivenANewLunchCycleCommandWithInvalidUser();
+    ThenTheUserIsNotValid();
   });
 
   xit("cannot create a new lunch cycle when the user is not valid", function() {
-    GivenANonValidNewLunchCycleSlashCommand();
-    WhenTheCommandIsFromANotValidUser();
-    ThenALunchCycleIsNotCreated();
-    ThenAErrorMessageIsSentToUser();
+    GivenANewLunchCycleCommandWithInvalidUser();
+    WhenANewLunchCycleIsCreated();
+    ThenANewLunchCycleIsNotCreated();
   });
+
+  it("can send a preview message", function() {});
 });
 
-function GivenAValidNewLunchCycleSlashCommand() {
-  slashCommandParams = {
-    token: "gIkuvaNzQIHg97ATvDxqgjtO",
-    team_id: "madetechteam",
-    team_domain: "example",
-    enterprise_id: "E0001",
-    enterprise_name: "MadeTech",
-    channel_id: "C2147483705",
-    channel_name: "test",
-    user_id: "U2147483697",
-    user_name: "Steve",
-    command: "/lunchinator_new",
-    text: "we dont use this",
-    response_url: "https://hooks.slack.com/commands/1234/5678",
-    trigger_id: "13345224609.738474920.8088930838d88f008e0"
-  };
-}
-
-function WhenTheCommandIsFromAValidUser() {
-  var useCase = new IsValidLunchinatorUser(slashCommandParams);
-  var isValid = useCase.execute().isValid;
-  expect(isValid).to.be.true;
+function GivenANewLunchCycleCommand() {
+  slashCommandParams = new SlashCommandFactory().getCommand();
 }
 
 function WhenANewLunchCycleIsCreated() {
@@ -80,10 +76,22 @@ function ThenANewLunchCycleIsCreated() {
   expect(lunchCycle).to.equal(theLunchCycleWeCreatedResponse.lunchCycle);
 }
 
-class FakeSlackGateway {
-  sendMessage(slackMessage) {
-    return true;
-  }
+function ThenTheUserIsValid() {
+  var useCase = new IsValidLunchinatorUser({ user_id: slashCommandParams.user_id });
+  var { isValid } = useCase.execute();
+  expect(isValid).to.be.true;
+}
+
+function GivenANewLunchCycleCommandWithInvalidUser() {
+  slashCommandParams = new SlashCommandFactory().getCommand({
+    user_id: "invalid_user"
+  });
+}
+
+function ThenTheUserIsNotValid() {
+  var useCase = new IsValidLunchinatorUser({ user_id: slashCommandParams.user_id });
+  var { isValid } = useCase.execute();
+  expect(isValid).to.be.false;
 }
 
 function ThenALunchCyclePreviewIsSentToUser() {
