@@ -11,10 +11,12 @@ class FakeInMemoryLunchCycleGateway {
 
   create(lunchCycle) {
     this.lunchCycles.push(lunchCycle);
+    return lunchCycle;
   }
 
   last() {
-    this.lunchCycles[this.lunchCycles.length - 1];
+    const [last] = this.lunchCycles.slice(-1);
+    return last;
   }
 }
 
