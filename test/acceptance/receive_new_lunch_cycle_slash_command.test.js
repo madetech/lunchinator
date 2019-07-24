@@ -4,6 +4,9 @@ const LunchCycle = require("@domain/lunch_cycle");
 const IsValidLunchinatorUser = require("@use_cases/is_valid_lunchinator_user");
 const CreateNewLunchCycle = require("@use_cases/create_new_lunch_cycle");
 const SendLunchCyclePreview = require("@use_cases/send_lunch_cycle_preview");
+const GetNewLunchCycleRestaurants = require("@use_cases/get_new_lunch_cycle_restaurants");
+const GetPreviousLunchCycle = require("@use_cases/get_previous_lunch_cycle");
+const Dietary = require("@domain/dietary");
 
 class FakeInMemoryLunchCycleGateway {
   constructor() {
@@ -72,12 +75,34 @@ describe("ReceiveNewLunchCycleSlashCommand", function() {
     });
   });
 
+  it("can get the restaurants for the new lunch cycle", function() {
+    GivenANewLunchCycleCommand();
+    WhenANewLunchCycleIsCreated();
+    WhenWeGetTheRestaurants();
+    ThenTheRestaurantsWillBe([
+      { name: "restaurant1", dietaries: [Dietary.Vegan, Dietary.Meat] },
+      { name: "restaurant2", dietaries: [Dietary.Meat] }
+    ]);
+  });
+
   it("can send a preview message", function() {
     GivenANewLunchCycleCommand();
     WhenANewLunchCycleIsCreated();
     ThenALunchCyclePreviewIsSent();
   });
 });
+
+function WhenWeGetTheRestaurants() {
+  var useCase = new GetNewLunchCycleRestaurants({
+    restaurantsGateway: fakeRestaurantsGateway,
+    getPreviousLunchCycle: new GetPreviousLunchCycle({ lunchCycleGateway: fakeLunchCycleGateway })
+  });
+  getNewLunchCycleRestaurantsResponse = useCase.execute();
+}
+
+function ThenTheRestaurantsWillBe(expected) {
+  expect(getNewLunchCycleRestaurantsResponse.restaurants).to.eql(expected);
+}
 
 function GivenALunchCycleExists() {
   fakeLunchCycleGateway.create(new LunchCycle());
