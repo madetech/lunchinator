@@ -77,8 +77,8 @@ function ThenANewLunchCycleIsCreated() {
 }
 
 function ThenTheUserIsValid() {
-  var useCase = new IsValidLunchinatorUser({ user_id: slashCommandParams.user_id });
-  var { isValid } = useCase.execute();
+  var useCase = new IsValidLunchinatorUser();
+  var { isValid } = useCase.execute({ userId: slashCommandParams.user_id });
   expect(isValid).to.be.true;
 }
 
@@ -89,8 +89,8 @@ function GivenANewLunchCycleCommandWithInvalidUser() {
 }
 
 function ThenTheUserIsNotValid() {
-  var useCase = new IsValidLunchinatorUser({ user_id: slashCommandParams.user_id });
-  var { isValid } = useCase.execute();
+  var useCase = new IsValidLunchinatorUser();
+  var { isValid } = useCase.execute({ userId: slashCommandParams.user_id });
   expect(isValid).to.be.false;
 }
 
