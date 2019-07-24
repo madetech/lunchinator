@@ -8,8 +8,9 @@ const app = require("@root/index");
 chai.use(chaiHttp);
 
 describe("Index", function() {
-  after(async function() {
+  after(async function(done) {
     app.stop();
+    done();
   });
 
   it("works", function() {
