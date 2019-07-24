@@ -17,6 +17,11 @@ class FakeInMemoryLunchCycleGateway {
 
   last() {
     const [last] = this.lunchCycles.slice(-1);
+
+    if (last === undefined) {
+      return null;
+    }
+
     return last;
   }
 }
@@ -52,7 +57,7 @@ describe("ReceiveNewLunchCycleSlashCommand", function() {
     ThenTheUserIsNotValid();
   });
 
-  xit("cannot create a new lunch cycle when the user is not valid", function() {
+  it("cannot create a new lunch cycle when the user is not valid", function() {
     GivenANewLunchCycleCommandWithInvalidUser();
     WhenANewLunchCycleIsCreated();
     ThenANewLunchCycleIsNotCreated();
@@ -66,8 +71,11 @@ function GivenANewLunchCycleCommand() {
 }
 
 function WhenANewLunchCycleIsCreated() {
-  var useCase = new CreateNewLunchCycle({ gateway: fakeGateway });
-  theLunchCycleWeCreatedResponse = useCase.execute();
+  var useCase = new CreateNewLunchCycle({
+    gateway: fakeGateway,
+    isValidLunchinatorUser: new IsValidLunchinatorUser()
+  });
+  theLunchCycleWeCreatedResponse = useCase.execute({ userId: slashCommandParams.user_id });
 }
 
 function ThenANewLunchCycleIsCreated() {
@@ -92,6 +100,12 @@ function ThenTheUserIsNotValid() {
   var useCase = new IsValidLunchinatorUser();
   var { isValid } = useCase.execute({ userId: slashCommandParams.user_id });
   expect(isValid).to.be.false;
+}
+
+function ThenANewLunchCycleIsNotCreated() {
+  var useCase = new GetLastLunchCycle({ gateway: fakeGateway });
+  var response = useCase.execute();
+  expect(response.lastLunchCycle).to.be.null;
 }
 
 function ThenALunchCyclePreviewIsSentToUser() {
