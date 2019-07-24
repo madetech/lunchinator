@@ -4,7 +4,7 @@ class GetLastLunchCycle {
   }
 
   execute() {
-    return this.gateway.last();
+    return { lastLunchCycle: this.gateway.last() };
   }
 }
 

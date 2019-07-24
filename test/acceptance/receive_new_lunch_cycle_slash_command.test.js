@@ -76,7 +76,7 @@ function WhenANewLunchCycleIsCreated() {
 
 function ThenANewLunchCycleIsCreated() {
   var useCase = new GetLastLunchCycle({ gateway: fakeGateway });
-  var lunchCycle = useCase.execute();
+  var lunchCycle = useCase.execute().lastLunchCycle;
   expect(lunchCycle).to.equal(theLunchCycleWeCreated);
 }
 
