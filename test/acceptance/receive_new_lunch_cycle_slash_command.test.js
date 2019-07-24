@@ -83,9 +83,7 @@ function WhenANewLunchCycleIsCreated() {
 }
 
 function ThenANewLunchCycleIsCreated() {
-  var useCase = new GetLastLunchCycle({ gateway: fakeGateway });
-  var response = useCase.execute();
-  expect(response.lastLunchCycle).to.equal(theLunchCycleWeCreatedResponse.lunchCycle);
+  expect(theLunchCycleWeCreatedResponse.lunchCycle).to.not.be.null;
 }
 
 function ThenTheUserIsValid() {
@@ -107,9 +105,7 @@ function ThenTheUserIsNotValid() {
 }
 
 function ThenANewLunchCycleIsNotCreated() {
-  var useCase = new GetLastLunchCycle({ gateway: fakeGateway });
-  var response = useCase.execute();
-  expect(response.lastLunchCycle).to.be.null;
+  expect(theLunchCycleWeCreatedResponse.lunchCycle).to.be.null;
 }
 
 function ThenALunchCyclePreviewIsSent() {

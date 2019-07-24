@@ -30,7 +30,7 @@ describe("CreateNewLunchCycle", function() {
 
     const response = useCase.execute({ userId: invalidUserIdDummy });
 
-    expect(response).to.be.undefined;
+    expect(response.lunchCycle).to.be.null;
     expect(isValidLunchinatorUserSpy).to.have.been.calledWith({ userId: invalidUserIdDummy });
   });
 });

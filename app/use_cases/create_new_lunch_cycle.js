@@ -15,6 +15,8 @@ class CreateNewLunchCycle {
 
       return { lunchCycle };
     }
+
+    return { lunchCycle: null };
   }
 }
 
