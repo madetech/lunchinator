@@ -1,5 +1,6 @@
 const { expect } = require("../test_helper");
 const SlashCommandFactory = require("./slash_command_factory");
+const InMemoryLunchCycleGateway = require("@gateways/in_memory_lunch_cycle_gateway");
 const LunchCycle = require("@domain/lunch_cycle");
 const IsValidLunchinatorUser = require("@use_cases/is_valid_lunchinator_user");
 const CreateNewLunchCycle = require("@use_cases/create_new_lunch_cycle");
@@ -7,21 +8,6 @@ const SendLunchCyclePreview = require("@use_cases/send_lunch_cycle_preview");
 const GetNewLunchCycleRestaurants = require("@use_cases/get_new_lunch_cycle_restaurants");
 const GetPreviousLunchCycle = require("@use_cases/get_previous_lunch_cycle");
 const Dietary = require("@domain/dietary");
-
-class FakeInMemoryLunchCycleGateway {
-  constructor() {
-    this.lunchCycles = [];
-  }
-
-  create(lunchCycle) {
-    this.lunchCycles.push(lunchCycle);
-    return lunchCycle;
-  }
-
-  count() {
-    return this.lunchCycles.length;
-  }
-}
 
 class FakeSlackGateway {
   sendMessage(slackMessage) {
@@ -39,7 +25,7 @@ let getNewLunchCycleRestaurantsResponse;
 
 describe("ReceiveNewLunchCycleSlashCommand", function() {
   beforeEach(function() {
-    fakeLunchCycleGateway = new FakeInMemoryLunchCycleGateway();
+    inMemoryLunchCycleGateway = new InMemoryLunchCycleGateway();
     fakeRestaurantsGateway = new FakeInMemoryRestaurantsGateway();
   });
 
@@ -95,7 +81,9 @@ describe("ReceiveNewLunchCycleSlashCommand", function() {
 function WhenWeGetTheRestaurants() {
   var useCase = new GetNewLunchCycleRestaurants({
     restaurantsGateway: fakeRestaurantsGateway,
-    getPreviousLunchCycle: new GetPreviousLunchCycle({ lunchCycleGateway: fakeLunchCycleGateway })
+    getPreviousLunchCycle: new GetPreviousLunchCycle({
+      lunchCycleGateway: inMemoryLunchCycleGateway
+    })
   });
   getNewLunchCycleRestaurantsResponse = useCase.execute();
 }
@@ -105,7 +93,7 @@ function ThenTheRestaurantsWillBe(expected) {
 }
 
 function GivenALunchCycleExists() {
-  fakeLunchCycleGateway.create(new LunchCycle());
+  inMemoryLunchCycleGateway.create(new LunchCycle());
 }
 
 function GivenANewLunchCycleCommand() {
@@ -114,7 +102,7 @@ function GivenANewLunchCycleCommand() {
 
 function WhenANewLunchCycleIsCreated() {
   var useCase = new CreateNewLunchCycle({
-    lunchCycleGateway: fakeLunchCycleGateway,
+    lunchCycleGateway: inMemoryLunchCycleGateway,
     isValidLunchinatorUser: new IsValidLunchinatorUser()
   });
   createNewLunchCycleResponse = useCase.execute({ userId: slashCommandParams.user_id });
@@ -154,5 +142,5 @@ function ThenALunchCyclePreviewIsSent() {
 }
 
 function ThenTheTotalCountOfLunchCyclesIs(count) {
-  expect(count).to.eq(fakeLunchCycleGateway.count());
+  expect(count).to.eq(inMemoryLunchCycleGateway.count());
 }

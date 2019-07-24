@@ -42,6 +42,7 @@
     "@root": ".",
     "@app": "app",
     "@domain": "app/domain",
-    "@use_cases": "app/use_cases"
+    "@use_cases": "app/use_cases",
+    "@gateways": "app/gateways"
   }
 }
