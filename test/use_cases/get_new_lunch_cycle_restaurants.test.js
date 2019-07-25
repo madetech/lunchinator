@@ -1,18 +1,18 @@
 const { expect, sinon } = require("../test_helper");
 const GetNewLunchCycleRestaurants = require("@use_cases/get_new_lunch_cycle_restaurants");
-const Dietary = require("@domain/dietary");
+const RestaurantFactory = require("../factories/restaurant_factory");
 
 describe("GetNewLunchCycleRestaurants", function() {
   it("uses the previous lunch cycle's restaurants", function() {
     const restaurants = [
-      { name: "restaurant1", dietaries: [Dietary.Meat] },
-      { name: "restaurant2", dietaries: [Dietary.Vegan] },
-      { name: "restaurant3", dietaries: [Dietary.Vegan] },
-      { name: "restaurant4", dietaries: [Dietary.Vegan] },
-      { name: "restaurant5", dietaries: [Dietary.Vegan] },
-      { name: "restaurant6", dietaries: [Dietary.Vegan] },
-      { name: "restaurant7", dietaries: [Dietary.Vegan] },
-      { name: "restaurant8", dietaries: [Dietary.Vegan] }
+      RestaurantFactory.getRestaurant({ name: "restaurant1", emoji: ":bowtie:" }),
+      RestaurantFactory.getRestaurant({ name: "restaurant2", emoji: ":smile:" }),
+      RestaurantFactory.getRestaurant({ name: "restaurant3", emoji: ":simple_smile:" }),
+      RestaurantFactory.getRestaurant({ name: "restaurant4", emoji: ":laughing:" }),
+      RestaurantFactory.getRestaurant({ name: "restaurant5", emoji: ":blush:" }),
+      RestaurantFactory.getRestaurant({ name: "restaurant6", emoji: ":relaxed:" }),
+      RestaurantFactory.getRestaurant({ name: "restaurant7", emoji: ":smirk:" }),
+      RestaurantFactory.getRestaurant({ name: "restaurant8", emoji: ":heart_eyes:" })
     ];
     const restaurantsGateway = {
       all: sinon.fake.returns(restaurants)
@@ -31,25 +31,25 @@ describe("GetNewLunchCycleRestaurants", function() {
     }).execute();
 
     expect(response.restaurants).to.eql([
-      { name: "restaurant7", dietaries: [Dietary.Vegan] },
-      { name: "restaurant8", dietaries: [Dietary.Vegan] },
-      { name: "restaurant1", dietaries: [Dietary.Meat] },
-      { name: "restaurant2", dietaries: [Dietary.Vegan] },
-      { name: "restaurant3", dietaries: [Dietary.Vegan] },
-      { name: "restaurant4", dietaries: [Dietary.Vegan] }
+      restaurants[6],
+      restaurants[7],
+      restaurants[0],
+      restaurants[1],
+      restaurants[2],
+      restaurants[3]
     ]);
   });
 
   it("can handle no previous lunch cycle", function() {
     const restaurants = [
-      { name: "restaurant1", dietaries: [Dietary.Meat] },
-      { name: "restaurant2", dietaries: [Dietary.Vegan] },
-      { name: "restaurant3", dietaries: [Dietary.Vegan] },
-      { name: "restaurant4", dietaries: [Dietary.Vegan] },
-      { name: "restaurant5", dietaries: [Dietary.Vegan] },
-      { name: "restaurant6", dietaries: [Dietary.Vegan] },
-      { name: "restaurant7", dietaries: [Dietary.Vegan] },
-      { name: "restaurant8", dietaries: [Dietary.Vegan] }
+      RestaurantFactory.getRestaurant({ name: "restaurant1", emoji: ":bowtie:" }),
+      RestaurantFactory.getRestaurant({ name: "restaurant2", emoji: ":smile:" }),
+      RestaurantFactory.getRestaurant({ name: "restaurant3", emoji: ":simple_smile:" }),
+      RestaurantFactory.getRestaurant({ name: "restaurant4", emoji: ":laughing:" }),
+      RestaurantFactory.getRestaurant({ name: "restaurant5", emoji: ":blush:" }),
+      RestaurantFactory.getRestaurant({ name: "restaurant6", emoji: ":relaxed:" }),
+      RestaurantFactory.getRestaurant({ name: "restaurant7", emoji: ":smirk:" }),
+      RestaurantFactory.getRestaurant({ name: "restaurant8", emoji: ":heart_eyes:" })
     ];
     const restaurantsGateway = {
       all: sinon.fake.returns(restaurants)
@@ -64,12 +64,12 @@ describe("GetNewLunchCycleRestaurants", function() {
     }).execute();
 
     expect(response.restaurants).to.eql([
-      { name: "restaurant1", dietaries: [Dietary.Meat] },
-      { name: "restaurant2", dietaries: [Dietary.Vegan] },
-      { name: "restaurant3", dietaries: [Dietary.Vegan] },
-      { name: "restaurant4", dietaries: [Dietary.Vegan] },
-      { name: "restaurant5", dietaries: [Dietary.Vegan] },
-      { name: "restaurant6", dietaries: [Dietary.Vegan] }
+      restaurants[0],
+      restaurants[1],
+      restaurants[2],
+      restaurants[3],
+      restaurants[4],
+      restaurants[5]
     ]);
   });
 });

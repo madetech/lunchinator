@@ -1,5 +1,5 @@
 const { expect } = require("../test_helper");
-const SlashCommandFactory = require("./slash_command_factory");
+const SlashCommandFactory = require("../factories/slash_command_factory");
 const InMemoryLunchCycleGateway = require("@gateways/in_memory_lunch_cycle_gateway");
 const LunchCycle = require("@domain/lunch_cycle");
 const IsValidLunchinatorUser = require("@use_cases/is_valid_lunchinator_user");
@@ -7,7 +7,7 @@ const CreateNewLunchCycle = require("@use_cases/create_new_lunch_cycle");
 const SendLunchCyclePreview = require("@use_cases/send_lunch_cycle_preview");
 const GetNewLunchCycleRestaurants = require("@use_cases/get_new_lunch_cycle_restaurants");
 const GetPreviousLunchCycle = require("@use_cases/get_previous_lunch_cycle");
-const Dietary = require("@domain/dietary");
+const RestaurantFactory = require("../factories/restaurant_factory");
 
 class FakeSlackGateway {
   sendMessage(slackMessage) {
@@ -18,10 +18,14 @@ class FakeSlackGateway {
 class FakeInMemoryRestaurantsGateway {
   constructor() {
     this.restaurants = [
-      { name: "restaurant1", dietaries: [Dietary.Vegan, Dietary.Meat] },
-      { name: "restaurant2", dietaries: [Dietary.Meat] },
-      { name: "restaurant3", dietaries: [Dietary.Vegan, Dietary.Meat] },
-      { name: "restaurant4", dietaries: [Dietary.Meat] }
+      RestaurantFactory.getRestaurant({ name: "restaurant1", emoji: ":bowtie:" }),
+      RestaurantFactory.getRestaurant({ name: "restaurant2", emoji: ":smile:" }),
+      RestaurantFactory.getRestaurant({ name: "restaurant3", emoji: ":simple_smile:" }),
+      RestaurantFactory.getRestaurant({ name: "restaurant4", emoji: ":laughing:" }),
+      RestaurantFactory.getRestaurant({ name: "restaurant5", emoji: ":blush:" }),
+      RestaurantFactory.getRestaurant({ name: "restaurant6", emoji: ":relaxed:" }),
+      RestaurantFactory.getRestaurant({ name: "restaurant7", emoji: ":smirk:" }),
+      RestaurantFactory.getRestaurant({ name: "restaurant8", emoji: ":heart_eyes:" })
     ];
   }
 
@@ -77,21 +81,21 @@ describe("ReceiveNewLunchCycleSlashCommand", function() {
   it("can get the restaurants for the new lunch cycle", function() {
     GivenANewLunchCycleCommand();
     WhenANewLunchCycleIsCreated();
-    WhenWeGetTheRestaurants();
-    ThenTheRestaurantsWillBe(fakeRestaurantsGateway.all());
+    WhenWeGetTheLunchCycleRestaurants();
+    ThenTheNewLunchCycleRestaurantsWillBe(fakeRestaurantsGateway.all().slice(0, 6));
   });
 
   describe("when there is a previous lunch cycle with restaurants", function() {
     it("can get the restaurants for the new lunch cycle", function() {
-      GivenALunchCycleExistsWithRestaurants(fakeRestaurantsGateway.all().slice(0, 2));
+      GivenALunchCycleExistsWithRestaurants(fakeRestaurantsGateway.all().slice(0, 6));
       GivenANewLunchCycleCommand();
       WhenANewLunchCycleIsCreated();
-      WhenWeGetTheRestaurants();
-      ThenTheRestaurantsWillBe(
+      WhenWeGetTheLunchCycleRestaurants();
+      ThenTheNewLunchCycleRestaurantsWillBe(
         fakeRestaurantsGateway
           .all()
-          .slice(2, 4)
-          .concat(fakeRestaurantsGateway.all())
+          .slice(6, 8)
+          .concat(fakeRestaurantsGateway.all().slice(0, 4))
       );
     });
   });
@@ -107,19 +111,19 @@ function GivenALunchCycleExistsWithRestaurants(restaurants) {
   inMemoryLunchCycleGateway.create(new LunchCycle({ restaurants: restaurants }));
 }
 
-function WhenWeGetTheRestaurants() {
+function WhenWeGetTheLunchCycleRestaurants() {
   var useCase = new GetNewLunchCycleRestaurants({
     restaurantsGateway: fakeRestaurantsGateway,
     getPreviousLunchCycle: new GetPreviousLunchCycle({
       lunchCycleGateway: inMemoryLunchCycleGateway
     })
   });
-  getNewLunchCycleRestaurantsResponse = useCase.execute(
-    inMemoryLunchCycleGateway.all().slice(-1)[0]
-  );
+
+  var lastRestaurantInLastLunchCycle = inMemoryLunchCycleGateway.all().slice(-1)[0];
+  getNewLunchCycleRestaurantsResponse = useCase.execute(lastRestaurantInLastLunchCycle);
 }
 
-function ThenTheRestaurantsWillBe(expected) {
+function ThenTheNewLunchCycleRestaurantsWillBe(expected) {
   expect(getNewLunchCycleRestaurantsResponse.restaurants).to.eql(expected);
 }
 
