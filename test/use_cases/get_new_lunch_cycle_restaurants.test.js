@@ -14,8 +14,8 @@ describe("GetNewLunchCycleRestaurants", function() {
       RestaurantFactory.getRestaurant({ name: "restaurant7", emoji: ":smirk:" }),
       RestaurantFactory.getRestaurant({ name: "restaurant8", emoji: ":heart_eyes:" })
     ];
-    const restaurantsGateway = {
-      all: sinon.fake.returns(restaurants)
+    const fetchRestaurantsFromGoogleSheetStub = {
+      execute: sinon.fake.returns({ restaurants })
     };
     const getPreviousLunchFake = {
       execute: sinon.fake.returns({
@@ -26,7 +26,7 @@ describe("GetNewLunchCycleRestaurants", function() {
     };
 
     const response = new GetNewLunchCycleRestaurants({
-      restaurantsGateway: restaurantsGateway,
+      fetchRestaurantsFromGoogleSheet: fetchRestaurantsFromGoogleSheetStub,
       getPreviousLunchCycle: getPreviousLunchFake
     }).execute();
 
@@ -51,15 +51,15 @@ describe("GetNewLunchCycleRestaurants", function() {
       RestaurantFactory.getRestaurant({ name: "restaurant7", emoji: ":smirk:" }),
       RestaurantFactory.getRestaurant({ name: "restaurant8", emoji: ":heart_eyes:" })
     ];
-    const restaurantsGateway = {
-      all: sinon.fake.returns(restaurants)
+    const fetchRestaurantsFromGoogleSheetStub = {
+      execute: sinon.fake.returns({ restaurants })
     };
     const getPreviousLunchFake = {
       execute: sinon.fake.returns({ previousLunchCycle: null })
     };
 
     const response = new GetNewLunchCycleRestaurants({
-      restaurantsGateway: restaurantsGateway,
+      fetchRestaurantsFromGoogleSheet: fetchRestaurantsFromGoogleSheetStub,
       getPreviousLunchCycle: getPreviousLunchFake
     }).execute();
 

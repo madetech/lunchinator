@@ -2,18 +2,20 @@ const config = require("@app/config");
 
 class GetNewLunchCycleRestaurants {
   constructor(options) {
-    this.restaurantsGateway = options.restaurantsGateway;
+    this.fetchRestaurantsFromGoogleSheet = options.fetchRestaurantsFromGoogleSheet;
     this.getPreviousLunchCycle = options.getPreviousLunchCycle;
   }
 
   execute(lunchCycle) {
     const previousLunchCycle = this.getPreviousLunchCycle.execute(lunchCycle).previousLunchCycle;
+    const allRestaurants = this.fetchRestaurantsFromGoogleSheet.execute().restaurants;
+
     let newRestaurants;
 
     if (previousLunchCycle && previousLunchCycle.restaurants) {
-      newRestaurants = this.findNextRestaurants(previousLunchCycle);
+      newRestaurants = this.findNextRestaurants(allRestaurants, previousLunchCycle);
     } else {
-      newRestaurants = this.restaurantsGateway.all().slice(0, config.CYCLE_LENGTH);
+      newRestaurants = allRestaurants.slice(0, config.CYCLE_LENGTH);
     }
 
     return {
@@ -21,13 +23,10 @@ class GetNewLunchCycleRestaurants {
     };
   }
 
-  findNextRestaurants(previousLunchCycle) {
-    const allRestaurants = this.restaurantsGateway.all();
+  findNextRestaurants(allRestaurants, previousLunchCycle) {
     const [lastRestaurant] = previousLunchCycle.restaurants.slice(-1);
 
-    const indexOfLastRestaurant = this.restaurantsGateway
-      .all()
-      .findIndex(res => res.name === lastRestaurant.name);
+    const indexOfLastRestaurant = allRestaurants.findIndex(res => res.name === lastRestaurant.name);
 
     let nextRestaurants = allRestaurants.slice(indexOfLastRestaurant + 1);
     if (nextRestaurants.length < config.CYCLE_LENGTH) {

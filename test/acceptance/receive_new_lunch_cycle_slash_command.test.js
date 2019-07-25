@@ -1,14 +1,15 @@
 const { expect } = require("../test_helper");
-const { SlashCommandFactory, RestaurantFactory } = require("../factories");
+const { SlashCommandFactory, RestaurantFactory, GoogleSheetRowFactory } = require("../factories");
 
-const { LunchCycle, DietaryLevel } = require("@domain");
+const { LunchCycle } = require("@domain");
 const { InMemoryLunchCycleGateway } = require("@gateways");
 const {
   IsValidLunchinatorUser,
   CreateNewLunchCycle,
   SendLunchCyclePreview,
   GetNewLunchCycleRestaurants,
-  GetPreviousLunchCycle
+  GetPreviousLunchCycle,
+  FetchRestaurantsFromGoogleSheet
 } = require("@use_cases");
 
 class FakeSlackGateway {
@@ -17,27 +18,29 @@ class FakeSlackGateway {
   }
 }
 
-class FakeInMemoryRestaurantsGateway {
-  constructor() {
-    this.restaurants = [
-      RestaurantFactory.getRestaurant({ name: "restaurant1", emoji: ":bowtie:" }),
-      RestaurantFactory.getRestaurant({ name: "restaurant2", emoji: ":smile:" }),
-      RestaurantFactory.getRestaurant({ name: "restaurant3", emoji: ":simple_smile:" }),
-      RestaurantFactory.getRestaurant({ name: "restaurant4", emoji: ":laughing:" }),
-      RestaurantFactory.getRestaurant({ name: "restaurant5", emoji: ":blush:" }),
-      RestaurantFactory.getRestaurant({ name: "restaurant6", emoji: ":relaxed:" }),
-      RestaurantFactory.getRestaurant({ name: "restaurant7", emoji: ":smirk:" }),
-      RestaurantFactory.getRestaurant({ name: "restaurant8", emoji: ":heart_eyes:" })
-    ];
-  }
+const restaurantList = [
+  RestaurantFactory.getRestaurant({ name: "restaurant1", emoji: ":bowtie:" }),
+  RestaurantFactory.getRestaurant({ name: "restaurant2", emoji: ":smile:" }),
+  RestaurantFactory.getRestaurant({ name: "restaurant3", emoji: ":simple_smile:" }),
+  RestaurantFactory.getRestaurant({ name: "restaurant4", emoji: ":laughing:" }),
+  RestaurantFactory.getRestaurant({ name: "restaurant5", emoji: ":blush:" }),
+  RestaurantFactory.getRestaurant({ name: "restaurant6", emoji: ":relaxed:" }),
+  RestaurantFactory.getRestaurant({ name: "restaurant7", emoji: ":smirk:" }),
+  RestaurantFactory.getRestaurant({ name: "restaurant8", emoji: ":heart_eyes:" })
+];
 
-  all() {
-    return this.restaurants;
-  }
-}
+const rawGoogleSheetRestaurantList = [
+  GoogleSheetRowFactory.getRestaurantRow({ restaurant: "restaurant1", emoji: ":bowtie:" }),
+  GoogleSheetRowFactory.getRestaurantRow({ restaurant: "restaurant2", emoji: ":smile:" }),
+  GoogleSheetRowFactory.getRestaurantRow({ restaurant: "restaurant3", emoji: ":simple_smile:" }),
+  GoogleSheetRowFactory.getRestaurantRow({ restaurant: "restaurant4", emoji: ":laughing:" }),
+  GoogleSheetRowFactory.getRestaurantRow({ restaurant: "restaurant5", emoji: ":blush:" }),
+  GoogleSheetRowFactory.getRestaurantRow({ restaurant: "restaurant6", emoji: ":relaxed:" }),
+  GoogleSheetRowFactory.getRestaurantRow({ restaurant: "restaurant7", emoji: ":smirk:" }),
+  GoogleSheetRowFactory.getRestaurantRow({ restaurant: "restaurant8", emoji: ":heart_eyes:" })
+];
 
 let inMemoryLunchCycleGateway;
-let fakeRestaurantsGateway;
 let slashCommandParams;
 let createNewLunchCycleResponse;
 let getNewLunchCycleRestaurantsResponse;
@@ -45,7 +48,6 @@ let getNewLunchCycleRestaurantsResponse;
 describe("ReceiveNewLunchCycleSlashCommand", function() {
   beforeEach(function() {
     inMemoryLunchCycleGateway = new InMemoryLunchCycleGateway();
-    fakeRestaurantsGateway = new FakeInMemoryRestaurantsGateway();
   });
 
   it("can create a new lunch cycle", function() {
@@ -84,20 +86,17 @@ describe("ReceiveNewLunchCycleSlashCommand", function() {
     GivenANewLunchCycleCommand();
     WhenANewLunchCycleIsCreated();
     WhenWeGetTheLunchCycleRestaurants();
-    ThenTheNewLunchCycleRestaurantsWillBe(fakeRestaurantsGateway.all().slice(0, 6));
+    ThenTheNewLunchCycleRestaurantsWillBe(restaurantList.slice(0, 6));
   });
 
   describe("when there is a previous lunch cycle with restaurants", function() {
     it("can get the restaurants for the new lunch cycle", function() {
-      GivenALunchCycleExistsWithRestaurants(fakeRestaurantsGateway.all().slice(0, 6));
+      GivenALunchCycleExistsWithRestaurants(restaurantList.slice(0, 6));
       GivenANewLunchCycleCommand();
       WhenANewLunchCycleIsCreated();
       WhenWeGetTheLunchCycleRestaurants();
       ThenTheNewLunchCycleRestaurantsWillBe(
-        fakeRestaurantsGateway
-          .all()
-          .slice(6, 8)
-          .concat(fakeRestaurantsGateway.all().slice(0, 4))
+        restaurantList.slice(6, 8).concat(restaurantList.slice(0, 4))
       );
     });
   });
@@ -112,10 +111,17 @@ describe("ReceiveNewLunchCycleSlashCommand", function() {
 function GivenALunchCycleExistsWithRestaurants(restaurants) {
   inMemoryLunchCycleGateway.create(new LunchCycle({ restaurants: restaurants }));
 }
+class FakeGoogleSheetGateway {
+  fetchRows(sheetId) {
+    return rawGoogleSheetRestaurantList;
+  }
+}
 
 function WhenWeGetTheLunchCycleRestaurants() {
   var useCase = new GetNewLunchCycleRestaurants({
-    restaurantsGateway: fakeRestaurantsGateway,
+    fetchRestaurantsFromGoogleSheet: new FetchRestaurantsFromGoogleSheet({
+      googleSheetGateway: new FakeGoogleSheetGateway()
+    }),
     getPreviousLunchCycle: new GetPreviousLunchCycle({
       lunchCycleGateway: inMemoryLunchCycleGateway
     })

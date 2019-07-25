@@ -5,8 +5,13 @@ class RestaurantFactory {
   static getRestaurant(overrides = {}) {
     const base = {
       name: "restaurant1",
-      dietaries: new Dietary({ vegan: DietaryLevel.Great }),
-      notes: "notes",
+      dietaries: new Dietary({
+        vegan: DietaryLevel.Great,
+        vegetarian: DietaryLevel.Some,
+        halal: DietaryLevel.Unknown,
+        meat: DietaryLevel.Great
+      }),
+      notes: "",
       emoji: ":bowtie:"
     };
 
