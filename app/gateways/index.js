@@ -1,3 +1,4 @@
 module.exports = {
-  InMemoryLunchCycleGateway: require("@gateways/in_memory_lunch_cycle_gateway")
+  InMemoryLunchCycleGateway: require("./in_memory_lunch_cycle_gateway"),
+  GoogleSheetGateway: require("./google_sheet_gateway")
 };
