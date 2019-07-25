@@ -1,8 +1,7 @@
 const { expect, sinon, config } = require("../test_helper");
-const FetchRestaurantsFromGoogleSheet = require("@use_cases/fetch_restaurants_from_google_sheet");
-const RestaurantFactory = require("../factories/restaurant_factory");
-const Dietary = require("@domain/dietary");
-const DietaryLevel = require("@domain/dietary_level");
+const { RestaurantFactory } = require("../factories");
+const { FetchRestaurantsFromGoogleSheet } = require("@use_cases");
+const { Dietary, DietaryLevel } = require("@domain");
 
 describe("FetchRestaurantsFromGoogleSheet", function() {
   it("can fetch rows from google sheet", function() {

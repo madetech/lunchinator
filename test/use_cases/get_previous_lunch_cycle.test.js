@@ -1,5 +1,5 @@
 const { expect, sinon } = require("../test_helper");
-const GetPreviousLunchCycle = require("@use_cases/get_previous_lunch_cycle");
+const { GetPreviousLunchCycle } = require("@use_cases");
 
 describe("GetPreviousLunchCycle", function() {
   it("returns the previous lunch cycle", function() {

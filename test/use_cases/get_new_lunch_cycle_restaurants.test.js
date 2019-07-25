@@ -1,6 +1,6 @@
 const { expect, sinon } = require("../test_helper");
-const GetNewLunchCycleRestaurants = require("@use_cases/get_new_lunch_cycle_restaurants");
-const RestaurantFactory = require("../factories/restaurant_factory");
+const { RestaurantFactory } = require("../factories");
+const { GetNewLunchCycleRestaurants } = require("@use_cases");
 
 describe("GetNewLunchCycleRestaurants", function() {
   it("uses the previous lunch cycle's restaurants", function() {

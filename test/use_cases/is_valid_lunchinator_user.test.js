@@ -1,5 +1,5 @@
 const { expect, sinon, config } = require("../test_helper");
-const IsValidLunchinatorUser = require("@use_cases/is_valid_lunchinator_user");
+const { IsValidLunchinatorUser } = require("@use_cases");
 
 describe("IsValidLunchinatorUser", function() {
   it("check lunchinator user is valid", function() {

@@ -1,6 +1,6 @@
 const { expect, sinon } = require("../test_helper");
-const SendLunchCyclePreview = require("@use_cases/send_lunch_cycle_preview");
-const SlackMessage = require("@domain/slack_message");
+const { SendLunchCyclePreview } = require("@use_cases");
+const { SlackMessage } = require("@domain");
 
 describe("SendLunchCyclePreview", function() {
   it("send lunch cycle preview", function() {

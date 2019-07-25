@@ -1,6 +1,6 @@
 const { expect, sinon } = require("../test_helper");
-const LunchCycle = require("@domain/lunch_cycle");
-const CreateNewLunchCycle = require("@use_cases/create_new_lunch_cycle");
+const { LunchCycle } = require("@domain");
+const { CreateNewLunchCycle } = require("@use_cases");
 
 describe("CreateNewLunchCycle", function() {
   it("creates a new lunch cycle", function() {
