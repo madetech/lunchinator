@@ -8,6 +8,9 @@ chai.use(sinonChai);
 
 const config = require("@app/config");
 
+sinon.stub(config, "GOOGLE_SERVICE_ACCOUNT_EMAIL").get(() => "test@madetech.com");
+sinon.stub(config, "GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY").get(() => "NOT_VALID");
+
 module.exports = {
   sinon,
   expect,
