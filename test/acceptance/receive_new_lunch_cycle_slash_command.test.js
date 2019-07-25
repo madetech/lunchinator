@@ -8,6 +8,8 @@ const SendLunchCyclePreview = require("@use_cases/send_lunch_cycle_preview");
 const GetNewLunchCycleRestaurants = require("@use_cases/get_new_lunch_cycle_restaurants");
 const GetPreviousLunchCycle = require("@use_cases/get_previous_lunch_cycle");
 const RestaurantFactory = require("../factories/restaurant_factory");
+const FetchRestaurantsFromGoogleSheet = require("@use_cases/fetch_restaurants_from_google_sheet");
+const DietaryLevel = require("@domain/dietary_level");
 
 class FakeSlackGateway {
   sendMessage(slackMessage) {
@@ -39,6 +41,7 @@ let fakeRestaurantsGateway;
 let slashCommandParams;
 let createNewLunchCycleResponse;
 let getNewLunchCycleRestaurantsResponse;
+let fetchRestaurantsFromGoogleSheetResponse;
 
 describe("ReceiveNewLunchCycleSlashCommand", function() {
   beforeEach(function() {
@@ -98,6 +101,25 @@ describe("ReceiveNewLunchCycleSlashCommand", function() {
           .concat(fakeRestaurantsGateway.all().slice(0, 4))
       );
     });
+  });
+
+  it("can fetch the restaurants from the google sheet", function() {
+    GivenANewLunchCycleCommand();
+    WhenANewLunchCycleIsCreated();
+    WhenTheRestaurantsAreFetchedFromTheGoogleSheet();
+    ThenTheRestaurantListWillBe([
+      RestaurantFactory.getRestaurant({
+        dietaries: {
+          halal: DietaryLevel.Unknown,
+          meat: DietaryLevel.Great,
+          vegan: DietaryLevel.Some,
+          vegetarian: DietaryLevel.Some
+        },
+        emoji: ":blush:",
+        name: "Nandos",
+        notes: ""
+      })
+    ]);
   });
 
   it("can send a preview message", function() {
@@ -178,4 +200,37 @@ function ThenALunchCyclePreviewIsSent() {
 
 function ThenTheTotalCountOfLunchCyclesIs(count) {
   expect(count).to.eq(inMemoryLunchCycleGateway.count());
+}
+
+class FakeGoogleSheetGateway {
+  fetchRows(sheetId) {
+    return [
+      {
+        _links: [],
+        _xml: "",
+        del: () => {},
+        emoji: ":blush:",
+        halal: "?",
+        id: "sheet_url",
+        meat: "great",
+        notes: "",
+        restaurant: "Nandos",
+        save: () => {},
+        vegan: "some",
+        vegetarian: "some"
+      }
+    ];
+  }
+}
+
+function WhenTheRestaurantsAreFetchedFromTheGoogleSheet() {
+  const fakeGoogleSheetGateway = new FakeGoogleSheetGateway();
+  const useCase = new FetchRestaurantsFromGoogleSheet({
+    googleSheetGateway: fakeGoogleSheetGateway
+  });
+  fetchRestaurantsFromGoogleSheetResponse = useCase.execute();
+}
+
+function ThenTheRestaurantListWillBe(expected) {
+  expect(fetchRestaurantsFromGoogleSheetResponse.restaurants).to.eql(expected);
 }
