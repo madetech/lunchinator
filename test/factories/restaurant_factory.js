@@ -1,7 +1,5 @@
 require("module-alias/register");
-const Dietary = require("@domain/dietary");
-const DietaryLevel = require("@domain/dietary_level");
-const Restaurant = require("@domain/restaurant.js");
+const { Dietary, DietaryLevel, Restaurant } = require("@domain");
 
 class RestaurantFactory {
   static getRestaurant(overrides = {}) {

@@ -1,15 +1,16 @@
 const { expect } = require("../test_helper");
-const SlashCommandFactory = require("../factories/slash_command_factory");
-const InMemoryLunchCycleGateway = require("@gateways/in_memory_lunch_cycle_gateway");
-const LunchCycle = require("@domain/lunch_cycle");
-const IsValidLunchinatorUser = require("@use_cases/is_valid_lunchinator_user");
-const CreateNewLunchCycle = require("@use_cases/create_new_lunch_cycle");
-const SendLunchCyclePreview = require("@use_cases/send_lunch_cycle_preview");
-const GetNewLunchCycleRestaurants = require("@use_cases/get_new_lunch_cycle_restaurants");
-const GetPreviousLunchCycle = require("@use_cases/get_previous_lunch_cycle");
-const RestaurantFactory = require("../factories/restaurant_factory");
-const FetchRestaurantsFromGoogleSheet = require("@use_cases/fetch_restaurants_from_google_sheet");
-const DietaryLevel = require("@domain/dietary_level");
+const { SlashCommandFactory, RestaurantFactory } = require("../factories");
+
+const { LunchCycle, DietaryLevel } = require("@domain");
+const { InMemoryLunchCycleGateway } = require("@gateways");
+const {
+  IsValidLunchinatorUser,
+  CreateNewLunchCycle,
+  SendLunchCyclePreview,
+  GetNewLunchCycleRestaurants,
+  GetPreviousLunchCycle,
+  FetchRestaurantsFromGoogleSheet
+} = require("@use_cases");
 
 class FakeSlackGateway {
   sendMessage(slackMessage) {

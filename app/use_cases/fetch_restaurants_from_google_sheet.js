@@ -1,7 +1,5 @@
 const config = require("@app/config");
-const Restaurant = require("@domain/restaurant");
-const Dietary = require("@domain/dietary");
-const DietaryLevel = require("@domain/dietary_level");
+const { Restaurant, Dietary, DietaryLevel } = require("@domain");
 
 class FetchRestaurantsFromGoogleSheet {
   constructor(options) {

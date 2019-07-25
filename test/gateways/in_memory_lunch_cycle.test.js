@@ -1,5 +1,5 @@
 const { expect } = require("../test_helper");
-const InMemoryLunchCycleGateway = require("@gateways/in_memory_lunch_cycle_gateway");
+const { InMemoryLunchCycleGateway } = require("@gateways");
 
 describe("InMemoryLunchCycleGateway", function() {
   it("can get previous lunch cycle", function() {

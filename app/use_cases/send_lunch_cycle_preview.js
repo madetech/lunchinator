@@ -1,5 +1,5 @@
 require("module-alias/register");
-const SlackMessage = require("@domain/slack_message");
+const { SlackMessage } = require("@domain");
 
 class SendLunchCyclePreview {
   constructor(options) {
