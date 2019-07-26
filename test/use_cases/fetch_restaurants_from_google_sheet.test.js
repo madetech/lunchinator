@@ -3,8 +3,8 @@ const { RestaurantFactory } = require("../factories");
 const { FetchRestaurantsFromGoogleSheet } = require("@use_cases");
 const { Dietary, DietaryLevel } = require("@domain");
 
-describe("FetchRestaurantsFromGoogleSheet", function() {
-  it("can fetch rows from google sheet", function() {
+describe("FetchRestaurantsFromGoogleSheet", async function() {
+  it("can fetch rows from google sheet", async function() {
     const fakeSheetGateway = {
       fetchRows: () => [
         {
@@ -46,7 +46,7 @@ describe("FetchRestaurantsFromGoogleSheet", function() {
     const useCase = new FetchRestaurantsFromGoogleSheet({
       googleSheetGateway: fakeSheetGateway
     });
-    const response = useCase.execute();
+    const response = await useCase.execute();
 
     expect(response.restaurants).to.eql(expectedRestaurants);
     expect(sheetGatewaySpy).to.have.been.calledOnceWith(dummySheetId);

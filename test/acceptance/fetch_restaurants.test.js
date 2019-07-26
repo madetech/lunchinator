@@ -34,27 +34,27 @@ let fetchRestaurantsFromGoogleSheetResponse;
 let inMemoryLunchCycleGateway;
 let getNewLunchCycleRestaurantsResponse;
 
-describe("Acceptance Test for Fetching Restaurants", function() {
+describe("Acceptance Test for Fetching Restaurants", async function() {
   beforeEach(function() {
     inMemoryLunchCycleGateway = new InMemoryLunchCycleGateway();
   });
 
-  it("can fetch the restaurants from the google sheet", function() {
-    WhenTheRestaurantsAreFetchedFromTheGoogleSheet();
+  it("can fetch the restaurants from the google sheet", async function() {
+    await WhenTheRestaurantsAreFetchedFromTheGoogleSheet();
     ThenTheRestaurantListWillBe(restaurantList);
   });
 
-  it("can get the restaurants for the new lunch cycle", function() {
+  it("can get the restaurants for the new lunch cycle", async function() {
     GivenANewLunchCycleHasBeenCreated();
-    WhenWeGetTheLunchCycleRestaurants();
+    await WhenWeGetTheLunchCycleRestaurants();
     ThenTheNewLunchCycleRestaurantsWillBe(restaurantList.slice(0, 6));
   });
 
-  describe("when there is a previous lunch cycle with restaurants", function() {
-    it("can get the restaurants for the new lunch cycle", function() {
+  describe("when there is a previous lunch cycle with restaurants", async function() {
+    it("can get the restaurants for the new lunch cycle", async function() {
       GivenALunchCycleExistsWithRestaurants(restaurantList.slice(0, 6));
       GivenANewLunchCycleHasBeenCreated();
-      WhenWeGetTheLunchCycleRestaurants();
+      await WhenWeGetTheLunchCycleRestaurants();
       ThenTheNewLunchCycleRestaurantsWillBe(
         restaurantList.slice(6, 8).concat(restaurantList.slice(0, 4))
       );
@@ -76,19 +76,19 @@ function GivenALunchCycleExistsWithRestaurants(restaurants) {
   inMemoryLunchCycleGateway.create(new LunchCycle({ restaurants: restaurants }));
 }
 
-function WhenTheRestaurantsAreFetchedFromTheGoogleSheet() {
+async function WhenTheRestaurantsAreFetchedFromTheGoogleSheet() {
   const fakeGoogleSheetGateway = new FakeGoogleSheetGateway();
   const useCase = new FetchRestaurantsFromGoogleSheet({
     googleSheetGateway: fakeGoogleSheetGateway
   });
-  fetchRestaurantsFromGoogleSheetResponse = useCase.execute();
+  fetchRestaurantsFromGoogleSheetResponse = await useCase.execute();
 }
 
 function ThenTheRestaurantListWillBe(expected) {
   expect(fetchRestaurantsFromGoogleSheetResponse.restaurants).to.eql(expected);
 }
 
-function WhenWeGetTheLunchCycleRestaurants() {
+async function WhenWeGetTheLunchCycleRestaurants() {
   var useCase = new GetNewLunchCycleRestaurants({
     fetchRestaurantsFromGoogleSheet: new FetchRestaurantsFromGoogleSheet({
       googleSheetGateway: new FakeGoogleSheetGateway()
@@ -99,7 +99,7 @@ function WhenWeGetTheLunchCycleRestaurants() {
   });
 
   var lastRestaurantInLastLunchCycle = inMemoryLunchCycleGateway.all().slice(-1)[0];
-  getNewLunchCycleRestaurantsResponse = useCase.execute(lastRestaurantInLastLunchCycle);
+  getNewLunchCycleRestaurantsResponse = await useCase.execute(lastRestaurantInLastLunchCycle);
 }
 
 function ThenTheNewLunchCycleRestaurantsWillBe(expected) {
