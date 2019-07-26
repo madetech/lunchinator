@@ -92,7 +92,11 @@ describe("GoogleSheetGateway", function() {
 
     sinon.stub(gateway, "newGoogleSpreadsheet").returns({});
     sinon.stub(gateway, "getFirstSheet").returns(fakeSheet);
+    sinon.stub(gateway, "doAuth");
 
-    await expect(gateway.fetchRows(dummyId)).to.be.rejectedWith(GoogleSheetGatewayError);
+    await expect(gateway.fetchRows(dummyId)).to.be.rejectedWith(
+      GoogleSheetGatewayError,
+      "Cannot get rows for Google Sheets sheet."
+    );
   });
 });

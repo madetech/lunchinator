@@ -54,7 +54,7 @@ class GoogleSheetGateway {
   async getRows(sheet) {
     const rows = await promisify(sheet.getRows)().catch(() => null);
 
-    if (info === null) {
+    if (rows === null) {
       throw new Error("Cannot get rows for Google Sheets sheet.");
     }
 
