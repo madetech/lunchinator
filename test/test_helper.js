@@ -3,8 +3,10 @@ require("module-alias/register");
 const chai = require("chai");
 const sinon = require("sinon");
 const sinonChai = require("sinon-chai");
+const chaiAsPromised = require("chai-as-promised");
 const expect = chai.expect;
 chai.use(sinonChai);
+chai.use(chaiAsPromised);
 
 const config = require("@app/config");
 
