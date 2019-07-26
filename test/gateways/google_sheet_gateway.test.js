@@ -10,6 +10,7 @@ describe("GoogleSheetGateway", function() {
     const dummyRows = [];
 
     sinon.stub(gateway, "newGoogleSpreadsheet").returns(dummyDoc);
+    sinon.stub(gateway, "doAuth");
     sinon.stub(gateway, "getFirstSheet").resolves(dummySheet);
     sinon.stub(gateway, "getRows").resolves(dummyRows);
 
@@ -49,8 +50,7 @@ describe("GoogleSheetGateway", function() {
       private_key: "Not Valid Key"
     };
     const fakeDoc = {
-      useServiceAccountAuth: sinon.fake.throws(new Error("Auth Error")),
-      getInfo: sinon.fake.returns({ worksheets: [] })
+      useServiceAccountAuth: sinon.fake.throws(new Error("Auth Error"))
     };
     const dummyId = "123";
     const gateway = new GoogleSheetGateway();
@@ -59,7 +59,10 @@ describe("GoogleSheetGateway", function() {
     sinon.stub(config, "GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY").get(() => dummyCreds.private_key);
     sinon.stub(gateway, "newGoogleSpreadsheet").returns(fakeDoc);
 
-    await expect(gateway.fetchRows(dummyId)).to.be.rejectedWith(GoogleSheetGatewayError);
+    await expect(gateway.fetchRows(dummyId)).to.be.rejectedWith(
+      GoogleSheetGatewayError,
+      "Google Sheets authorisation error."
+    );
   });
 
   it("can handle errors from doc.getInfo API", async function() {
@@ -67,14 +70,29 @@ describe("GoogleSheetGateway", function() {
     const gateway = new GoogleSheetGateway();
 
     const fakeDoc = {
-      useServiceAccountAuth: callback => callback(),
       getInfo: sinon.fake.throws(new Error("Can't getInfo"))
     };
 
     sinon.stub(gateway, "newGoogleSpreadsheet").returns(fakeDoc);
+    sinon.stub(gateway, "doAuth");
+
+    await expect(gateway.fetchRows(dummyId)).to.be.rejectedWith(
+      GoogleSheetGatewayError,
+      "Cannot get info for Google Sheets document."
+    );
+  });
+
+  it("can handle errors from sheet.getRows API", async function() {
+    const dummyId = "123";
+    const gateway = new GoogleSheetGateway();
+
+    const fakeSheet = {
+      getRows: sinon.fake.throws(new Error("Can't getRows"))
+    };
+
+    sinon.stub(gateway, "newGoogleSpreadsheet").returns({});
+    sinon.stub(gateway, "getFirstSheet").returns(fakeSheet);
 
     await expect(gateway.fetchRows(dummyId)).to.be.rejectedWith(GoogleSheetGatewayError);
   });
-
-  xit("can handle errors from sheet.getRows API");
 });

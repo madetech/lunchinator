@@ -13,6 +13,7 @@ class GoogleSheetGateway {
   async fetchRows(sheetId) {
     try {
       const doc = this.newGoogleSpreadsheet(sheetId);
+      await this.doAuth(doc);
       const sheet = await this.getFirstSheet(doc);
       const rows = await this.getRows(sheet);
 
@@ -26,7 +27,7 @@ class GoogleSheetGateway {
     return new GoogleSpreadsheet(sheetId);
   }
 
-  async getFirstSheet(doc) {
+  async doAuth(doc) {
     const creds = {
       client_email: config.GOOGLE_SERVICE_ACCOUNT_EMAIL,
       private_key: config.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY
@@ -36,20 +37,28 @@ class GoogleSheetGateway {
     const authResult = await promisify(doc.useServiceAccountAuth)(creds).catch(() => null);
 
     if (authResult === null) {
-      throw new Error("Auth Error");
+      throw new Error("Google Sheets authorisation error.");
     }
+  }
 
+  async getFirstSheet(doc) {
     const info = await promisify(doc.getInfo)().catch(() => null);
 
     if (info === null) {
-      throw new Error("Cannot getInfo for doc");
+      throw new Error("Cannot get info for Google Sheets document.");
     }
 
     return info.worksheets[0];
   }
 
   async getRows(sheet) {
-    return await promisify(sheet.getRows)();
+    const rows = await promisify(sheet.getRows)().catch(() => null);
+
+    if (info === null) {
+      throw new Error("Cannot get rows for Google Sheets sheet.");
+    }
+
+    return rows;
   }
 }
 
