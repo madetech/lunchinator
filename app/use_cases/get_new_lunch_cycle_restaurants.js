@@ -6,9 +6,10 @@ class GetNewLunchCycleRestaurants {
     this.getPreviousLunchCycle = options.getPreviousLunchCycle;
   }
 
-  execute(lunchCycle) {
+  async execute(lunchCycle) {
     const previousLunchCycle = this.getPreviousLunchCycle.execute(lunchCycle).previousLunchCycle;
-    const allRestaurants = this.fetchRestaurantsFromGoogleSheet.execute().restaurants;
+    const fetchResponse = await this.fetchRestaurantsFromGoogleSheet.execute();
+    const allRestaurants = fetchResponse.restaurants;
 
     let newRestaurants;
 

@@ -1,3 +1,4 @@
+require("module-alias/register");
 const result = require("dotenv").config();
 
 let envs;
