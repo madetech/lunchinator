@@ -9,6 +9,8 @@ describe("PostgresLunchCycleGateway", function() {
 
     const client = await postgresLunchCycleGateway._client();
     await client.query("TRUNCATE lunch_cycles RESTART IDENTITY");
+
+    client.end();
   });
 
   it("create", async function() {
