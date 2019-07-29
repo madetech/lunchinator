@@ -1,4 +1,5 @@
 const result = require("dotenv").config();
+const dbConfig = require("config");
 
 let envs;
 
@@ -14,5 +15,13 @@ if (!("error" in result)) {
 if (envs.VALID_SLACK_USER_IDS) {
   envs.VALID_SLACK_USER_IDS = envs.VALID_SLACK_USER_IDS.split(",");
 }
+
+envs.db = {
+  user: envs.PGUSER,
+  host: envs.PGHOST,
+  database: dbConfig.db.database,
+  password: envs.PGPASSWORD,
+  port: envs.PGPORT
+};
 
 module.exports = envs;
