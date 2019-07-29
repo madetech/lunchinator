@@ -8,7 +8,7 @@ class SlashCommandFactory {
       enterprise_name: "MadeTech",
       channel_id: "C2147483705",
       channel_name: "test",
-      user_id: "U2147483697",
+      user_id: "TEST_U2147483697",
       user_name: "Steve",
       command: "/lunchinator_new",
       text: "we dont use this",
