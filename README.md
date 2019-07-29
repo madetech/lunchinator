@@ -18,8 +18,8 @@ We are using PostgreSQL to store information. You need to have two databases loc
 - Ensure PostgreSQL is installed and running (`brew install postgresql` and `brew services start postgresql`).
 - Using `psql postgres` do the following:
 - `CREATE DATABASE lunchinator_dev; CREATE DATABASE lunchinator_test;`
-- Grant permission for your user: `GRANT ALL PRIVILEGES ON DATABASE lunchinator_dev TO $USER` and `GRANT ALL PRIVILEGES ON DATABASE lunchinator_test TO $USER;`
-- Then run `yarn run migrate up` for development and `yarn run migrate-test up`
+- Grant permission for your user: `GRANT ALL PRIVILEGES ON DATABASE lunchinator_dev TO $USER` and `GRANT ALL PRIVILEGES ON DATABASE lunchinator_test TO $USER;` (replacing `$USER` with your username from `whoami`)
+- Then run `yarn run migrate up` for development and `yarn run migrate-test up` for test
 
 ### Using Slack App in Development
 
