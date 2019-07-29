@@ -1,6 +1,6 @@
 require("module-alias/register");
 const { Client } = require("pg");
-const { LunchCycle, Restaurant } = require("@domain");
+const { LunchCycle } = require("@domain");
 const config = require("@app/config");
 
 class PostgresLunchCycleGateway {

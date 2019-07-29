@@ -1,5 +1,5 @@
 const { expect } = require("../test_helper");
-const { LunchCycle, Restaurant } = require("@domain");
+const { LunchCycle } = require("@domain");
 const { RestaurantFactory } = require("../factories");
 const { PostgresLunchCycleGateway } = require("@gateways");
 
