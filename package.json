@@ -46,6 +46,7 @@
     "@app": "app",
     "@domain": "app/domain",
     "@use_cases": "app/use_cases",
-    "@gateways": "app/gateways"
+    "@gateways": "app/gateways",
+    "@controllers": "app/controllers"
   }
 }

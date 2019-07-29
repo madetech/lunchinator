@@ -1,43 +1,12 @@
 const express = require("express");
 const app = express();
-const port = 3000;
+const port = 4390;
 
-const config = require("./app/config");
-const { InMemoryLunchCycleGateway, GoogleSheetGateway } = require("@gateways");
-const {
-  GetNewLunchCycleRestaurants,
-  GetPreviousLunchCycle,
-  FetchRestaurantsFromGoogleSheet
-} = require("@use_cases");
+const { LunchCycleController } = require("@controllers");
 
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => res.send("Hello World!"));
-
-app.post("/new", async (req, res) => {
-  const inMemoryLunchCycleGateway = new InMemoryLunchCycleGateway();
-  var getNewLunchCycleRestaurants = new GetNewLunchCycleRestaurants({
-    fetchRestaurantsFromGoogleSheet: new FetchRestaurantsFromGoogleSheet({
-      googleSheetGateway: new GoogleSheetGateway()
-    }),
-    getPreviousLunchCycle: new GetPreviousLunchCycle({
-      lunchCycleGateway: inMemoryLunchCycleGateway
-    })
-  });
-
-  const lastRestaurantInLastLunchCycle = null;
-  const getNewLunchCycleRestaurantsResponse = await getNewLunchCycleRestaurants.execute(
-    lastRestaurantInLastLunchCycle
-  );
-
-  const message = getNewLunchCycleRestaurantsResponse.restaurants
-    .map(restaurants => {
-      return `${restaurants.emoji} ${restaurants.name}`;
-    })
-    .join("\n");
-
-  return res.send(`Next Cycle Restaurants:\n${message}`);
-});
+app.use("/", LunchCycleController);
 
 const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
