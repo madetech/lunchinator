@@ -15,7 +15,8 @@ class FetchRestaurantsFromGoogleSheet {
           name: row.restaurant,
           dietaries: this.parseDietaries(row),
           notes: row.notes,
-          emoji: row.emoji
+          emoji: row.emoji,
+          direction: row.direction
         });
       })
     };

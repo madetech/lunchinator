@@ -12,7 +12,8 @@ class RestaurantFactory {
         meat: DietaryLevel.Great
       }),
       notes: "",
-      emoji: ":bowtie:"
+      emoji: ":bowtie:",
+      direction: "googlemaps"
     };
 
     return new Restaurant({ ...base, ...overrides });
