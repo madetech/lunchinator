@@ -1,12 +1,15 @@
+require("module-alias/register");
 const express = require("express");
 const app = express();
-const port = 3000;
+const port = 4390;
 
-app.get("/", (req, res) => res.send("Hello World!"));
+const { LunchCycleController } = require("@controllers");
 
-const server = app.listen(port, () =>
-  console.log(`Example app listening on port ${port}!`)
-);
+app.use(express.urlencoded({ extended: true }));
+
+app.use("/", LunchCycleController);
+
+const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
 function stop() {
   server.close();

@@ -3,10 +3,10 @@ const { SlashCommandFactory } = require("../factories");
 
 const { LunchCycle } = require("@domain");
 const { InMemoryLunchCycleGateway } = require("@gateways");
-const { IsValidLunchinatorUser, CreateNewLunchCycle } = require("@use_cases");
+const { IsValidLunchinatorUser, CreateNewLunchCycle, VerifySlackRequest } = require("@use_cases");
 
 let inMemoryLunchCycleGateway;
-let slashCommandParams;
+let slashCommandResponse;
 let createNewLunchCycleResponse;
 
 describe("ReceiveNewLunchCycleSlashCommand", function() {
@@ -45,6 +45,18 @@ describe("ReceiveNewLunchCycleSlashCommand", function() {
       ThenTheTotalCountOfLunchCyclesIs(1);
     });
   });
+
+  describe("can verify the slack request is legit", function() {
+    it("can verify a request is legit", function() {
+      GivenANewLunchCycleCommand();
+      ThenTheSlackRequestIsLegit();
+    });
+
+    it("can verify a request is not legit", function() {
+      GivenANewLunchCycleCommandWithInvalidSignature();
+      ThenTheSlackRequestIsNotLegit();
+    });
+  });
 });
 
 function GivenALunchCycleExists() {
@@ -52,7 +64,7 @@ function GivenALunchCycleExists() {
 }
 
 function GivenANewLunchCycleCommand() {
-  slashCommandParams = new SlashCommandFactory().getCommand();
+  slashCommandResponse = new SlashCommandFactory().getCommand();
 }
 
 function WhenANewLunchCycleIsCreated() {
@@ -60,7 +72,7 @@ function WhenANewLunchCycleIsCreated() {
     lunchCycleGateway: inMemoryLunchCycleGateway,
     isValidLunchinatorUser: new IsValidLunchinatorUser()
   });
-  createNewLunchCycleResponse = useCase.execute({ userId: slashCommandParams.user_id });
+  createNewLunchCycleResponse = useCase.execute({ userId: slashCommandResponse.body.user_id });
 }
 
 function ThenANewLunchCycleIsCreated() {
@@ -69,19 +81,17 @@ function ThenANewLunchCycleIsCreated() {
 
 function ThenTheUserIsValid() {
   var useCase = new IsValidLunchinatorUser();
-  var response = useCase.execute({ userId: slashCommandParams.user_id });
+  var response = useCase.execute({ userId: slashCommandResponse.body.user_id });
   expect(response.isValid).to.be.true;
 }
 
 function GivenANewLunchCycleCommandWithInvalidUser() {
-  slashCommandParams = new SlashCommandFactory().getCommand({
-    user_id: "invalid_user"
-  });
+  slashCommandResponse = new SlashCommandFactory().getCommand({}, { user_id: "invalid_user" });
 }
 
 function ThenTheUserIsNotValid() {
   var useCase = new IsValidLunchinatorUser();
-  var response = useCase.execute({ userId: slashCommandParams.user_id });
+  var response = useCase.execute({ userId: slashCommandResponse.body.user_id });
   expect(response.isValid).to.be.false;
 }
 
@@ -91,4 +101,37 @@ function ThenANewLunchCycleIsNotCreated() {
 
 function ThenTheTotalCountOfLunchCyclesIs(count) {
   expect(count).to.eq(inMemoryLunchCycleGateway.count());
+}
+
+function GivenANewLunchCycleCommandWithInvalidSignature() {
+  slashCommandResponse = new SlashCommandFactory().getCommand({
+    "x-slack-signature": "invalid_sig"
+  });
+}
+
+class FakeCryptoGateway {
+  areSignaturesEqual(mySignature, theirSignature) {
+    return theirSignature === "valid_sig";
+  }
+}
+
+function ThenTheSlackRequestIsNotLegit() {
+  var useCase = new VerifySlackRequest({
+    gateway: new FakeCryptoGateway()
+  });
+  var response = useCase.execute({ slackSignature: "invalid_sig", timestamp: 1, body: {} });
+  expect(response.isVerified).to.be.false;
+}
+
+function ThenTheSlackRequestIsLegit() {
+  var useCase = new VerifySlackRequest({
+    gateway: new FakeCryptoGateway()
+  });
+  var response = useCase.execute({
+    slackSignature: "valid_sig",
+    timestamp: new Date().getTime() / 1000 - 10,
+    body: {}
+  });
+
+  expect(response.isVerified).to.be.true;
 }

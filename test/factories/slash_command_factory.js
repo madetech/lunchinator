@@ -1,6 +1,19 @@
 class SlashCommandFactory {
-  getCommand(overrides = {}) {
-    const base = {
+  getCommand(headersOverrides = {}, bodyOverrides = {}) {
+    const baseHeaders = {
+      "user-agent": "Slackbot 1.0 (+https://api.slack.com/robots)",
+      "accept-encoding": "gzip,deflate",
+      accept: "application/json,*/*",
+      "x-slack-signature": "v0=xxx",
+      "x-slack-request-timestamp": "1564476490",
+      "content-length": "374",
+      "content-type": "application/x-www-form-urlencoded",
+      host: "an.endpoint.com",
+      "cache-control": "max-age=259200",
+      "x-forwarded-for": "1.1.1.1"
+    };
+
+    const baseBody = {
       token: "gIkuvaNzQIHg97ATvDxqgjtO",
       team_id: "madetechteam",
       team_domain: "example",
@@ -16,7 +29,10 @@ class SlashCommandFactory {
       trigger_id: "13345224609.738474920.8088930838d88f008e0"
     };
 
-    return { ...base, ...overrides };
+    return {
+      headers: { ...baseHeaders, ...headersOverrides },
+      body: { ...baseBody, ...bodyOverrides }
+    };
   }
 }
 

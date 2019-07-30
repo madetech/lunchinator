@@ -6,8 +6,8 @@ class FetchRestaurantsFromGoogleSheet {
     this.googleSheetGateway = options.googleSheetGateway;
   }
 
-  execute() {
-    const rows = this.googleSheetGateway.fetchRows(config.RESTAURANTS_LIST_SHEET_ID);
+  async execute() {
+    const rows = await this.googleSheetGateway.fetchRows(config.RESTAURANTS_LIST_SHEET_ID);
 
     return {
       restaurants: rows.map(row => {
@@ -15,7 +15,8 @@ class FetchRestaurantsFromGoogleSheet {
           name: row.restaurant,
           dietaries: this.parseDietaries(row),
           notes: row.notes,
-          emoji: row.emoji
+          emoji: row.emoji,
+          direction: row.direction
         });
       })
     };

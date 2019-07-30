@@ -6,7 +6,8 @@
     "module-alias": "^2.2.0",
     "node-pg-migrate": "^3.21.1",
     "pg": "^7.12.0",
-    "slack": "^11.0.2"
+    "slack": "^11.0.2",
+    "qs": "^6.7.0"
   },
   "engines": {
     "node": "12.X"
@@ -52,6 +53,8 @@
     "@app": "app",
     "@domain": "app/domain",
     "@use_cases": "app/use_cases",
-    "@gateways": "app/gateways"
+    "@gateways": "app/gateways",
+    "@controllers": "app/controllers",
+    "@services": "app/services"
   }
 }

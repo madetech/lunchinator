@@ -2,8 +2,8 @@ const { expect, sinon } = require("../test_helper");
 const { RestaurantFactory } = require("../factories");
 const { GetNewLunchCycleRestaurants } = require("@use_cases");
 
-describe("GetNewLunchCycleRestaurants", function() {
-  it("uses the previous lunch cycle's restaurants", function() {
+describe("GetNewLunchCycleRestaurants", async function() {
+  it("uses the previous lunch cycle's restaurants", async function() {
     const restaurants = [
       RestaurantFactory.getRestaurant({ name: "restaurant1", emoji: ":bowtie:" }),
       RestaurantFactory.getRestaurant({ name: "restaurant2", emoji: ":smile:" }),
@@ -25,7 +25,7 @@ describe("GetNewLunchCycleRestaurants", function() {
       })
     };
 
-    const response = new GetNewLunchCycleRestaurants({
+    const response = await new GetNewLunchCycleRestaurants({
       fetchRestaurantsFromGoogleSheet: fetchRestaurantsFromGoogleSheetStub,
       getPreviousLunchCycle: getPreviousLunchFake
     }).execute();
@@ -40,7 +40,7 @@ describe("GetNewLunchCycleRestaurants", function() {
     ]);
   });
 
-  it("can handle no previous lunch cycle", function() {
+  it("can handle no previous lunch cycle", async function() {
     const restaurants = [
       RestaurantFactory.getRestaurant({ name: "restaurant1", emoji: ":bowtie:" }),
       RestaurantFactory.getRestaurant({ name: "restaurant2", emoji: ":smile:" }),
@@ -58,7 +58,7 @@ describe("GetNewLunchCycleRestaurants", function() {
       execute: sinon.fake.returns({ previousLunchCycle: null })
     };
 
-    const response = new GetNewLunchCycleRestaurants({
+    const response = await new GetNewLunchCycleRestaurants({
       fetchRestaurantsFromGoogleSheet: fetchRestaurantsFromGoogleSheetStub,
       getPreviousLunchCycle: getPreviousLunchFake
     }).execute();

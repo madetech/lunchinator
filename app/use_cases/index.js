@@ -6,5 +6,7 @@ module.exports = {
   GetPreviousLunchCycle: require("./get_previous_lunch_cycle"),
   FetchRestaurantsFromGoogleSheet: require("./fetch_restaurants_from_google_sheet"),
   SendDirectMessageToSlackUser: require("./send_direct_message_to_slack_user"),
-  FetchAllSlackUsers: require("./fetch_all_slack_users")
+  FetchAllSlackUsers: require("./fetch_all_slack_users"),
+  VerifySlackRequest: require("./verify_slack_request"),
+  GenerateSlackPreviewMessage: require("./generate_slack_preview_message")
 };

@@ -9,7 +9,7 @@ const {
 } = require("@use_cases");
 
 let lunchCycle;
-let slashCommandParams;
+let slashCommandResponse;
 let fetchAllSlackUsersResponse;
 let sendDirectMessageToSlackUserResponse;
 let userList;
@@ -80,13 +80,16 @@ function WhenTheUserIsValid() {
 }
 
 function WhenTheUserIsNotValid() {
-  slashCommandParams.user_id = "NOT_VALID_USER";
+  slashCommandResponse.body.user_id = "NOT_VALID_USER";
 }
 
 function GivenASendLunchCycleCommand() {
-  slashCommandParams = new SlashCommandFactory().getCommand({
-    command: "/lunchinator_send"
-  });
+  slashCommandResponse = new SlashCommandFactory().getCommand(
+    {},
+    {
+      command: "/lunchinator_send"
+    }
+  );
 }
 
 function GivenAListOfSlackUsers() {
@@ -95,13 +98,13 @@ function GivenAListOfSlackUsers() {
 
 function ThenTheUserIsValid() {
   const useCase = new IsValidLunchinatorUser();
-  const response = useCase.execute({ userId: slashCommandParams.user_id });
+  const response = useCase.execute({ userId: slashCommandResponse.body.user_id });
   expect(response.isValid).to.be.true;
 }
 
 function ThenTheUserIsNotValid() {
   const useCase = new IsValidLunchinatorUser();
-  const response = useCase.execute({ userId: slashCommandParams.user_id });
+  const response = useCase.execute({ userId: slashCommandResponse.body.user_id });
   expect(response.isValid).to.be.false;
 }
 

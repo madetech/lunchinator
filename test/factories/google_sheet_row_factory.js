@@ -12,7 +12,8 @@ class GoogleSheetRowFactory {
       restaurant: "restaurant",
       save: () => {},
       vegan: "great",
-      vegetarian: "some"
+      vegetarian: "some", 
+      direction:"googlemaps"
     };
 
     return { ...base, ...overrides };

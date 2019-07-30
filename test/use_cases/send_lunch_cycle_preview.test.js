@@ -7,9 +7,9 @@ describe("SendLunchCyclePreview", function() {
     const gatewaySpy = { sendMessage: sinon.fake.returns(true) };
     const useCase = new SendLunchCyclePreview({ gateway: gatewaySpy });
 
-    const response = useCase.execute();
+    const response = useCase.execute({message: ""});
 
     expect(gatewaySpy.sendMessage).to.have.been.calledWith(sinon.match.instanceOf(SlackMessage));
-    expect(response.slackResponse).to.equal(true);
+    expect(response.isSent).to.equal(true);
   });
 });
