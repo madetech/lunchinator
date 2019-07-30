@@ -8,5 +8,6 @@ module.exports = {
   SendDirectMessageToSlackUser: require("./send_direct_message_to_slack_user"),
   FetchAllSlackUsers: require("./fetch_all_slack_users"),
   VerifySlackRequest: require("./verify_slack_request"),
-  GenerateSlackPreviewMessage: require("./generate_slack_preview_message")
+  GenerateSlackPreviewMessage: require("./generate_slack_preview_message"),
+  FetchReactionsForSlackUserLunchCycle: require("./fetch_reactions_for_slack_user_lunch_cycle")
 };

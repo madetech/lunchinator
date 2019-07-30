@@ -13,6 +13,34 @@ class FakeSlackClient {
     this.chat = {
       postMessage: () => {}
     };
+    this.reactions = {
+      get: () => {}
+    };
+
+    const reactionsStub = sinon.stub(this.reactions, "get");
+
+    reactionsStub
+      .withArgs({
+        channel: "DM_CHANNEL_ID_1",
+        timestamp: "1564484225.000400"
+      })
+      .resolves({
+        ok: true,
+        type: "message",
+        channel: "DM_CHANNEL_ID_1",
+        message: {
+          type: "message",
+          subtype: "bot_message",
+          text: "Hello from Node!",
+          ts: "1564484225.000400",
+          username: "Lunchinator",
+          bot_id: "BOT_ID",
+          reactions: [
+            { name: "pizza", users: ["U2147483697"], count: 1 },
+            { name: "sushi", users: ["U2147483697"], count: 1 }
+          ]
+        }
+      });
 
     // Easy way to get the Promise interface working.
     sinon.stub(this.users, "list").resolves({
@@ -299,6 +327,32 @@ describe("SlackGateway", function() {
     expect(postMessageStub).to.have.been.calledWith({
       channel: slackUser.id,
       text: messageText
+    });
+  });
+
+  it("can get reactions for a message", async function() {
+    const slackApiParams = { channel: "DM_CHANNEL_ID_1", timestamp: "1564484225.000400" };
+
+    const gateway = new SlackGateway();
+
+    const reactionsResponse = await gateway.fetchReactionsFromMessage(slackApiParams);
+
+    expect(reactionsResponse).to.eql({
+      ok: true,
+      type: "message",
+      channel: "DM_CHANNEL_ID_1",
+      message: {
+        type: "message",
+        subtype: "bot_message",
+        text: "Hello from Node!",
+        ts: "1564484225.000400",
+        username: "Lunchinator",
+        bot_id: "BOT_ID",
+        reactions: [
+          { name: "pizza", users: ["U2147483697"], count: 1 },
+          { name: "sushi", users: ["U2147483697"], count: 1 }
+        ]
+      }
     });
   });
 });

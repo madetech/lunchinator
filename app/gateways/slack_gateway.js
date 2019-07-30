@@ -20,6 +20,14 @@ class SlackGateway {
     return slackResponse;
   }
 
+  async fetchReactionsFromMessage({ timestamp, channel }) {
+    const slackResponse = await this._slackClient().reactions.get({
+      channel,
+      timestamp
+    });
+    return slackResponse;
+  }
+
   _slackClient() {
     return new Slack({ token: config.SLACK_BOT_TOKEN });
   }
