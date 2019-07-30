@@ -2,14 +2,14 @@ const { expect, sinon } = require("../test_helper");
 const { FetchAllSlackUsers } = require("@use_cases");
 
 describe("FetchAllSlackUsers", function() {
-  it("uses the SlackGateway to fetch Slack Users", function() {
+  it("uses the SlackGateway to fetch Slack Users", async function() {
     const response = { slackUsers: [] };
-    const slackGatewaySpy = { fetchUsers: sinon.fake.returns([]) };
+    const slackGatewaySpy = { fetchUsers: sinon.fake.resolves([]) };
     const useCase = new FetchAllSlackUsers({
       slackGateway: slackGatewaySpy
     });
 
-    expect(useCase.execute()).to.eql(response);
+    expect(await useCase.execute()).to.eql(response);
 
     expect(slackGatewaySpy.fetchUsers).to.have.been.called;
   });

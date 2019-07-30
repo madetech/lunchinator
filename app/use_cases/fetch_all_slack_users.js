@@ -3,10 +3,10 @@ class FetchAllSlackUsers {
     this.slackGateway = options.slackGateway;
   }
 
-  execute() {
-    return {
-      slackUsers: this.slackGateway.fetchUsers()
-    };
+  async execute() {
+    const slackUsers = await this.slackGateway.fetchUsers();
+
+    return { slackUsers };
   }
 }
 

@@ -1,6 +1,7 @@
-const { expect } = require("../test_helper");
+const { expect, sinon } = require("../test_helper");
 const { SlashCommandFactory, RestaurantFactory } = require("../factories");
 const { LunchCycle } = require("@domain");
+const { SlackGateway } = require("@gateways");
 const {
   SendDirectMessageToSlackUser,
   IsValidLunchinatorUser,
@@ -11,8 +12,35 @@ let lunchCycle;
 let slashCommandParams;
 let fetchAllSlackUsersResponse;
 let sendDirectMessageToSlackUserResponse;
+let userList;
+
+class FakeSlackClient {
+  constructor({ token }) {
+    this.token = token;
+    this.users = {
+      list: () => {}
+    };
+
+    // Easy way to get the Promise interface working.
+    sinon.stub(this.users, "list").resolves({
+      ok: true,
+      members: userList
+    });
+  }
+}
 
 describe("ReceiveSendLunchCycleSlashCommand", function() {
+  before(function() {
+    SlackGateway.prototype._slackClient = () => new FakeSlackClient({ token: "NOT_VALID" });
+
+    userList = [{ id: "U2147483697", profile: { email: "test@example.com", first_name: "Test" } }];
+
+    // Fake sendmessage
+    SlackGateway.prototype.sendMessage = () => {
+      return { ts: "1503435956.000247", channel: "C1H9RESGL" };
+    };
+  });
+
   it("can check for a valid user", function() {
     GivenASendLunchCycleCommand();
     WhenTheUserIsValid();
@@ -25,17 +53,17 @@ describe("ReceiveSendLunchCycleSlashCommand", function() {
     ThenTheUserIsNotValid();
   });
 
-  it("can get all users", function() {
+  it("can get all users", async function() {
     GivenASendLunchCycleCommand();
     WhenTheUserIsValid();
-    WhenAllTheSlackUsersAreFetched();
+    await WhenAllTheSlackUsersAreFetched();
     ThenAListOfSlackUsersAreReturned();
   });
 
-  it("can send direct messages to all users", function() {
+  it("can send direct messages to all users", async function() {
     GivenALunchCycleExists();
     GivenAListOfSlackUsers();
-    WhenTheDirectMessagesAreCreated();
+    await WhenTheDirectMessagesAreCreated();
     ThenDirectMessagesAreSent();
   });
 });
@@ -77,16 +105,6 @@ function ThenTheUserIsNotValid() {
   expect(response.isValid).to.be.false;
 }
 
-class FakeSlackGateway {
-  sendMessage(slackUser, slackMessage) {
-    return { ts: "1503435956.000247", channel: "C1H9RESGL" };
-  }
-
-  fetchUsers() {
-    return [{ id: "U2147483697", profile: { email: "test@example.com", first_name: "Test" } }];
-  }
-}
-
 class FakeSlackUserLunchCycleGateway {
   recordSlackUserLunchCycle(slackUser, slackResponse, lunchCycle) {
     return {
@@ -103,12 +121,12 @@ class FakeSlackUserLunchCycleGateway {
   }
 }
 
-function WhenAllTheSlackUsersAreFetched() {
+async function WhenAllTheSlackUsersAreFetched() {
   const useCase = new FetchAllSlackUsers({
-    slackGateway: new FakeSlackGateway()
+    slackGateway: new SlackGateway()
   });
 
-  fetchAllSlackUsersResponse = useCase.execute();
+  fetchAllSlackUsersResponse = await useCase.execute();
 }
 
 function ThenAListOfSlackUsersAreReturned() {
@@ -117,15 +135,17 @@ function ThenAListOfSlackUsersAreReturned() {
   ]);
 }
 
-function WhenTheDirectMessagesAreCreated() {
-  const fakeSlackGateway = new FakeSlackGateway();
+async function WhenTheDirectMessagesAreCreated() {
+  const fakeSlackGateway = new SlackGateway();
   const useCase = new SendDirectMessageToSlackUser({
     slackGateway: fakeSlackGateway,
     slackUserLunchCycleGateway: new FakeSlackUserLunchCycleGateway()
   });
 
+  const slackUsers = await fakeSlackGateway.fetchUsers();
+
   sendDirectMessageToSlackUserResponse = useCase.execute({
-    slackUser: fakeSlackGateway.fetchUsers()[0],
+    slackUser: slackUsers[0],
     lunchCycle: lunchCycle
   });
 }
