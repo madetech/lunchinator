@@ -2,6 +2,7 @@ const { expect, sinon } = require("../test_helper");
 const { SlackGateway } = require("@gateways");
 
 let userList = [];
+let postMessageStub;
 
 class FakeSlackClient {
   constructor({ token }) {
@@ -9,11 +10,28 @@ class FakeSlackClient {
     this.users = {
       list: () => {}
     };
+    this.chat = {
+      postMessage: () => {}
+    };
 
     // Easy way to get the Promise interface working.
     sinon.stub(this.users, "list").resolves({
       ok: true,
       members: userList
+    });
+
+    postMessageStub = sinon.stub(this.chat, "postMessage").resolves({
+      ok: true,
+      channel: "DM_CHANNEL_ID", // Differs from sent Channel ID (User ID)
+      ts: "1564484225.000400",
+      message: {
+        type: "message",
+        subtype: "bot_message",
+        text: "Hello from Node!",
+        ts: "1564484225.000400",
+        username: "Lunchinator",
+        bot_id: "BOT_ID"
+      }
     });
   }
 }
@@ -241,5 +259,46 @@ describe("SlackGateway", function() {
         updated: 1550160376
       }
     ]);
+  });
+
+  it("can postMessage to correct Channel", async function() {
+    const messageText = "hello";
+    const slackMessageDummy = { text: messageText };
+    const slackUser = {
+      id: "USLACKID1",
+      team_id: "TEAM_ID",
+      name: "Test Name",
+      deleted: false,
+      profile: {
+        email: "test2@example.com"
+      },
+      is_bot: false,
+      is_app_user: false,
+      updated: 1520258399
+    };
+    const gateway = new SlackGateway();
+
+    const sendMessageResponse = await gateway.sendMessage(slackUser, slackMessageDummy);
+
+    expect(sendMessageResponse).to.eql({
+      ok: true,
+      channel: "DM_CHANNEL_ID",
+      ts: "1564484225.000400",
+      message: {
+        type: "message",
+        subtype: "bot_message",
+        text: "Hello from Node!",
+        ts: "1564484225.000400",
+        username: "Lunchinator",
+        bot_id: "BOT_ID"
+      }
+    });
+
+    expect(sendMessageResponse.channel).to.not.eql(slackUser.id);
+
+    expect(postMessageStub).to.have.been.calledWith({
+      channel: slackUser.id,
+      text: messageText
+    });
   });
 });

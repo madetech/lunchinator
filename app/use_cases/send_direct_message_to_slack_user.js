@@ -7,9 +7,9 @@ class SendDirectMessageToSlackUser {
     this.slackUserLunchCycleGateway = options.slackUserLunchCycleGateway;
   }
 
-  execute(options) {
+  async execute(options) {
     const { slackUser, lunchCycle } = options;
-    const slackMessageResponse = this.slackGateway.sendMessage(slackUser, new SlackMessage());
+    const slackMessageResponse = await this.slackGateway.sendMessage(slackUser, new SlackMessage());
 
     const slackUserLunchCycleResponse = this.slackUserLunchCycleGateway.recordSlackUserLunchCycle(
       slackUser,

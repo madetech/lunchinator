@@ -11,6 +11,15 @@ class SlackGateway {
     );
   }
 
+  async sendMessage(slackUser, message) {
+    const slackResponse = await this._slackClient().chat.postMessage({
+      channel: slackUser.id,
+      text: message.text
+    });
+
+    return slackResponse;
+  }
+
   _slackClient() {
     return new Slack({ token: config.SLACK_BOT_TOKEN });
   }
