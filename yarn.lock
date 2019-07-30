@@ -2466,6 +2466,13 @@ sinon@^7.3.2:
     nise "^1.4.10"
     supports-color "^5.5.0"
 
+slack@^11.0.2:
+  version "11.0.2"
+  resolved "https://registry.yarnpkg.com/slack/-/slack-11.0.2.tgz#30f68527c5d1712b7faa3141db7716f89ac6e911"
+  integrity sha512-rv842+S+AGyZCmMMd8xPtW5DvJ9LzWTAKfxi8Gw57oYlXgcKtFuHd4nqk6lTPpRKdUGn3tx/Drd0rjQR3dQPqw==
+  dependencies:
+    tiny-json-http "^7.0.2"
+
 slice-ansi@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/slice-ansi/-/slice-ansi-2.1.0.tgz#cacd7693461a637a5788d92a7dd4fba068e81636"
@@ -2635,6 +2642,11 @@ through@2, through@^2.3.6:
   version "2.3.8"
   resolved "https://registry.yarnpkg.com/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
   integrity sha1-DdTJ/6q8NXlgsbckEV1+Doai4fU=
+
+tiny-json-http@^7.0.2:
+  version "7.1.2"
+  resolved "https://registry.yarnpkg.com/tiny-json-http/-/tiny-json-http-7.1.2.tgz#620e189849bab08992ec23fada7b48c7c61637b4"
+  integrity sha512-XB9Bu+ohdQso6ziPFNVqK+pcTt0l8BSRkW/CCBq0pUVlLxcYDsorpo7ae5yPhu2CF1xYgJuKVLF7cfOGeLCTlA==
 
 tmp@^0.0.33:
   version "0.0.33"
