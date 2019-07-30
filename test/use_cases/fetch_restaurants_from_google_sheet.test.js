@@ -19,7 +19,8 @@ describe("FetchRestaurantsFromGoogleSheet", async function() {
           restaurant: "Nandos",
           save: () => {},
           vegan: "some",
-          vegetarian: "some"
+          vegetarian: "some", 
+          direction: "googlemaps"
         }
       ]
     };
@@ -34,7 +35,8 @@ describe("FetchRestaurantsFromGoogleSheet", async function() {
           halal: DietaryLevel.Unknown
         }),
         notes: "",
-        emoji: ":blush:"
+        emoji: ":blush:",
+        direction: "googlemaps"
       })
     ];
 
