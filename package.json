@@ -3,7 +3,8 @@
     "dotenv": "^8.0.0",
     "express": "^4.17.1",
     "google-spreadsheet": "^2.0.7",
-    "module-alias": "^2.2.0"
+    "module-alias": "^2.2.0",
+    "qs": "^6.7.0"
   },
   "engines": {
     "node": "12.X"
@@ -47,6 +48,7 @@
     "@domain": "app/domain",
     "@use_cases": "app/use_cases",
     "@gateways": "app/gateways",
-    "@controllers": "app/controllers"
+    "@controllers": "app/controllers",
+    "@services": "app/services"
   }
 }
