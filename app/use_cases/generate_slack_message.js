@@ -1,9 +1,12 @@
 class GenerateSlackMessage {
-  execute({ lunchCycle, slackUser }) {
-    const twentFourHoursInMs = 86400000;
-    const slackFirstName = slackUser.profile.first_name;
+  constructor(options) {
+    this.firstName = options.firstName;
+  }
 
-    let message = `Hey ${slackFirstName}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n`;
+  execute({ lunchCycle }) {
+    const twentFourHoursInMs = 86400000;
+
+    let message = `Hey ${this.firstName} it’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n`;
 
     lunchCycle.restaurants.forEach((r, i) => {
       const nextDate = new Date(lunchCycle.starts_at.getTime() + i * 7 * twentFourHoursInMs);
