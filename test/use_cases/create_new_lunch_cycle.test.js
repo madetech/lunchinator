@@ -3,7 +3,7 @@ const { RestaurantFactory } = require("../factories");
 const { LunchCycle } = require("@domain");
 const { CreateNewLunchCycle } = require("@use_cases");
 
-describe("CreateNewLunchCycle", async function() {
+describe("CreateNewLunchCycle", function() {
   it("creates a new lunch cycle", async function() {
     const lunchCycleDummy = {};
     const gatewaySpy = { create: sinon.fake.returns(lunchCycleDummy) };
