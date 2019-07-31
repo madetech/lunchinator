@@ -49,12 +49,12 @@ function ThenANewLunchCyclePreviewMessageIsCreated() {
   message = response.message;
 
   const expected = [
-    ":bowtie: 12/3/2020 restaurant1 vegan:2, meat:2, direction:googlemaps",
-    ":smile: 19/3/2020 restaurant2 vegan:2, meat:2, direction:googlemaps",
-    ":simple_smile: 26/3/2020 restaurant3 vegan:2, meat:2, direction:googlemaps",
-    ":laughing: 2/4/2020 restaurant4 vegan:2, meat:2, direction:googlemaps",
-    ":blush: 9/4/2020 restaurant5 vegan:2, meat:2, direction:googlemaps",
-    ":relaxed: 16/4/2020 restaurant6 vegan:2, meat:2, direction:googlemaps\n"
+    ":bowtie: 12/03/2020 restaurant1 vegan:2, meat:2, direction:googlemaps",
+    ":smile: 19/03/2020 restaurant2 vegan:2, meat:2, direction:googlemaps",
+    ":simple_smile: 26/03/2020 restaurant3 vegan:2, meat:2, direction:googlemaps",
+    ":laughing: 02/04/2020 restaurant4 vegan:2, meat:2, direction:googlemaps",
+    ":blush: 09/04/2020 restaurant5 vegan:2, meat:2, direction:googlemaps",
+    ":relaxed: 16/04/2020 restaurant6 vegan:2, meat:2, direction:googlemaps\n"
   ];
 
   const expectedMessage =

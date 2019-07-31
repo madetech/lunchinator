@@ -23,12 +23,12 @@ describe("GenerateSlackPreviewMessage", function() {
     const direction = "googlemaps";
 
     const expected = [
-      `:bowtie: 12/3/2020 restaurant1 vegan:2, meat:2, direction:${direction}`,
-      `:smile: 19/3/2020 restaurant2 vegan:2, meat:2, direction:${direction}`,
-      `:simple_smile: 26/3/2020 restaurant3 vegan:2, meat:2, direction:${direction}`,
-      `:laughing: 2/4/2020 restaurant4 vegan:2, meat:2, direction:${direction}`,
-      `:blush: 9/4/2020 restaurant5 vegan:2, meat:2, direction:${direction}`,
-      `:relaxed: 16/4/2020 restaurant6 vegan:2, meat:2, direction:${direction}\n`
+      `:bowtie: 12/03/2020 restaurant1 vegan:2, meat:2, direction:${direction}`,
+      `:smile: 19/03/2020 restaurant2 vegan:2, meat:2, direction:${direction}`,
+      `:simple_smile: 26/03/2020 restaurant3 vegan:2, meat:2, direction:${direction}`,
+      `:laughing: 02/04/2020 restaurant4 vegan:2, meat:2, direction:${direction}`,
+      `:blush: 09/04/2020 restaurant5 vegan:2, meat:2, direction:${direction}`,
+      `:relaxed: 16/04/2020 restaurant6 vegan:2, meat:2, direction:${direction}\n`
     ];
 
     const expectedMessage =
