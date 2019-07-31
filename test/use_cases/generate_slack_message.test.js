@@ -21,21 +21,8 @@ describe("GenerateSlackMessage", function() {
 
     const slackFirstName = "Barry";
 
-    const slackUser = {
-      id: "USLACKID1",
-      team_id: "TEAM_ID",
-      name: "Test Name",
-      deleted: false,
-      profile: {
-        first_name: slackFirstName
-      },
-      is_bot: false,
-      is_app_user: false,
-      updated: 1520258399
-    };
-
-    const useCase = new GenerateSlackMessage();
-    const response = useCase.execute({ slackUser: slackUser, lunchCycle: lunchCycle });
+    const useCase = new GenerateSlackMessage({ firstName: slackFirstName });
+    const response = useCase.execute({ lunchCycle: lunchCycle });
     const direction = "googlemaps";
 
     const expected = [
@@ -48,7 +35,7 @@ describe("GenerateSlackMessage", function() {
     ];
 
     const expectedMessage =
-      `Hey ${slackFirstName}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n` +
+      `Hey ${slackFirstName} it’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n` +
       expected.join("\n");
 
     expect(response.message).to.be.eql(expectedMessage);
