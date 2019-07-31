@@ -13,6 +13,10 @@ class InMemoryLunchCycleGateway {
     return [...this.lunchCycles];
   }
 
+  findById(wantedId) {
+    return this.all().filter(lc => lc.id === wantedId)[0];
+  }
+
   async findPrevious() {
     const all = await this.all();
     return all.reverse()[0];
