@@ -71,7 +71,7 @@ describe("CreateNewLunchCycle", async function() {
   });
 
   it("creates a lunch cycle with the correct date when a date is provided", async function() {
-    const expected = "2020-01-25T00:00:00.000Z";
+    const expected = "2020-01-25 00:00:00";
 
     const useCase = new CreateNewLunchCycle({
       lunchCycleGateway: {
@@ -82,7 +82,7 @@ describe("CreateNewLunchCycle", async function() {
 
     const response = await useCase.execute({
       restaurants: [RestaurantFactory.getRestaurant()],
-      startsAt: "25-01-2020"
+      startsAt: expected
     });
 
     expect(response.lunchCycle.starts_at).to.be.eql(expected);

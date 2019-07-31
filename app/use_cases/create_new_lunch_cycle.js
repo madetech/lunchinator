@@ -23,9 +23,7 @@ class CreateNewLunchCycle {
       };
     }
 
-    const startsAtIsoString = this.parseDateToIsoString(startsAt);
-
-    if (!startsAt || !startsAtIsoString) {
+    if (!startsAt || !this.isValidDate(startsAt)) {
       return {
         error: "invalid start date."
       };
@@ -34,19 +32,15 @@ class CreateNewLunchCycle {
     const lunchCycle = await this.lunchCycleGateway.create(
       new LunchCycle({
         restaurants: restaurants,
-        starts_at: startsAtIsoString
+        starts_at: startsAt
       })
     );
 
     return { lunchCycle };
   }
 
-  parseDateToIsoString(dateString) {
-    const mo = moment.utc(dateString, "DD-MM-YYYY");
-
-    if (mo.isValid()) {
-      return mo.toDate().toISOString();
-    }
+  isValidDate(dateString) {
+    return moment.utc(dateString).isValid();
   }
 }
 

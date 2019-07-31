@@ -2,12 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { LunchCycleService } = require("@services");
 
-const {
-  PostgresLunchCycleGateway,
-  InMemoryLunchCycleGateway,
-  GoogleSheetGateway,
-  CryptoGateway
-} = require("@gateways");
+const { PostgresLunchCycleGateway, GoogleSheetGateway, CryptoGateway } = require("@gateways");
 const {
   GetNewLunchCycleRestaurants,
   GetPreviousLunchCycle,
@@ -19,7 +14,7 @@ const {
 } = require("@use_cases");
 
 router.post("/new", async function(req, res) {
-  const lunchCycleGateway = new InMemoryLunchCycleGateway();
+  const lunchCycleGateway = new PostgresLunchCycleGateway();
 
   const lunchCycleService = new LunchCycleService({
     createNewLunchCycle: new CreateNewLunchCycle({

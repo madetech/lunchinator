@@ -17,7 +17,7 @@ class LunchCycleService {
       .startOf("isoWeek")
       .add(4, "days")
       .add(weeksBeforeCycleStarts, "week")
-      .format("DD-MM-YYYY");
+      .format();
 
     const response = await this.createNewLunchCycle.execute({
       userId: userId,
