@@ -1,26 +1,25 @@
-class UpdateSlackUserLunchCycleWithReactions {
+class UpdateSlackUserResponseWithReactions {
   constructor(options) {
-    this.slackUserLunchCycleGateway = options.slackUserLunchCycleGateway;
+    this.slackUserResponseGateway = options.slackUserResponseGateway;
     this.lunchCycleGateway = options.lunchCycleGateway;
   }
 
-  async execute({ slackUserLunchCycle, reactions }) {
-    const lunchCycle = await this.lunchCycleGateway.findById(slackUserLunchCycle.lunchCycleId);
+  async execute({ slackUserResponse, reactions }) {
+    const lunchCycle = await this.lunchCycleGateway.findById(slackUserResponse.lunchCycleId);
 
     const selectedEmojis = reactions.message.reactions.map(r => r.name).join("|");
-
     lunchCycle.restaurants.map(restaurant => {
       if (restaurant.emoji.match(new RegExp(`(${selectedEmojis})`))) {
-        slackUserLunchCycle.availableEmojis.push(restaurant.emoji);
+        slackUserResponse.availableEmojis.push(restaurant.emoji);
       }
     });
 
-    const updatedSlackUserLunchCycle = await this.slackUserLunchCycleGateway.save({
-      slackUserLunchCycle
+    const updatedSlackUserResponse = await this.slackUserResponseGateway.save({
+      slackUserResponse
     });
 
-    return { slackUserLunchCycle: updatedSlackUserLunchCycle };
+    return { slackUserResponse: updatedSlackUserResponse };
   }
 }
 
-module.exports = UpdateSlackUserLunchCycleWithReactions;
+module.exports = UpdateSlackUserResponseWithReactions;

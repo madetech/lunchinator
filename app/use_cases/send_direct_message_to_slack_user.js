@@ -4,13 +4,13 @@ const { SlackMessage } = require("@domain");
 class SendDirectMessageToSlackUser {
   constructor(options) {
     this.slackGateway = options.slackGateway;
-    this.slackUserLunchCycleGateway = options.slackUserLunchCycleGateway;
+    this.slackUserResponseGateway = options.slackUserResponseGateway;
   }
 
   async execute({ slackUser, lunchCycle }) {
     const slackMessageResponse = await this.slackGateway.sendMessage(slackUser, new SlackMessage());
 
-    const slackUserLunchCycle = await this.slackUserLunchCycleGateway.create({
+    const slackUserResponse = await this.slackUserResponseGateway.create({
       slackUser,
       slackMessageResponse,
       lunchCycle
@@ -18,7 +18,7 @@ class SendDirectMessageToSlackUser {
 
     return {
       slackMessageResponse,
-      slackUserLunchCycle
+      slackUserResponse
     };
   }
 }

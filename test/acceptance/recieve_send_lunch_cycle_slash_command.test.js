@@ -1,8 +1,8 @@
 const { expect } = require("../test_helper");
 const { SlashCommandFactory, RestaurantFactory } = require("../factories");
 const { FakeSlackClient } = require("../fakes");
-const { LunchCycle } = require("@domain");
-const { SlackGateway, InMemorySlackUserLunchCycleGateway } = require("@gateways");
+const { LunchCycle, SlackUserResponse } = require("@domain");
+const { SlackGateway, InMemorySlackUserResponseGateway } = require("@gateways");
 const {
   SendDirectMessageToSlackUser,
   IsValidLunchinatorUser,
@@ -110,7 +110,7 @@ async function WhenTheDirectMessagesAreCreated() {
   const fakeSlackGateway = new SlackGateway();
   const useCase = new SendDirectMessageToSlackUser({
     slackGateway: fakeSlackGateway,
-    slackUserLunchCycleGateway: new InMemorySlackUserLunchCycleGateway()
+    slackUserResponseGateway: new InMemorySlackUserResponseGateway()
   });
 
   const slackUsers = await fakeSlackGateway.fetchUsers();
@@ -135,13 +135,15 @@ function ThenDirectMessagesAreSent() {
       bot_id: "BOT_ID"
     }
   });
-  expect(sendDirectMessageToSlackUserResponse.slackUserLunchCycle).to.eql({
-    userId: "U2147483697",
-    email: "test@example.com",
-    firstName: "Test",
-    messageChannel: "DM_CHANNEL_ID",
-    messageId: "1564484225.000400",
-    lunchCycleId: 5,
-    availableEmojis: []
-  });
+  expect(sendDirectMessageToSlackUserResponse.slackUserResponse).to.eql(
+    new SlackUserResponse({
+      slackUserId: "U2147483697",
+      email: "test@example.com",
+      firstName: "Test",
+      messageChannel: "DM_CHANNEL_ID",
+      messageId: "1564484225.000400",
+      lunchCycleId: 5,
+      availableEmojis: []
+    })
+  );
 }

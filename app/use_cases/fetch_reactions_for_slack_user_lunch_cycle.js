@@ -1,16 +1,16 @@
-class FetchReactionsForSlackUserLunchCycle {
+class FetchReactionsForSlackUserResponse {
   constructor(options) {
     this.slackGateway = options.slackGateway;
   }
 
-  async execute({ slackUserLunchCycle }) {
+  async execute({ slackUserResponse }) {
     const reactions = await this.slackGateway.fetchReactionsFromMessage({
-      timestamp: slackUserLunchCycle.messageId,
-      channel: slackUserLunchCycle.messageChannel
+      timestamp: slackUserResponse.messageId,
+      channel: slackUserResponse.messageChannel
     });
 
     return { reactions };
   }
 }
 
-module.exports = FetchReactionsForSlackUserLunchCycle;
+module.exports = FetchReactionsForSlackUserResponse;

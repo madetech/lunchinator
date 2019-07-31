@@ -1,44 +1,47 @@
-class InMemorySlackUserLunchCycleGateway {
+require("module-alias/register");
+const { SlackUserResponse } = require("@domain");
+
+class InMemorySlackUserResponseGateway {
   constructor() {
-    this.slackUserLunchCycles = [];
+    this.slackUserResponses = [];
   }
 
   async create({ slackUser, slackMessageResponse, lunchCycle }) {
-    const newSlackUserLunchCycle = {
-      userId: slackUser.id,
+    const newSlackUserResponse = new SlackUserResponse({
+      slackUserId: slackUser.id,
       email: slackUser.profile.email,
       firstName: slackUser.profile.first_name,
       messageChannel: slackMessageResponse.channel,
       messageId: slackMessageResponse.ts,
       lunchCycleId: lunchCycle.id,
       availableEmojis: []
-    };
+    });
 
-    this.slackUserLunchCycles.push(newSlackUserLunchCycle);
+    this.slackUserResponses.push(newSlackUserResponse);
 
-    return newSlackUserLunchCycle;
+    return newSlackUserResponse;
   }
 
-  async save({ slackUserLunchCycle }) {
-    const foundSlackUserLunchCycle = this.slackUserLunchCycles.find(sulc => {
+  async save({ slackUserResponse }) {
+    const foundSlackUserResponse = this.slackUserResponses.find(sulc => {
       return (
-        sulc.userId === slackUserLunchCycle.userId &&
-        sulc.lunchCycleId === slackUserLunchCycle.lunchCycleId
+        sulc.userId === slackUserResponse.userId &&
+        sulc.lunchCycleId === slackUserResponse.lunchCycleId
       );
     });
 
-    if (foundSlackUserLunchCycle) {
-      foundSlackUserLunchCycle.availableEmojis = slackUserLunchCycle.availableEmojis;
+    if (foundSlackUserResponse) {
+      foundSlackUserResponse.availableEmojis = slackUserResponse.availableEmojis;
 
-      return foundSlackUserLunchCycle;
+      return foundSlackUserResponse;
     }
 
     return null;
   }
 
   async count() {
-    return this.slackUserLunchCycles.length;
+    return this.slackUserResponses.length;
   }
 }
 
-module.exports = InMemorySlackUserLunchCycleGateway;
+module.exports = InMemorySlackUserResponseGateway;
