@@ -9,7 +9,7 @@ let inMemoryLunchCycleGateway;
 let slashCommandResponse;
 let createNewLunchCycleResponse;
 
-describe("ReceiveNewLunchCycleSlashCommand", async function() {
+describe("ReceiveNewLunchCycleSlashCommand", function() {
   beforeEach(function() {
     inMemoryLunchCycleGateway = new InMemoryLunchCycleGateway();
     slashCommandResponse = undefined;
