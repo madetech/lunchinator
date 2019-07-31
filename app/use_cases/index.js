@@ -9,6 +9,7 @@ module.exports = {
   FetchAllSlackUsers: require("./fetch_all_slack_users"),
   VerifySlackRequest: require("./verify_slack_request"),
   GenerateSlackPreviewMessage: require("./generate_slack_preview_message"),
+  GenerateSlackMessage: require("./generate_slack_message"),
   FetchReactionsForSlackUserLunchCycle: require("./fetch_reactions_for_slack_user_lunch_cycle"),
   UpdateSlackUserLunchCycleWithReactions: require("./update_slack_user_lunch_cycle_with_reactions")
 };
