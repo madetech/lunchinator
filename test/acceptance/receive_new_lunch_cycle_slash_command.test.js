@@ -9,14 +9,14 @@ let inMemoryLunchCycleGateway;
 let slashCommandResponse;
 let createNewLunchCycleResponse;
 
-describe("ReceiveNewLunchCycleSlashCommand", function() {
+describe("ReceiveNewLunchCycleSlashCommand", async function() {
   beforeEach(function() {
     inMemoryLunchCycleGateway = new InMemoryLunchCycleGateway();
   });
 
-  it("can create a new lunch cycle", function() {
+  it("can create a new lunch cycle", async function() {
     GivenANewLunchCycleCommand();
-    WhenANewLunchCycleIsCreated();
+    await WhenANewLunchCycleIsCreated();
     ThenANewLunchCycleIsCreated();
   });
 
@@ -31,18 +31,18 @@ describe("ReceiveNewLunchCycleSlashCommand", function() {
   });
 
   describe("cannot create a new lunch cycle when the user is not valid", function() {
-    it("where there is not an existing lunch cycle", function() {
+    it("where there is not an existing lunch cycle", async function() {
       GivenANewLunchCycleCommandWithInvalidUser();
-      WhenANewLunchCycleIsCreated();
+      await WhenANewLunchCycleIsCreated();
       ThenANewLunchCycleIsNotCreated();
     });
 
-    it("where there are existing lunch cycles", function() {
+    it("where there are existing lunch cycles", async function() {
       GivenALunchCycleExists();
       GivenANewLunchCycleCommandWithInvalidUser();
-      WhenANewLunchCycleIsCreated();
+      await WhenANewLunchCycleIsCreated();
       ThenANewLunchCycleIsNotCreated();
-      ThenTheTotalCountOfLunchCyclesIs(1);
+      await ThenTheTotalCountOfLunchCyclesIs(1);
     });
   });
 
@@ -67,12 +67,14 @@ function GivenANewLunchCycleCommand() {
   slashCommandResponse = new SlashCommandFactory().getCommand();
 }
 
-function WhenANewLunchCycleIsCreated() {
+async function WhenANewLunchCycleIsCreated() {
   var useCase = new CreateNewLunchCycle({
     lunchCycleGateway: inMemoryLunchCycleGateway,
     isValidLunchinatorUser: new IsValidLunchinatorUser()
   });
-  createNewLunchCycleResponse = useCase.execute({ userId: slashCommandResponse.body.user_id });
+  createNewLunchCycleResponse = await useCase.execute({
+    userId: slashCommandResponse.body.user_id
+  });
 }
 
 function ThenANewLunchCycleIsCreated() {
@@ -99,8 +101,8 @@ function ThenANewLunchCycleIsNotCreated() {
   expect(createNewLunchCycleResponse.lunchCycle).to.be.null;
 }
 
-function ThenTheTotalCountOfLunchCyclesIs(count) {
-  expect(count).to.eq(inMemoryLunchCycleGateway.count());
+async function ThenTheTotalCountOfLunchCyclesIs(count) {
+  expect(count).to.eq(await inMemoryLunchCycleGateway.count());
 }
 
 function GivenANewLunchCycleCommandWithInvalidSignature() {

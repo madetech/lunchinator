@@ -6,15 +6,15 @@ class GetNewLunchCycleRestaurants {
     this.getPreviousLunchCycle = options.getPreviousLunchCycle;
   }
 
-  async execute(lunchCycle) {
-    const previousLunchCycle = this.getPreviousLunchCycle.execute(lunchCycle).previousLunchCycle;
+  async execute() {
+    const prevResponse = await this.getPreviousLunchCycle.execute();
     const fetchResponse = await this.fetchRestaurantsFromGoogleSheet.execute();
     const allRestaurants = fetchResponse.restaurants;
 
     let newRestaurants;
 
-    if (previousLunchCycle && previousLunchCycle.restaurants) {
-      newRestaurants = this.findNextRestaurants(allRestaurants, previousLunchCycle);
+    if (prevResponse.previousLunchCycle != null && prevResponse.previousLunchCycle.restaurants) {
+      newRestaurants = this.findNextRestaurants(allRestaurants, prevResponse.previousLunchCycle);
     } else {
       newRestaurants = allRestaurants.slice(0, config.CYCLE_LENGTH);
     }

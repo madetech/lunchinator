@@ -3,23 +3,22 @@ class InMemoryLunchCycleGateway {
     this.lunchCycles = [];
   }
 
-  create(lunchCycle) {
-    lunchCycle.id = this.count() + 1;
+  async create(lunchCycle) {
+    lunchCycle.id = this.lunchCycles.length + 1;
     this.lunchCycles.push(lunchCycle);
     return lunchCycle;
   }
 
-  all() {
+  async all() {
     return [...this.lunchCycles];
   }
 
-  findPrevious(lunchCycle) {
-    return this.all()
-      .reverse()
-      .find(currentLunchCycle => currentLunchCycle.id < lunchCycle.id);
+  async findPrevious() {
+    const all = await this.all();
+    return all.reverse()[0];
   }
 
-  count() {
+  async count() {
     return this.lunchCycles.length;
   }
 }

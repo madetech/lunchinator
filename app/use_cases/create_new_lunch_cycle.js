@@ -7,11 +7,17 @@ class CreateNewLunchCycle {
     this.isValidLunchinatorUser = options.isValidLunchinatorUser;
   }
 
-  execute(request) {
+  async execute(request) {
     var isValidUserResponse = this.isValidLunchinatorUser.execute({ userId: request.userId });
 
     if (isValidUserResponse.isValid) {
-      const lunchCycle = this.lunchCycleGateway.create(new LunchCycle());
+      let lunchCycleOptions = {};
+
+      if (request.restaurants) {
+        lunchCycleOptions.restaurants = request.restaurants;
+      }
+
+      const lunchCycle = await this.lunchCycleGateway.create(new LunchCycle(lunchCycleOptions));
 
       return { lunchCycle };
     }

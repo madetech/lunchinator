@@ -8,7 +8,6 @@ class CryptoGateway {
         Buffer.from(theirSignature, "utf8")
       );
     } catch (err) {
-      console.log("ERR:" + err);
       return false;
     }
   }

@@ -3,8 +3,8 @@ class GetPreviousLunchCycle {
     this.lunchCycleGateway = options.lunchCycleGateway;
   }
 
-  execute(lunchCycle) {
-    const foundLunchCycle = this.lunchCycleGateway.findPrevious(lunchCycle);
+  async execute() {
+    const foundLunchCycle = await this.lunchCycleGateway.findPrevious();
 
     return { previousLunchCycle: foundLunchCycle };
   }

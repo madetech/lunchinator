@@ -45,16 +45,17 @@ describe("Acceptance Test for Fetching Restaurants", async function() {
   });
 
   it("can get the restaurants for the new lunch cycle", async function() {
-    GivenANewLunchCycleHasBeenCreated();
     await WhenWeGetTheLunchCycleRestaurants();
+    await GivenANewLunchCycleHasBeenCreated();
     ThenTheNewLunchCycleRestaurantsWillBe(restaurantList.slice(0, 6));
   });
 
   describe("when there is a previous lunch cycle with restaurants", async function() {
     it("can get the restaurants for the new lunch cycle", async function() {
       GivenALunchCycleExistsWithRestaurants(restaurantList.slice(0, 6));
-      GivenANewLunchCycleHasBeenCreated();
       await WhenWeGetTheLunchCycleRestaurants();
+      await GivenANewLunchCycleHasBeenCreated();
+
       ThenTheNewLunchCycleRestaurantsWillBe(
         restaurantList.slice(6, 8).concat(restaurantList.slice(0, 4))
       );
@@ -62,8 +63,12 @@ describe("Acceptance Test for Fetching Restaurants", async function() {
   });
 });
 
-function GivenANewLunchCycleHasBeenCreated() {
-  inMemoryLunchCycleGateway.create(new LunchCycle());
+async function GivenANewLunchCycleHasBeenCreated() {
+  const options = {};
+  if (getNewLunchCycleRestaurantsResponse) {
+    options.restaurants = getNewLunchCycleRestaurantsResponse.restaurants;
+  }
+  await inMemoryLunchCycleGateway.create(new LunchCycle(options));
 }
 
 class FakeGoogleSheetGateway {
@@ -89,7 +94,7 @@ function ThenTheRestaurantListWillBe(expected) {
 }
 
 async function WhenWeGetTheLunchCycleRestaurants() {
-  var useCase = new GetNewLunchCycleRestaurants({
+  const useCase = new GetNewLunchCycleRestaurants({
     fetchRestaurantsFromGoogleSheet: new FetchRestaurantsFromGoogleSheet({
       googleSheetGateway: new FakeGoogleSheetGateway()
     }),
@@ -98,8 +103,7 @@ async function WhenWeGetTheLunchCycleRestaurants() {
     })
   });
 
-  var lastRestaurantInLastLunchCycle = inMemoryLunchCycleGateway.all().slice(-1)[0];
-  getNewLunchCycleRestaurantsResponse = await useCase.execute(lastRestaurantInLastLunchCycle);
+  getNewLunchCycleRestaurantsResponse = await useCase.execute();
 }
 
 function ThenTheNewLunchCycleRestaurantsWillBe(expected) {
