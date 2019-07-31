@@ -7,7 +7,7 @@ class PostgresSlackUserResponseGateway {
   async findAllForLunchCycle({ lunchCycle }) {
     const client = await this._client();
     const result = await client.query({
-      text: "SELECT * FROM slack_user_responses WHERE lunch_cycle_id = $1",
+      text: "SELECT * FROM slack_user_responses WHERE lunch_cycle_id = $1 ORDER BY slack_user_id",
       values: [lunchCycle.id]
     });
     client.end();

@@ -101,12 +101,12 @@ describe("PostgresSlackUserResponseGateway", function() {
   it("can retrive all Slack User Responses for a given lunchCycle", async function() {
     const postgresSlackUserResponseGateway = new PostgresSlackUserResponseGateway();
 
-    const firstSlackUserResponse = await postgresSlackUserResponseGateway.create({
+    await postgresSlackUserResponseGateway.create({
       slackUser,
       slackMessageResponse,
       lunchCycle
     });
-    await postgresSlackUserResponseGateway.create({
+    const firstOrderedSlackUserResponse = await postgresSlackUserResponseGateway.create({
       slackUser: { ...slackUser, id: "U123" },
       slackMessageResponse,
       lunchCycle
@@ -121,6 +121,6 @@ describe("PostgresSlackUserResponseGateway", function() {
       lunchCycle
     });
     expect(listWithResults.length).to.eql(2);
-    expect(listWithResults[0]).to.eql(firstSlackUserResponse);
+    expect(listWithResults[0]).to.eql(firstOrderedSlackUserResponse);
   });
 });
