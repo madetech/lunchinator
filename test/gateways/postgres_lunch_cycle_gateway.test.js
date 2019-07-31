@@ -80,14 +80,8 @@ describe("PostgresLunchCycleGateway", function() {
     // Add some dummy data to ensure we get the order right.
     await postgresLunchCycleGateway.create(new LunchCycle());
     await postgresLunchCycleGateway.create(new LunchCycle());
-    const notExpecting3 = await postgresLunchCycleGateway.create(new LunchCycle());
     const expecting = await postgresLunchCycleGateway.create(new LunchCycle());
-    const notExpecting4 = await postgresLunchCycleGateway.create(new LunchCycle());
 
-    // Verify we're going to get the correct object.
-    expect(expecting.id).to.be.above(notExpecting3.id);
-    expect(expecting.id).to.be.below(notExpecting4.id);
-
-    expect(await postgresLunchCycleGateway.findPrevious(notExpecting4)).to.eql(expecting);
+    expect(await postgresLunchCycleGateway.findPrevious()).to.eql(expecting);
   });
 });
