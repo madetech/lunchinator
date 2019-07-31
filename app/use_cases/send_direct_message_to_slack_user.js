@@ -7,19 +7,18 @@ class SendDirectMessageToSlackUser {
     this.slackUserLunchCycleGateway = options.slackUserLunchCycleGateway;
   }
 
-  async execute(options) {
-    const { slackUser, lunchCycle } = options;
+  async execute({ slackUser, lunchCycle }) {
     const slackMessageResponse = await this.slackGateway.sendMessage(slackUser, new SlackMessage());
 
-    const slackUserLunchCycleResponse = this.slackUserLunchCycleGateway.recordSlackUserLunchCycle(
+    const slackUserLunchCycle = await this.slackUserLunchCycleGateway.create({
       slackUser,
       slackMessageResponse,
       lunchCycle
-    );
+    });
 
     return {
       slackMessageResponse,
-      slackUserLunchCycle: slackUserLunchCycleResponse.slackUserLunchCycle
+      slackUserLunchCycle
     };
   }
 }

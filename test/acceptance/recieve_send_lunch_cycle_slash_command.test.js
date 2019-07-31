@@ -2,7 +2,7 @@ const { expect } = require("../test_helper");
 const { SlashCommandFactory, RestaurantFactory } = require("../factories");
 const { FakeSlackClient } = require("../fakes");
 const { LunchCycle } = require("@domain");
-const { SlackGateway } = require("@gateways");
+const { SlackGateway, InMemorySlackUserLunchCycleGateway } = require("@gateways");
 const {
   SendDirectMessageToSlackUser,
   IsValidLunchinatorUser,
@@ -92,22 +92,6 @@ function ThenTheUserIsNotValid() {
   expect(response.isValid).to.be.false;
 }
 
-class FakeSlackUserLunchCycleGateway {
-  recordSlackUserLunchCycle(slackUser, slackResponse, lunchCycle) {
-    return {
-      slackUserLunchCycle: {
-        userId: slackUser.id,
-        email: slackUser.profile.email,
-        firstName: slackUser.profile.first_name,
-        lunchCycleId: lunchCycle.id,
-        messageId: slackResponse.ts,
-        messageChannel: slackResponse.channel,
-        availableEmojis: []
-      }
-    };
-  }
-}
-
 async function WhenAllTheSlackUsersAreFetched() {
   const useCase = new FetchAllSlackUsers({
     slackGateway: new SlackGateway()
@@ -126,7 +110,7 @@ async function WhenTheDirectMessagesAreCreated() {
   const fakeSlackGateway = new SlackGateway();
   const useCase = new SendDirectMessageToSlackUser({
     slackGateway: fakeSlackGateway,
-    slackUserLunchCycleGateway: new FakeSlackUserLunchCycleGateway()
+    slackUserLunchCycleGateway: new InMemorySlackUserLunchCycleGateway()
   });
 
   const slackUsers = await fakeSlackGateway.fetchUsers();
