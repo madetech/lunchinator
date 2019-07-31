@@ -13,8 +13,20 @@ const config = require("@app/config");
 sinon.stub(config, "GOOGLE_SERVICE_ACCOUNT_EMAIL").get(() => "test@madetech.com");
 sinon.stub(config, "GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY").get(() => "NOT_VALID");
 
+async function clearPostgres() {
+  if (process.env.NODE_ENV === "test") {
+    const { Client } = require("pg");
+    const client = new Client(config.db);
+    await client.connect();
+    await client.query("TRUNCATE lunch_cycles RESTART IDENTITY").finally(() => client.end());
+  } else {
+    throw new Error("Cannot run this outside of 'NODE_ENV=test'");
+  }
+}
+
 module.exports = {
   sinon,
   expect,
-  config
+  config,
+  clearPostgres
 };

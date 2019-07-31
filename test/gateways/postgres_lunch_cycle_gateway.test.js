@@ -1,16 +1,11 @@
-const { expect } = require("../test_helper");
+const { expect, clearPostgres } = require("../test_helper");
 const { LunchCycle } = require("@domain");
 const { RestaurantFactory } = require("../factories");
 const { PostgresLunchCycleGateway } = require("@gateways");
 
 describe("PostgresLunchCycleGateway", function() {
   beforeEach(async function() {
-    const postgresLunchCycleGateway = new PostgresLunchCycleGateway();
-
-    const client = await postgresLunchCycleGateway._client();
-    await client.query("TRUNCATE lunch_cycles RESTART IDENTITY");
-
-    client.end();
+    await clearPostgres();
   });
 
   it("create", async function() {
