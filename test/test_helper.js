@@ -18,7 +18,9 @@ async function clearPostgres() {
     const { Client } = require("pg");
     const client = new Client(config.db);
     await client.connect();
-    await client.query("TRUNCATE lunch_cycles RESTART IDENTITY").finally(() => client.end());
+    await client
+      .query("TRUNCATE lunch_cycles,slack_user_responses RESTART IDENTITY")
+      .finally(() => client.end());
   } else {
     throw new Error("Cannot run this outside of 'NODE_ENV=test'");
   }

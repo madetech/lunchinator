@@ -1,11 +1,5 @@
 class SlackUserResponse {
   static newFromDb(dbObject) {
-    let availableEmojis = [];
-
-    if (dbObject.available_emojis) {
-      availableEmojis = JSON.parse(dbObject.available_emojis);
-    }
-
     return new SlackUserResponse({
       slackUserId: dbObject.slack_user_id,
       lunchCycleId: dbObject.lunch_cycle_id,
@@ -13,7 +7,7 @@ class SlackUserResponse {
       firstName: dbObject.first_name,
       messageChannel: dbObject.message_channel,
       messageId: dbObject.message_id,
-      availableEmojis: availableEmojis
+      availableEmojis: dbObject.available_emojis
     });
   }
 
