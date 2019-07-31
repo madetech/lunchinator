@@ -21,7 +21,7 @@ describe("GenerateSlackMessage", function() {
 
     const slackFirstName = "Barry";
 
-    slackUser = {
+    const slackUser = {
       id: "USLACKID1",
       team_id: "TEAM_ID",
       name: "Test Name",

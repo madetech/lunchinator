@@ -1,5 +1,5 @@
 class GenerateSlackMessage {
-  execute({ lunchCycle }) {
+  execute({ lunchCycle, slackUser }) {
     const twentFourHoursInMs = 86400000;
     const slackFirstName = slackUser.profile.first_name;
 
