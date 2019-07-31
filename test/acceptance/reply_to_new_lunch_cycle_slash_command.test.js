@@ -1,5 +1,5 @@
 const { expect } = require("../test_helper");
-const { SendLunchCyclePreview, GenerateSlackPreviewMessage } = require("@use_cases");
+const { SendLunchCyclePreview, GenerateSlackMessage } = require("@use_cases");
 const { RestaurantFactory } = require("../factories");
 const { InMemoryLunchCycleGateway } = require("@gateways");
 const { LunchCycle } = require("@domain");
@@ -44,7 +44,7 @@ function GivenALunchCycleWithRestaurantsExists(restaurants) {
 }
 
 function ThenANewLunchCyclePreviewMessageIsCreated() {
-  var useCase = new GenerateSlackPreviewMessage();
+  var useCase = new GenerateSlackMessage({ firstName: "" });
   const response = useCase.execute({ lunchCycle });
   message = response.message;
 
@@ -58,7 +58,7 @@ function ThenANewLunchCyclePreviewMessageIsCreated() {
   ];
 
   const expectedMessage =
-    "Hey {first name}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n" +
+    "Hey {first name}! it’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n" +
     expected.join("\n");
   expect(message).to.be.eql(expectedMessage);
 }
