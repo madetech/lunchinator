@@ -1,5 +1,5 @@
 const { expect } = require("../test_helper");
-const { SlashCommandFactory } = require("../factories");
+const { SlashCommandFactory, RestaurantFactory } = require("../factories");
 
 const { LunchCycle } = require("@domain");
 const { InMemoryLunchCycleGateway } = require("@gateways");
@@ -16,7 +16,7 @@ describe("ReceiveNewLunchCycleSlashCommand", async function() {
 
   it("can create a new lunch cycle", async function() {
     GivenANewLunchCycleCommand();
-    await WhenANewLunchCycleIsCreated();
+    await WhenANewLunchCycleIsCreatedWith([RestaurantFactory.getRestaurant()], "01-01-2020");
     ThenANewLunchCycleIsCreated();
   });
 
@@ -33,17 +33,29 @@ describe("ReceiveNewLunchCycleSlashCommand", async function() {
   describe("cannot create a new lunch cycle when the user is not valid", function() {
     it("where there is not an existing lunch cycle", async function() {
       GivenANewLunchCycleCommandWithInvalidUser();
-      await WhenANewLunchCycleIsCreated();
+      await WhenANewLunchCycleIsCreatedWith([RestaurantFactory.getRestaurant()], "01-01-2020");
       ThenANewLunchCycleIsNotCreated();
     });
 
     it("where there are existing lunch cycles", async function() {
       GivenALunchCycleExists();
       GivenANewLunchCycleCommandWithInvalidUser();
-      await WhenANewLunchCycleIsCreated();
+      await WhenANewLunchCycleIsCreatedWith([RestaurantFactory.getRestaurant()], "01-01-2020");
       ThenANewLunchCycleIsNotCreated();
       await ThenTheTotalCountOfLunchCyclesIs(1);
     });
+  });
+
+  it("can check that a valid start date has been provided", async function() {
+    GivenANewLunchCycleCommand();
+    await WhenANewLunchCycleIsCreatedWith([RestaurantFactory.getRestaurant()]);
+    ThenANewLunchCycleIsNotCreated();
+  });
+
+  it("can check that a list of restaurants has been provided", async function() {
+    GivenANewLunchCycleCommand();
+    await WhenANewLunchCycleIsCreatedWith([], "01-01-2020");
+    ThenANewLunchCycleIsNotCreated();
   });
 
   describe("can verify the slack request is legit", function() {
@@ -67,18 +79,20 @@ function GivenANewLunchCycleCommand() {
   slashCommandResponse = new SlashCommandFactory().getCommand();
 }
 
-async function WhenANewLunchCycleIsCreated() {
+async function WhenANewLunchCycleIsCreatedWith(restaurants, startsAt) {
   var useCase = new CreateNewLunchCycle({
     lunchCycleGateway: inMemoryLunchCycleGateway,
     isValidLunchinatorUser: new IsValidLunchinatorUser()
   });
   createNewLunchCycleResponse = await useCase.execute({
-    userId: slashCommandResponse.body.user_id
+    userId: slashCommandResponse.body.user_id,
+    restaurants: restaurants,
+    startsAt: startsAt
   });
 }
 
 function ThenANewLunchCycleIsCreated() {
-  expect(createNewLunchCycleResponse.lunchCycle).to.not.be.null;
+  expect(createNewLunchCycleResponse.lunchCycle).to.not.be.undefined;
 }
 
 function ThenTheUserIsValid() {
@@ -98,7 +112,8 @@ function ThenTheUserIsNotValid() {
 }
 
 function ThenANewLunchCycleIsNotCreated() {
-  expect(createNewLunchCycleResponse.lunchCycle).to.be.null;
+  expect(createNewLunchCycleResponse.lunchCycle).to.be.undefined;
+  expect(createNewLunchCycleResponse.error.length).to.be.greaterThan(0);
 }
 
 async function ThenTheTotalCountOfLunchCyclesIs(count) {

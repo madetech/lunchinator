@@ -1,4 +1,5 @@
 require("module-alias/register");
+const moment = require("moment");
 const { LunchCycle } = require("@domain");
 
 class CreateNewLunchCycle {
@@ -7,22 +8,45 @@ class CreateNewLunchCycle {
     this.isValidLunchinatorUser = options.isValidLunchinatorUser;
   }
 
-  async execute(request) {
-    var isValidUserResponse = this.isValidLunchinatorUser.execute({ userId: request.userId });
+  async execute({ userId, restaurants, startsAt: startsAt }) {
+    var isValidUserResponse = this.isValidLunchinatorUser.execute({ userId: userId });
 
-    if (isValidUserResponse.isValid) {
-      let lunchCycleOptions = {};
-
-      if (request.restaurants) {
-        lunchCycleOptions.restaurants = request.restaurants;
-      }
-
-      const lunchCycle = await this.lunchCycleGateway.create(new LunchCycle(lunchCycleOptions));
-
-      return { lunchCycle };
+    if (!isValidUserResponse.isValid) {
+      return {
+        error: "unauthorised slack user."
+      };
     }
 
-    return { lunchCycle: null };
+    if (!restaurants || !restaurants.length) {
+      return {
+        error: "invalid list of restaurants."
+      };
+    }
+
+    const startsAtIsoString = this.parseDateToIsoString(startsAt);
+
+    if (!startsAt || !startsAtIsoString) {
+      return {
+        error: "invalid start date."
+      };
+    }
+
+    const lunchCycle = await this.lunchCycleGateway.create(
+      new LunchCycle({
+        restaurants: restaurants,
+        starts_at: startsAtIsoString
+      })
+    );
+
+    return { lunchCycle };
+  }
+
+  parseDateToIsoString(dateString) {
+    const mo = moment.utc(dateString, "DD-MM-YYYY");
+
+    if (mo.isValid()) {
+      return mo.toDate().toISOString();
+    }
   }
 }
 
