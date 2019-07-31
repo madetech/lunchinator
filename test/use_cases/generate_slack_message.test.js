@@ -34,7 +34,7 @@ describe("GenerateSlackMessage", function() {
     const response = useCase.execute({ lunchCycle: lunchCycle });
 
     const expectedMessage =
-      `Hey ${slackFirstName} it’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n` +
+      `Hey ${slackFirstName}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n` +
       expected.join("\n");
 
     expect(response.message).to.be.eql(expectedMessage);
@@ -46,7 +46,7 @@ describe("GenerateSlackMessage", function() {
     const response = useCase.execute({ lunchCycle: lunchCycle });
 
     const expectedMessage =
-      `Hey {first name}! it’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n` +
+      `Hey {first name}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n` +
       expected.join("\n");
 
     expect(response.message).to.be.eql(expectedMessage);
