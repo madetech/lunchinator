@@ -18,6 +18,19 @@ describe("LunchCycleService", async function() {
     expect(response.lunchCycle).to.be.eql(expected);
   });
 
+  it("can check slack user is lunchinator admin", function() {
+    const spy = { execute: sinon.fake.returns({ isValid: true }) };
+
+    const service = new LunchCycleService({
+      isLunchinatorAdmin: spy
+    });
+
+    const result = service.isAdmin("user");
+
+    expect(spy.execute).to.have.been.called;
+    expect(result).to.be.true;
+  });
+
   it("can verify a slack request", function() {
     const spy = { execute: sinon.fake.returns({ isVerified: true }) };
 

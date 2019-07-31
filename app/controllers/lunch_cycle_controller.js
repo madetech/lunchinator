@@ -10,7 +10,7 @@ const {
   VerifySlackRequest,
   GenerateSlackPreviewMessage,
   CreateNewLunchCycle,
-  IsValidLunchinatorUser
+  IsLunchinatorAdmin
 } = require("@use_cases");
 
 router.post("/new", async function(req, res) {
@@ -18,8 +18,7 @@ router.post("/new", async function(req, res) {
 
   const lunchCycleService = new LunchCycleService({
     createNewLunchCycle: new CreateNewLunchCycle({
-      lunchCycleGateway: lunchCycleGateway,
-      isValidLunchinatorUser: new IsValidLunchinatorUser()
+      lunchCycleGateway: lunchCycleGateway
     }),
     verifySlackRequest: new VerifySlackRequest({
       gateway: new CryptoGateway()
@@ -32,19 +31,21 @@ router.post("/new", async function(req, res) {
         lunchCycleGateway: lunchCycleGateway
       })
     }),
-    generateSlackPreviewMessage: new GenerateSlackPreviewMessage()
+    generateSlackPreviewMessage: new GenerateSlackPreviewMessage(),
+    isLunchinatorAdmin: new IsLunchinatorAdmin()
   });
 
   if (!lunchCycleService.verifyRequest(req.headers, req.body)) {
     res.send("error verifying slack request.");
   }
 
-  // want to move user verification in here
+  if (!lunchCycleService.isAdmin(req.body.user_id)) {
+    res.send("sorry, you are not authorised to do this.");
+  }
 
   const lunchCycleRestaurants = await lunchCycleService.getLunchCycleRestaurants();
 
   const createResponse = await lunchCycleService.createLunchCycle({
-    userId: req.body.user_id,
     restaurants: lunchCycleRestaurants
   });
 

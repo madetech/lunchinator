@@ -5,18 +5,9 @@ const { LunchCycle } = require("@domain");
 class CreateNewLunchCycle {
   constructor(options) {
     this.lunchCycleGateway = options.lunchCycleGateway;
-    this.isValidLunchinatorUser = options.isValidLunchinatorUser;
   }
 
-  async execute({ userId, restaurants, startsAt: startsAt }) {
-    var isValidUserResponse = this.isValidLunchinatorUser.execute({ userId: userId });
-
-    if (!isValidUserResponse.isValid) {
-      return {
-        error: "unauthorised slack user."
-      };
-    }
-
+  async execute({ restaurants, startsAt: startsAt }) {
     if (!restaurants || !restaurants.length) {
       return {
         error: "invalid list of restaurants."

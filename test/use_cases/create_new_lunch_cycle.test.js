@@ -9,8 +9,7 @@ describe("CreateNewLunchCycle", async function() {
     const gatewaySpy = { create: sinon.fake.returns(lunchCycleDummy) };
 
     const useCase = new CreateNewLunchCycle({
-      lunchCycleGateway: gatewaySpy,
-      isValidLunchinatorUser: { execute: sinon.fake.returns({ isValid: true }) }
+      lunchCycleGateway: gatewaySpy
     });
 
     const response = await useCase.execute({
@@ -23,30 +22,9 @@ describe("CreateNewLunchCycle", async function() {
     expect(response.lunchCycle).to.equal(lunchCycleDummy);
   });
 
-  it("does not create a lunch cycle for invalid user", async function() {
-    const invalidUserIdDummy = "invalid";
-    const isValidLunchinatorUserSpy = { execute: sinon.fake.returns({ isValid: false }) };
-
-    const useCase = new CreateNewLunchCycle({
-      lunchCycleGateway: {},
-      isValidLunchinatorUser: isValidLunchinatorUserSpy
-    });
-
-    const response = await useCase.execute({
-      userId: invalidUserIdDummy
-    });
-
-    expect(isValidLunchinatorUserSpy.execute).to.have.been.calledWith({
-      userId: invalidUserIdDummy
-    });
-    expect(response.lunchCycle).to.be.undefined;
-    expect(response.error).to.be.eql("unauthorised slack user.");
-  });
-
   it("does not create a lunch cycle when no restaurants provided", async function() {
     const useCase = new CreateNewLunchCycle({
-      lunchCycleGateway: {},
-      isValidLunchinatorUser: { execute: sinon.fake.returns({ isValid: true }) }
+      lunchCycleGateway: {}
     });
 
     const response = await useCase.execute({ restaurants: [] });
@@ -57,8 +35,7 @@ describe("CreateNewLunchCycle", async function() {
 
   it("does not create a lunch cycle when an invalid start date is provided", async function() {
     const useCase = new CreateNewLunchCycle({
-      lunchCycleGateway: {},
-      isValidLunchinatorUser: { execute: sinon.fake.returns({ isValid: true }) }
+      lunchCycleGateway: {}
     });
 
     const response = await useCase.execute({
@@ -76,8 +53,7 @@ describe("CreateNewLunchCycle", async function() {
     const useCase = new CreateNewLunchCycle({
       lunchCycleGateway: {
         create: sinon.fake.returns(new LunchCycle({ starts_at: expected }))
-      },
-      isValidLunchinatorUser: { execute: sinon.fake.returns({ isValid: true }) }
+      }
     });
 
     const response = await useCase.execute({

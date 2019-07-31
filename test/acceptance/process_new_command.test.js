@@ -3,7 +3,7 @@ const { SlashCommandFactory, RestaurantFactory } = require("../factories");
 
 const { LunchCycle } = require("@domain");
 const { InMemoryLunchCycleGateway } = require("@gateways");
-const { IsValidLunchinatorUser, CreateNewLunchCycle, VerifySlackRequest } = require("@use_cases");
+const { CreateNewLunchCycle, VerifySlackRequest, IsLunchinatorAdmin } = require("@use_cases");
 
 let inMemoryLunchCycleGateway;
 let slashCommandResponse;
@@ -12,6 +12,8 @@ let createNewLunchCycleResponse;
 describe("ReceiveNewLunchCycleSlashCommand", async function() {
   beforeEach(function() {
     inMemoryLunchCycleGateway = new InMemoryLunchCycleGateway();
+    slashCommandResponse = undefined;
+    createNewLunchCycleResponse = undefined;
   });
 
   it("can create a new lunch cycle", async function() {
@@ -20,45 +22,43 @@ describe("ReceiveNewLunchCycleSlashCommand", async function() {
     ThenANewLunchCycleIsCreated();
   });
 
-  it("can check for a valid user", function() {
+  it("can create a second lunch cycle", async function() {
+    GivenALunchCycleExists();
     GivenANewLunchCycleCommand();
-    ThenTheUserIsValid();
+    await WhenANewLunchCycleIsCreatedWith([RestaurantFactory.getRestaurant()], "01-01-2020");
+    ThenANewLunchCycleIsCreated();
+    await ThenTheTotalCountOfLunchCyclesIs(2);
   });
 
-  it("can check for an invalid user", function() {
-    GivenANewLunchCycleCommandWithInvalidUser();
-    ThenTheUserIsNotValid();
-  });
-
-  describe("cannot create a new lunch cycle when the user is not valid", function() {
-    it("where there is not an existing lunch cycle", async function() {
-      GivenANewLunchCycleCommandWithInvalidUser();
-      await WhenANewLunchCycleIsCreatedWith([RestaurantFactory.getRestaurant()], "01-01-2020");
-      ThenANewLunchCycleIsNotCreated();
+  describe("user validation", function() {
+    it("can check for a valid user", function() {
+      GivenANewLunchCycleCommand();
+      ThenTheUserIsValid();
     });
 
-    it("where there are existing lunch cycles", async function() {
-      GivenALunchCycleExists();
+    it("can check for an invalid user", function() {
       GivenANewLunchCycleCommandWithInvalidUser();
-      await WhenANewLunchCycleIsCreatedWith([RestaurantFactory.getRestaurant()], "01-01-2020");
-      ThenANewLunchCycleIsNotCreated();
-      await ThenTheTotalCountOfLunchCyclesIs(1);
+      ThenTheUserIsNotValid();
     });
   });
 
-  it("can check that a valid start date has been provided", async function() {
-    GivenANewLunchCycleCommand();
-    await WhenANewLunchCycleIsCreatedWith([RestaurantFactory.getRestaurant()]);
-    ThenANewLunchCycleIsNotCreated();
+  describe("date validation", async function() {
+    it("can check that a valid start date has been provided", async function() {
+      GivenANewLunchCycleCommand();
+      await WhenANewLunchCycleIsCreatedWith([RestaurantFactory.getRestaurant()]);
+      ThenANewLunchCycleIsNotCreated();
+    });
   });
 
-  it("can check that a list of restaurants has been provided", async function() {
-    GivenANewLunchCycleCommand();
-    await WhenANewLunchCycleIsCreatedWith([], "01-01-2020");
-    ThenANewLunchCycleIsNotCreated();
+  describe("restaurant validation", async function() {
+    it("can check that a list of restaurants has been provided", async function() {
+      GivenANewLunchCycleCommand();
+      await WhenANewLunchCycleIsCreatedWith([], "01-01-2020");
+      ThenANewLunchCycleIsNotCreated();
+    });
   });
 
-  describe("can verify the slack request is legit", function() {
+  describe("slack request validation", function() {
     it("can verify a request is legit", function() {
       GivenANewLunchCycleCommand();
       ThenTheSlackRequestIsLegit();
@@ -81,11 +81,9 @@ function GivenANewLunchCycleCommand() {
 
 async function WhenANewLunchCycleIsCreatedWith(restaurants, startsAt) {
   var useCase = new CreateNewLunchCycle({
-    lunchCycleGateway: inMemoryLunchCycleGateway,
-    isValidLunchinatorUser: new IsValidLunchinatorUser()
+    lunchCycleGateway: inMemoryLunchCycleGateway
   });
   createNewLunchCycleResponse = await useCase.execute({
-    userId: slashCommandResponse.body.user_id,
     restaurants: restaurants,
     startsAt: startsAt
   });
@@ -96,7 +94,7 @@ function ThenANewLunchCycleIsCreated() {
 }
 
 function ThenTheUserIsValid() {
-  var useCase = new IsValidLunchinatorUser();
+  var useCase = new IsLunchinatorAdmin();
   var response = useCase.execute({ userId: slashCommandResponse.body.user_id });
   expect(response.isValid).to.be.true;
 }
@@ -106,7 +104,7 @@ function GivenANewLunchCycleCommandWithInvalidUser() {
 }
 
 function ThenTheUserIsNotValid() {
-  var useCase = new IsValidLunchinatorUser();
+  var useCase = new IsLunchinatorAdmin();
   var response = useCase.execute({ userId: slashCommandResponse.body.user_id });
   expect(response.isValid).to.be.false;
 }

@@ -5,8 +5,8 @@ const { LunchCycle } = require("@domain");
 const { SlackGateway, InMemorySlackUserLunchCycleGateway } = require("@gateways");
 const {
   SendDirectMessageToSlackUser,
-  IsValidLunchinatorUser,
-  FetchAllSlackUsers
+  FetchAllSlackUsers,
+  IsLunchinatorAdmin
 } = require("@use_cases");
 
 let lunchCycle;
@@ -81,13 +81,13 @@ function GivenAListOfSlackUsers() {
 }
 
 function ThenTheUserIsValid() {
-  const useCase = new IsValidLunchinatorUser();
+  const useCase = new IsLunchinatorAdmin();
   const response = useCase.execute({ userId: slashCommandResponse.body.user_id });
   expect(response.isValid).to.be.true;
 }
 
 function ThenTheUserIsNotValid() {
-  const useCase = new IsValidLunchinatorUser();
+  const useCase = new IsLunchinatorAdmin();
   const response = useCase.execute({ userId: slashCommandResponse.body.user_id });
   expect(response.isValid).to.be.false;
 }
