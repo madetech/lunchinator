@@ -13,23 +13,22 @@ let fetchReactionsUseCaseResponse;
 let updateSULCWithReactions;
 let inMemoryLunchCycleGateway;
 
-describe("Collect Lunch Cycle Reactions", function() {
+describe("Collect Lunch Cycle Reactions", async function() {
   before(function() {
     SlackGateway.prototype._slackClient = () => new FakeSlackClient({ token: "NOT_VALID" });
-
     inMemoryLunchCycleGateway = new InMemoryLunchCycleGateway();
   });
 
   it("can get reactions for a Slack User Lunch Cycle", async function() {
-    GivenASlackUserLunchCycleExists();
+    await GivenASlackUserLunchCycleExists();
     await WhenReactionsAreRetrivedForTheSlackUserLunchCycle();
     ThenReturnsTheReactions();
   });
 
-  it("can update a Slack User Lunch Cycle with the reactions", function() {
-    GivenASlackUserLunchCycleExists();
+  it("can update a Slack User Lunch Cycle with the reactions", async function() {
+    await GivenASlackUserLunchCycleExists();
     GivenAFetchSlackReactionsForSlackUserLunchCycleResponseExists();
-    WhenTheSlackUserLunchCycleIsUpdatedWithTheReactions();
+    await WhenTheSlackUserLunchCycleIsUpdatedWithTheReactions();
     ThenTheSlackUserLunchCycleHasCorrectEmojis();
   });
 });
@@ -68,8 +67,8 @@ class FakeSlackClient {
   }
 }
 
-function GivenASlackUserLunchCycleExists() {
-  lunchCycle = inMemoryLunchCycleGateway.create(
+async function GivenASlackUserLunchCycleExists() {
+  lunchCycle = await inMemoryLunchCycleGateway.create(
     new LunchCycle({
       restaurants: [
         RestaurantFactory.getRestaurant({ name: "Rest 1", emoji: ":pizza:" }),
@@ -143,13 +142,13 @@ function GivenAFetchSlackReactionsForSlackUserLunchCycleResponseExists() {
   };
 }
 
-function WhenTheSlackUserLunchCycleIsUpdatedWithTheReactions() {
+async function WhenTheSlackUserLunchCycleIsUpdatedWithTheReactions() {
   const useCase = new UpdateSlackUserLunchCycleWithReactions({
     slackUserLunchCycleGateway: { save: sinon.stub().returnsArg(0) },
     lunchCycleGateway: inMemoryLunchCycleGateway
   });
 
-  updateSULCWithReactions = useCase.execute({
+  updateSULCWithReactions = await useCase.execute({
     slackUserLunchCycle: slackUserLunchCycle,
     reactions: fetchReactionsUseCaseResponse.reactions
   });

@@ -4,8 +4,8 @@ class UpdateSlackUserLunchCycleWithReactions {
     this.lunchCycleGateway = options.lunchCycleGateway;
   }
 
-  execute({ slackUserLunchCycle, reactions }) {
-    const lunchCycle = this.lunchCycleGateway.findById(slackUserLunchCycle.lunchCycleId);
+  async execute({ slackUserLunchCycle, reactions }) {
+    const lunchCycle = await this.lunchCycleGateway.findById(slackUserLunchCycle.lunchCycleId);
 
     const selectedEmojis = reactions.message.reactions.map(r => r.name).join("|");
 

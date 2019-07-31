@@ -13,8 +13,9 @@ class InMemoryLunchCycleGateway {
     return [...this.lunchCycles];
   }
 
-  findById(wantedId) {
-    return this.all().filter(lc => lc.id === wantedId)[0];
+  async findById(wantedId) {
+    const all = await this.all();
+    return all.filter(lc => lc.id === wantedId)[0];
   }
 
   async findPrevious() {
