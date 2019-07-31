@@ -44,7 +44,7 @@ function GivenALunchCycleWithRestaurantsExists(restaurants) {
 }
 
 function ThenANewLunchCyclePreviewMessageIsCreated() {
-  var useCase = new GenerateSlackMessage({ firstName: "" });
+  var useCase = new GenerateSlackMessage({ firstName: null });
   const response = useCase.execute({ lunchCycle });
   message = response.message;
 

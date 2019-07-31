@@ -41,7 +41,7 @@ describe("GenerateSlackMessage", function() {
   });
 
   it("can generate a lunch cycle message without a first name", function() {
-    const noFirstName = "";
+    const noFirstName = null;
     const useCase = new GenerateSlackMessage({ firstName: noFirstName });
     const response = useCase.execute({ lunchCycle: lunchCycle });
 

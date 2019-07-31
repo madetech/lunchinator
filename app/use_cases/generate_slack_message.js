@@ -6,7 +6,7 @@ class GenerateSlackMessage {
   }
 
   execute({ lunchCycle }) {
-    if (this.firstName === "") {
+    if (this.firstName === null) {
       var message = `Hey {first name}! it’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n`;
     } else {
       var message = `Hey ${this.firstName} it’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n`;
