@@ -1,5 +1,6 @@
-const { expect, sinon } = require("../test_helper");
+const { expect } = require("../test_helper");
 const { SlashCommandFactory, RestaurantFactory } = require("../factories");
+const { FakeSlackClient } = require("../fakes");
 const { LunchCycle } = require("@domain");
 const { SlackGateway } = require("@gateways");
 const {
@@ -13,44 +14,15 @@ let slashCommandResponse;
 let fetchAllSlackUsersResponse;
 let sendDirectMessageToSlackUserResponse;
 let userList;
-
-class FakeSlackClient {
-  constructor({ token }) {
-    this.token = token;
-    this.users = {
-      list: () => {}
-    };
-    this.chat = {
-      postMessage: () => {}
-    };
-
-    // Easy way to get the Promise interface working.
-    sinon.stub(this.users, "list").resolves({
-      ok: true,
-      members: userList
-    });
-
-    sinon.stub(this.chat, "postMessage").resolves({
-      ok: true,
-      channel: "DM_CHANNEL_ID", // Differs from sent Channel ID (User ID)
-      ts: "1564484225.000400",
-      message: {
-        type: "message",
-        subtype: "bot_message",
-        text: "Hello from Node!",
-        ts: "1564484225.000400",
-        username: "Lunchinator",
-        bot_id: "BOT_ID"
-      }
-    });
-  }
-}
+let fakeSlackClient;
 
 describe("ReceiveSendLunchCycleSlashCommand", function() {
   before(function() {
-    SlackGateway.prototype._slackClient = () => new FakeSlackClient({ token: "NOT_VALID" });
+    fakeSlackClient = new FakeSlackClient({ token: "NOT_VALID" });
+    SlackGateway.prototype._slackClient = () => fakeSlackClient;
 
     userList = [{ id: "U2147483697", profile: { email: "test@example.com", first_name: "Test" } }];
+    fakeSlackClient.stubUserList(userList);
   });
 
   it("can check for a valid user", function() {

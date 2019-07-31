@@ -1,72 +1,14 @@
-const { expect, sinon } = require("../test_helper");
+const { expect } = require("../test_helper");
+const { FakeSlackClient } = require("../fakes");
 const { SlackGateway } = require("@gateways");
 
 let userList = [];
-let postMessageStub;
-
-class FakeSlackClient {
-  constructor({ token }) {
-    this.token = token;
-    this.users = {
-      list: () => {}
-    };
-    this.chat = {
-      postMessage: () => {}
-    };
-    this.reactions = {
-      get: () => {}
-    };
-
-    const reactionsStub = sinon.stub(this.reactions, "get");
-
-    reactionsStub
-      .withArgs({
-        channel: "DM_CHANNEL_ID_1",
-        timestamp: "1564484225.000400"
-      })
-      .resolves({
-        ok: true,
-        type: "message",
-        channel: "DM_CHANNEL_ID_1",
-        message: {
-          type: "message",
-          subtype: "bot_message",
-          text: "Hello from Node!",
-          ts: "1564484225.000400",
-          username: "Lunchinator",
-          bot_id: "BOT_ID",
-          reactions: [
-            { name: "pizza", users: ["U2147483697"], count: 1 },
-            { name: "sushi", users: ["U2147483697"], count: 1 }
-          ]
-        }
-      });
-
-    // Easy way to get the Promise interface working.
-    sinon.stub(this.users, "list").resolves({
-      ok: true,
-      members: userList
-    });
-
-    postMessageStub = sinon.stub(this.chat, "postMessage").resolves({
-      ok: true,
-      channel: "DM_CHANNEL_ID", // Differs from sent Channel ID (User ID)
-      ts: "1564484225.000400",
-      message: {
-        type: "message",
-        subtype: "bot_message",
-        text: "Hello from Node!",
-        ts: "1564484225.000400",
-        username: "Lunchinator",
-        bot_id: "BOT_ID"
-      }
-    });
-  }
-}
+let fakeSlackClient;
 
 describe("SlackGateway", function() {
   before(function() {
-    SlackGateway.prototype._slackClient = () => new FakeSlackClient({ token: "NOT_VALID" });
+    fakeSlackClient = new FakeSlackClient({ token: "NOT_VALID" });
+    SlackGateway.prototype._slackClient = () => fakeSlackClient;
   });
 
   it("can fetch all users from slack", async function() {
@@ -96,6 +38,8 @@ describe("SlackGateway", function() {
         updated: 1550160376
       }
     ];
+
+    fakeSlackClient.stubUserList(userList);
 
     const gateway = new SlackGateway();
 
@@ -130,6 +74,7 @@ describe("SlackGateway", function() {
       }
     ];
 
+    fakeSlackClient.stubUserList(userList);
     const gateway = new SlackGateway();
 
     expect(await gateway.fetchUsers()).to.eql([
@@ -176,6 +121,7 @@ describe("SlackGateway", function() {
       }
     ];
 
+    fakeSlackClient.stubUserList(userList);
     const gateway = new SlackGateway();
 
     expect(await gateway.fetchUsers()).to.eql([
@@ -222,6 +168,7 @@ describe("SlackGateway", function() {
       }
     ];
 
+    fakeSlackClient.stubUserList(userList);
     const gateway = new SlackGateway();
 
     expect(await gateway.fetchUsers()).to.eql([
@@ -270,6 +217,7 @@ describe("SlackGateway", function() {
       }
     ];
 
+    fakeSlackClient.stubUserList(userList);
     const gateway = new SlackGateway();
 
     expect(await gateway.fetchUsers()).to.eql([
@@ -324,7 +272,7 @@ describe("SlackGateway", function() {
 
     expect(sendMessageResponse.channel).to.not.eql(slackUser.id);
 
-    expect(postMessageStub).to.have.been.calledWith({
+    expect(fakeSlackClient.postMessageStub).to.have.been.calledWith({
       channel: slackUser.id,
       text: messageText
     });

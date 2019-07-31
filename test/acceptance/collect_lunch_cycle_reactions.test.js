@@ -1,6 +1,7 @@
 const { expect, sinon } = require("../test_helper");
 const { RestaurantFactory } = require("../factories");
 const { LunchCycle } = require("@domain");
+const { FakeSlackClient } = require("../fakes");
 const { SlackGateway, InMemoryLunchCycleGateway } = require("@gateways");
 const {
   FetchReactionsForSlackUserLunchCycle,
@@ -12,10 +13,12 @@ let slackUserLunchCycle;
 let fetchReactionsUseCaseResponse;
 let updateSULCWithReactions;
 let inMemoryLunchCycleGateway;
+let fakeSlackClient;
 
-describe("Collect Lunch Cycle Reactions", async function() {
+describe("Collect Lunch Cycle Reactions", function() {
   before(function() {
-    SlackGateway.prototype._slackClient = () => new FakeSlackClient({ token: "NOT_VALID" });
+    fakeSlackClient = new FakeSlackClient({ token: "NOT_VALID" });
+    SlackGateway.prototype._slackClient = () => fakeSlackClient;
     inMemoryLunchCycleGateway = new InMemoryLunchCycleGateway();
   });
 
@@ -32,40 +35,6 @@ describe("Collect Lunch Cycle Reactions", async function() {
     ThenTheSlackUserLunchCycleHasCorrectEmojis();
   });
 });
-
-class FakeSlackClient {
-  constructor({ token }) {
-    this.token = token;
-    this.reactions = {
-      get: () => {}
-    };
-
-    const reactionsStub = sinon.stub(this.reactions, "get");
-
-    reactionsStub
-      .withArgs({
-        channel: "DM_CHANNEL_ID_1",
-        timestamp: "1564484225.000400"
-      })
-      .resolves({
-        ok: true,
-        type: "message",
-        channel: "DM_CHANNEL_ID_1",
-        message: {
-          type: "message",
-          subtype: "bot_message",
-          text: "Hello from Node!",
-          ts: "1564484225.000400",
-          username: "Lunchinator",
-          bot_id: "BOT_ID",
-          reactions: [
-            { name: "pizza", users: ["U2147483697"], count: 1 },
-            { name: "sushi", users: ["U2147483697"], count: 1 }
-          ]
-        }
-      });
-  }
-}
 
 async function GivenASlackUserLunchCycleExists() {
   lunchCycle = await inMemoryLunchCycleGateway.create(
