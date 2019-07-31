@@ -2,7 +2,11 @@ const { expect, sinon } = require("../test_helper");
 const { RestaurantFactory } = require("../factories");
 const { LunchCycle } = require("@domain");
 const { FakeSlackClient } = require("../fakes");
-const { SlackGateway, InMemoryLunchCycleGateway } = require("@gateways");
+const {
+  SlackGateway,
+  InMemoryLunchCycleGateway,
+  InMemorySlackUserLunchCycleGateway
+} = require("@gateways");
 const {
   FetchReactionsForSlackUserLunchCycle,
   UpdateSlackUserLunchCycleWithReactions
@@ -14,12 +18,14 @@ let fetchReactionsUseCaseResponse;
 let updateSULCWithReactions;
 let inMemoryLunchCycleGateway;
 let fakeSlackClient;
+let inMemorySlackUserLunchCycleGateway;
 
 describe("Collect Lunch Cycle Reactions", function() {
   before(function() {
     fakeSlackClient = new FakeSlackClient({ token: "NOT_VALID" });
     SlackGateway.prototype._slackClient = () => fakeSlackClient;
     inMemoryLunchCycleGateway = new InMemoryLunchCycleGateway();
+    inMemorySlackUserLunchCycleGateway = new InMemorySlackUserLunchCycleGateway();
   });
 
   it("can get reactions for a Slack User Lunch Cycle", async function() {
@@ -47,15 +53,20 @@ async function GivenASlackUserLunchCycleExists() {
     })
   );
 
-  slackUserLunchCycle = {
-    userId: "U2147483697",
-    email: "test@example.com",
-    firstName: "Test",
-    messageChannel: "DM_CHANNEL_ID_1",
-    messageId: "1564484225.000400",
-    lunchCycleId: lunchCycle.id,
-    availableEmojis: []
-  };
+  slackUserLunchCycle = await inMemorySlackUserLunchCycleGateway.create({
+    slackUser: {
+      id: "U2147483697",
+      profile: {
+        email: "test@example.com",
+        first_name: "Test"
+      }
+    },
+    slackMessageResponse: {
+      channel: "DM_CHANNEL_ID_1",
+      ts: "1564484225.000400"
+    },
+    lunchCycle
+  });
 }
 
 async function WhenReactionsAreRetrivedForTheSlackUserLunchCycle() {
@@ -113,7 +124,7 @@ function GivenAFetchSlackReactionsForSlackUserLunchCycleResponseExists() {
 
 async function WhenTheSlackUserLunchCycleIsUpdatedWithTheReactions() {
   const useCase = new UpdateSlackUserLunchCycleWithReactions({
-    slackUserLunchCycleGateway: { save: sinon.stub().returnsArg(0) },
+    slackUserLunchCycleGateway: inMemorySlackUserLunchCycleGateway,
     lunchCycleGateway: inMemoryLunchCycleGateway
   });
 

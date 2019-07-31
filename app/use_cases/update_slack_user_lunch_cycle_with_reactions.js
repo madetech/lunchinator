@@ -15,7 +15,9 @@ class UpdateSlackUserLunchCycleWithReactions {
       }
     });
 
-    const updatedSlackUserLunchCycle = this.slackUserLunchCycleGateway.save(slackUserLunchCycle);
+    const updatedSlackUserLunchCycle = await this.slackUserLunchCycleGateway.save({
+      slackUserLunchCycle
+    });
 
     return { slackUserLunchCycle: updatedSlackUserLunchCycle };
   }
