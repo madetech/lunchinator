@@ -15,7 +15,7 @@ describe("CreateNewLunchCycle", function() {
     const response = await useCase.execute({
       userId: "validUserId",
       restaurants: [RestaurantFactory.getRestaurant()],
-      startsAt: "01-01-2020"
+      startsAt: "2020-01-01T00:00:00+01:00"
     });
 
     expect(gatewaySpy.create).to.have.been.calledWith(sinon.match.instanceOf(LunchCycle));
@@ -48,7 +48,7 @@ describe("CreateNewLunchCycle", function() {
   });
 
   it("creates a lunch cycle with the correct date when a date is provided", async function() {
-    const expected = "2020-01-25 00:00:00";
+    const expected = "2020-01-25T00:00:00+01:00";
 
     const useCase = new CreateNewLunchCycle({
       lunchCycleGateway: {

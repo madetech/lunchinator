@@ -18,14 +18,20 @@ describe("ReceiveNewLunchCycleSlashCommand", function() {
 
   it("can create a new lunch cycle", async function() {
     GivenANewLunchCycleCommand();
-    await WhenANewLunchCycleIsCreatedWith([RestaurantFactory.getRestaurant()], "01-01-2020");
+    await WhenANewLunchCycleIsCreatedWith(
+      [RestaurantFactory.getRestaurant()],
+      "2020-01-01T00:00:00+01:00"
+    );
     ThenANewLunchCycleIsCreated();
   });
 
   it("can create a second lunch cycle", async function() {
     GivenALunchCycleExists();
     GivenANewLunchCycleCommand();
-    await WhenANewLunchCycleIsCreatedWith([RestaurantFactory.getRestaurant()], "01-01-2020");
+    await WhenANewLunchCycleIsCreatedWith(
+      [RestaurantFactory.getRestaurant()],
+      "2020-01-01T00:00:00+01:00"
+    );
     ThenANewLunchCycleIsCreated();
     await ThenTheTotalCountOfLunchCyclesIs(2);
   });
@@ -42,7 +48,7 @@ describe("ReceiveNewLunchCycleSlashCommand", function() {
     });
   });
 
-  describe("date validation", async function() {
+  describe("date validation", function() {
     it("can check that a valid start date has been provided", async function() {
       GivenANewLunchCycleCommand();
       await WhenANewLunchCycleIsCreatedWith([RestaurantFactory.getRestaurant()]);
@@ -50,10 +56,10 @@ describe("ReceiveNewLunchCycleSlashCommand", function() {
     });
   });
 
-  describe("restaurant validation", async function() {
+  describe("restaurant validation", function() {
     it("can check that a list of restaurants has been provided", async function() {
       GivenANewLunchCycleCommand();
-      await WhenANewLunchCycleIsCreatedWith([], "01-01-2020");
+      await WhenANewLunchCycleIsCreatedWith([], "2020-01-01T00:00:00+01:00");
       ThenANewLunchCycleIsNotCreated();
     });
   });

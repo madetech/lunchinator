@@ -31,7 +31,7 @@ class CreateNewLunchCycle {
   }
 
   isValidDate(dateString) {
-    return moment.utc(dateString).isValid();
+    return moment(new Date(dateString)).isValid();
   }
 }
 
