@@ -3,5 +3,6 @@ module.exports = {
   PostgresLunchCycleGateway: require("./postgres_lunch_cycle_gateway"),
   SlackGateway: require("./slack_gateway"),
   ...require("./google_sheet_gateway"),
-  CryptoGateway: require("./crypto_gateway")
+  CryptoGateway: require("./crypto_gateway"),
+  InMemorySlackUserLunchCycleGateway: require("./in_memory_slack_user_lunch_cycle_gateway")
 };
