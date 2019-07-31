@@ -1,9 +1,10 @@
 const { expect } = require("../test_helper");
-const { InMemorySlackUserLunchCycleGateway } = require("@gateways");
+const { SlackUserResponse } = require("@domain");
+const { InMemorySlackUserResponseGateway } = require("@gateways");
 
-describe("InMemorySlackUserLunchCycleGateway", function() {
-  it("can create a new SlackUserLunchCycle", async function() {
-    const gateway = new InMemorySlackUserLunchCycleGateway();
+describe("InMemorySlackUserResponseGateway", function() {
+  it("can create a new SlackUserResponse", async function() {
+    const gateway = new InMemorySlackUserResponseGateway();
 
     const slackUser = {
       id: "U2147483697",
@@ -26,7 +27,7 @@ describe("InMemorySlackUserLunchCycleGateway", function() {
 
     expect(await gateway.count()).to.eql(0);
 
-    const newSlackUserLunchCycle = await gateway.create({
+    const newSlackUserResponse = await gateway.create({
       slackUser,
       slackMessageResponse,
       lunchCycle
@@ -34,8 +35,23 @@ describe("InMemorySlackUserLunchCycleGateway", function() {
 
     expect(await gateway.count()).to.eql(1);
 
-    expect(newSlackUserLunchCycle).to.eql({
-      userId: "U2147483697",
+    expect(newSlackUserResponse).to.eql(
+      new SlackUserResponse({
+        slackUserId: "U2147483697",
+        email: "test@example.com",
+        firstName: "Test",
+        messageChannel: "DM_CHANNEL_ID",
+        messageId: "1564484225.000400",
+        lunchCycleId: 123,
+        availableEmojis: []
+      })
+    );
+  });
+
+  it("can save", async function() {
+    const gateway = new InMemorySlackUserResponseGateway();
+    const slackUserResponse = new SlackUserResponse({
+      slackUserId: "U2147483697",
       email: "test@example.com",
       firstName: "Test",
       messageChannel: "DM_CHANNEL_ID",
@@ -43,31 +59,18 @@ describe("InMemorySlackUserLunchCycleGateway", function() {
       lunchCycleId: 123,
       availableEmojis: []
     });
-  });
 
-  it("can save", async function() {
-    const gateway = new InMemorySlackUserLunchCycleGateway();
-    const slackUserLunchCycle = {
-      userId: "U2147483697",
-      email: "test@example.com",
-      firstName: "Test",
-      messageChannel: "DM_CHANNEL_ID",
-      messageId: "1564484225.000400",
-      lunchCycleId: 123,
-      availableEmojis: []
-    };
+    gateway.slackUserResponses = [{ ...slackUserResponse }];
 
-    gateway.slackUserLunchCycles = [{ ...slackUserLunchCycle }];
-
-    slackUserLunchCycle.availableEmojis = [":pizza:"];
+    slackUserResponse.availableEmojis = [":pizza:"];
 
     expect(await gateway.count()).to.eql(1);
 
-    const returnedSlackUserLunchCycle = await gateway.save({ slackUserLunchCycle });
+    const returnedSlackUserResponse = await gateway.save({ slackUserResponse });
 
     expect(await gateway.count()).to.eql(1);
 
-    expect(returnedSlackUserLunchCycle).to.not.equal(slackUserLunchCycle);
-    expect(returnedSlackUserLunchCycle).to.eql(slackUserLunchCycle);
+    expect(returnedSlackUserResponse).to.not.equal(slackUserResponse);
+    expect(returnedSlackUserResponse).to.eql(slackUserResponse);
   });
 });

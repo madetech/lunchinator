@@ -1,5 +1,5 @@
 const { expect } = require("../test_helper");
-const { SendLunchCyclePreview, GenerateSlackPreviewMessage } = require("@use_cases");
+const { SendLunchCyclePreview, GenerateSlackMessage } = require("@use_cases");
 const { RestaurantFactory } = require("../factories");
 const { InMemoryLunchCycleGateway } = require("@gateways");
 const { LunchCycle } = require("@domain");
@@ -44,7 +44,7 @@ function GivenALunchCycleWithRestaurantsExists(restaurants) {
 }
 
 function ThenANewLunchCyclePreviewMessageIsCreated() {
-  var useCase = new GenerateSlackPreviewMessage();
+  var useCase = new GenerateSlackMessage({ firstName: null });
   const response = useCase.execute({ lunchCycle });
   message = response.message;
 
