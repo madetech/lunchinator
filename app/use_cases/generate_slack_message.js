@@ -1,12 +1,7 @@
 const moment = require("moment");
 
 class GenerateSlackMessage {
-  constructor(options) {
-    this.firstName = options.firstName;
-  }
-
-  execute({ lunchCycle }) {
-    let firstName = this.firstName;
+  execute({ lunchCycle, firstName }) {
     if (firstName === null) {
       firstName = "{first name}";
     }
@@ -20,7 +15,7 @@ class GenerateSlackMessage {
     });
 
     return {
-      message: message
+      text: message
     };
   }
 }

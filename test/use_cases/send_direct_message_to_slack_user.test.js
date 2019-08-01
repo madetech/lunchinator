@@ -3,25 +3,27 @@ const { SendDirectMessageToSlackUser } = require("@use_cases");
 const { SlackMessage } = require("@domain");
 
 describe("SendDirectMessageToSlackUser", function() {
+  const slackMessageDummy = { message: "" };
+  const generateSlackMessage = { execute: sinon.fake.returns(slackMessageDummy) };
+
   it("uses SlackGateway to send message", async function() {
     const gatewaySpy = { sendMessage: sinon.fake.returns(true) };
     const slackUserLunchCycleStub = { create: sinon.fake.resolves({}) };
+
     const useCase = new SendDirectMessageToSlackUser({
       slackGateway: gatewaySpy,
-      slackUserLunchCycleGateway: slackUserLunchCycleStub
+      slackUserLunchCycleGateway: slackUserLunchCycleStub,
+      generateSlackMessage: generateSlackMessage
     });
     const lunchCycleDummy = {};
-    const slackUserDummy = {};
+    const slackUserDummy = { profile: { first_name: "Bob" } };
 
     const response = await useCase.execute({
       slackUser: slackUserDummy,
       lunchCycle: lunchCycleDummy
     });
 
-    expect(gatewaySpy.sendMessage).to.have.been.calledWith(
-      slackUserDummy,
-      sinon.match.instanceOf(SlackMessage)
-    );
+    expect(gatewaySpy.sendMessage).to.have.been.calledWith(slackUserDummy, slackMessageDummy);
     expect(response.slackMessageResponse).to.equal(true);
   });
 
@@ -32,10 +34,12 @@ describe("SendDirectMessageToSlackUser", function() {
     const slackUserLunchCycleSpy = { create: sinon.fake.resolves(slackUserLunchCycleDummy) };
     const useCase = new SendDirectMessageToSlackUser({
       slackGateway: gatewayStub,
-      slackUserLunchCycleGateway: slackUserLunchCycleSpy
+      slackUserLunchCycleGateway: slackUserLunchCycleSpy,
+      generateSlackMessage: generateSlackMessage
     });
+
     const lunchCycleDummy = {};
-    const slackUserDummy = {};
+    const slackUserDummy = { profile: { first_name: "Bob" } };
 
     const response = await useCase.execute({
       slackUser: slackUserDummy,
