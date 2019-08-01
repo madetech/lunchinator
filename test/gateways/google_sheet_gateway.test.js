@@ -2,6 +2,21 @@ const { expect, sinon, config } = require("../test_helper");
 const { GoogleSheetGateway, GoogleSheetGatewayError } = require("@gateways");
 
 describe("GoogleSheetGateway", function() {
+  it("can fetch a sheet", async function() {
+    const sheetIdDummy = "abc123";
+    const gateway = new GoogleSheetGateway();
+    const dummyDoc = {};
+
+    sinon.stub(gateway, "newGoogleSpreadsheet").returns(dummyDoc);
+    sinon.stub(gateway, "doAuth");
+
+    const returnedDoc = await gateway.fetchSheet(sheetIdDummy);
+
+    expect(gateway.newGoogleSpreadsheet).to.have.been.calledWith(sheetIdDummy);
+
+    expect(returnedDoc).to.eql(dummyDoc);
+  });
+
   it("can fetch rows from a sheet", async function() {
     const sheetIdDummy = "abc123";
     const gateway = new GoogleSheetGateway();
@@ -97,6 +112,44 @@ describe("GoogleSheetGateway", function() {
     await expect(gateway.fetchRows(dummyId)).to.be.rejectedWith(
       GoogleSheetGatewayError,
       "Cannot get rows for Google Sheets sheet."
+    );
+  });
+
+  it("can handle errors from sheet.addWorksheetTo API", async function() {
+    const gateway = new GoogleSheetGateway();
+
+    const fakeSheet = {
+      addWorksheet: sinon.fake.throws(new Error("Can't addWorksheet"))
+    };
+
+    await expect(
+      gateway.addWorksheetTo({ sheet: fakeSheet, title: "test", headers: [] })
+    ).to.be.rejectedWith(GoogleSheetGatewayError, "Cannot add worksheet to Google Sheets sheet");
+  });
+
+  it("can handle errors from sheet.addRow API", async function() {
+    const gateway = new GoogleSheetGateway();
+
+    const fakeSheet = {
+      addRow: sinon.fake.throws(new Error("Can't addRow"))
+    };
+
+    await expect(gateway.addRow({ sheet: fakeSheet, row: {} })).to.be.rejectedWith(
+      GoogleSheetGatewayError,
+      "Cannot add new row to Google Sheets sheet"
+    );
+  });
+
+  it("can handle errors from row.save API", async function() {
+    const gateway = new GoogleSheetGateway();
+
+    const fakeRow = {
+      save: sinon.fake.throws(new Error("Can't save row"))
+    };
+
+    await expect(gateway.saveRow({ row: fakeRow })).to.be.rejectedWith(
+      GoogleSheetGatewayError,
+      "Cannot save row to Google Sheets sheet"
     );
   });
 });
