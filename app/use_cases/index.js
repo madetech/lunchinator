@@ -10,5 +10,6 @@ module.exports = {
   VerifySlackRequest: require("./verify_slack_request"),
   GenerateSlackMessage: require("./generate_slack_message"),
   FetchReactionsForSlackUserResponse: require("./fetch_reactions_for_slack_user_response"),
-  UpdateSlackUserResponseWithReactions: require("./update_slack_user_response_with_reactions")
+  UpdateSlackUserResponseWithReactions: require("./update_slack_user_response_with_reactions"),
+  ExportSlackUserResponseToGoogleSheet: require("./export_slack_user_response_to_google_sheet")
 };
