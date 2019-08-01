@@ -14,7 +14,7 @@ let inMemoryLunchCycleGateway;
 let inMemorySlackUserResponseGateway;
 let slashCommandResponse;
 
-describe("ReceiveNewLunchCycleSlashCommand", function() {
+describe("Process Get Responses Slash Command", function() {
   beforeEach(function() {
     inMemoryLunchCycleGateway = new InMemoryLunchCycleGateway();
     inMemorySlackUserResponseGateway = new InMemorySlackUserResponseGateway();
@@ -81,7 +81,7 @@ function WhenTheCommandIsReceived() {
   slashCommandResponse = new SlashCommandFactory().getCommand(
     {},
     {
-      command: "/lunchinator_export"
+      command: "/lunchinator_get_responses"
     }
   );
 }
