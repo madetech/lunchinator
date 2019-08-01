@@ -1,26 +1,26 @@
 const { expect, sinon } = require("../test_helper");
 const { RestaurantFactory } = require("../factories");
-const { UpdateSlackUserLunchCycleWithReactions } = require("@use_cases");
+const { UpdateSlackUserResponseWithReactions } = require("@use_cases");
 
-describe("UpdateSlackUserLunchCycleWithReactions", function() {
+describe("UpdateSlackUserResponseWithReactions", function() {
   it("gets the correct lunch cycle from the gateway", async function() {
     const lunchCycleGatewaySpy = { findById: sinon.stub().returns({ restaurants: [] }) };
-    const slackUserLunchCycle = { lunchCycleId: 123 };
-    const useCase = new UpdateSlackUserLunchCycleWithReactions({
-      slackUserLunchCycleGateway: { save: sinon.stub().resolves(slackUserLunchCycle) },
+    const slackUserResponse = { lunchCycleId: 123 };
+    const useCase = new UpdateSlackUserResponseWithReactions({
+      slackUserResponseGateway: { save: sinon.stub().resolves(slackUserResponse) },
       lunchCycleGateway: lunchCycleGatewaySpy
     });
 
-    await useCase.execute({ slackUserLunchCycle, reactions: { message: { reactions: [] } } });
+    await useCase.execute({ slackUserResponse, reactions: { message: { reactions: [] } } });
 
     expect(lunchCycleGatewaySpy.findById).to.have.been.calledWith(123);
   });
 
   it("uses the LunchCycle Restaurants list for valid reactions", async function() {
-    const slackUserLunchCycle = { availableEmojis: [] };
-    const useCase = new UpdateSlackUserLunchCycleWithReactions({
-      slackUserLunchCycleGateway: {
-        save: sinon.stub().resolves(slackUserLunchCycle)
+    const slackUserResponse = { availableEmojis: [] };
+    const useCase = new UpdateSlackUserResponseWithReactions({
+      slackUserResponseGateway: {
+        save: sinon.stub().resolves(slackUserResponse)
       },
       lunchCycleGateway: {
         findById: sinon.stub().returns({
@@ -41,18 +41,18 @@ describe("UpdateSlackUserLunchCycleWithReactions", function() {
       }
     };
 
-    const resposne = await useCase.execute({ slackUserLunchCycle, reactions });
+    const resposne = await useCase.execute({ slackUserResponse, reactions });
 
-    expect(resposne.slackUserLunchCycle.availableEmojis).to.eql([":sushi:", ":pizza:"]);
+    expect(resposne.slackUserResponse.availableEmojis).to.eql([":sushi:", ":pizza:"]);
   });
 
-  it("uses the slackUserLunchCycleGateway to save the available emojis", async function() {
-    const slackUserLunchCycle = { availableEmojis: [] };
-    const slackUserLunchCycleGatewaySpy = {
+  it("uses the slackUserResponseGateway to save the available emojis", async function() {
+    const slackUserResponse = { availableEmojis: [] };
+    const slackUserResponseGatewaySpy = {
       save: sinon.stub().resolves()
     };
-    const useCase = new UpdateSlackUserLunchCycleWithReactions({
-      slackUserLunchCycleGateway: slackUserLunchCycleGatewaySpy,
+    const useCase = new UpdateSlackUserResponseWithReactions({
+      slackUserResponseGateway: slackUserResponseGatewaySpy,
       lunchCycleGateway: {
         findById: sinon.stub().returns({
           restaurants: [RestaurantFactory.getRestaurant({ name: "Rest 2", emoji: ":pizza:" })]
@@ -63,8 +63,8 @@ describe("UpdateSlackUserLunchCycleWithReactions", function() {
       message: { reactions: [{ name: "pizza", users: ["U2147483697"], count: 1 }] }
     };
 
-    await useCase.execute({ slackUserLunchCycle, reactions });
+    await useCase.execute({ slackUserResponse, reactions });
 
-    expect(slackUserLunchCycleGatewaySpy.save).to.have.been.calledWith({ slackUserLunchCycle });
+    expect(slackUserResponseGatewaySpy.save).to.have.been.calledWith({ slackUserResponse });
   });
 });

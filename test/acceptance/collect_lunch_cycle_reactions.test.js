@@ -1,48 +1,48 @@
-const { expect, sinon } = require("../test_helper");
+const { expect } = require("../test_helper");
 const { RestaurantFactory } = require("../factories");
-const { LunchCycle } = require("@domain");
+const { LunchCycle, SlackUserResponse } = require("@domain");
 const { FakeSlackClient } = require("../fakes");
 const {
   SlackGateway,
   InMemoryLunchCycleGateway,
-  InMemorySlackUserLunchCycleGateway
+  InMemorySlackUserResponseGateway
 } = require("@gateways");
 const {
-  FetchReactionsForSlackUserLunchCycle,
-  UpdateSlackUserLunchCycleWithReactions
+  FetchReactionsForSlackUserResponse,
+  UpdateSlackUserResponseWithReactions
 } = require("@use_cases");
 
 let lunchCycle;
-let slackUserLunchCycle;
+let slackUserResponse;
 let fetchReactionsUseCaseResponse;
 let updateSULCWithReactions;
 let inMemoryLunchCycleGateway;
 let fakeSlackClient;
-let inMemorySlackUserLunchCycleGateway;
+let inMemorySlackUserResponseGateway;
 
 describe("Collect Lunch Cycle Reactions", function() {
   before(function() {
     fakeSlackClient = new FakeSlackClient({ token: "NOT_VALID" });
     SlackGateway.prototype._slackClient = () => fakeSlackClient;
     inMemoryLunchCycleGateway = new InMemoryLunchCycleGateway();
-    inMemorySlackUserLunchCycleGateway = new InMemorySlackUserLunchCycleGateway();
+    inMemorySlackUserResponseGateway = new InMemorySlackUserResponseGateway();
   });
 
-  it("can get reactions for a Slack User Lunch Cycle", async function() {
-    await GivenASlackUserLunchCycleExists();
-    await WhenReactionsAreRetrivedForTheSlackUserLunchCycle();
+  it("can get reactions for a Slack User Response", async function() {
+    await GivenASlackUserResponseExists();
+    await WhenReactionsAreRetrivedForTheSlackUserResponse();
     ThenReturnsTheReactions();
   });
 
-  it("can update a Slack User Lunch Cycle with the reactions", async function() {
-    await GivenASlackUserLunchCycleExists();
-    GivenAFetchSlackReactionsForSlackUserLunchCycleResponseExists();
-    await WhenTheSlackUserLunchCycleIsUpdatedWithTheReactions();
-    ThenTheSlackUserLunchCycleHasCorrectEmojis();
+  it("can update a Slack User Response with the reactions", async function() {
+    await GivenASlackUserResponseExists();
+    GivenAFetchSlackReactionsForSlackUserResponseResponseExists();
+    await WhenTheSlackUserResponseIsUpdatedWithTheReactions();
+    ThenTheSlackUserResponseHasCorrectEmojis();
   });
 });
 
-async function GivenASlackUserLunchCycleExists() {
+async function GivenASlackUserResponseExists() {
   lunchCycle = await inMemoryLunchCycleGateway.create(
     new LunchCycle({
       restaurants: [
@@ -53,7 +53,7 @@ async function GivenASlackUserLunchCycleExists() {
     })
   );
 
-  slackUserLunchCycle = await inMemorySlackUserLunchCycleGateway.create({
+  slackUserResponse = await inMemorySlackUserResponseGateway.create({
     slackUser: {
       id: "U2147483697",
       profile: {
@@ -69,13 +69,13 @@ async function GivenASlackUserLunchCycleExists() {
   });
 }
 
-async function WhenReactionsAreRetrivedForTheSlackUserLunchCycle() {
-  const useCase = new FetchReactionsForSlackUserLunchCycle({
+async function WhenReactionsAreRetrivedForTheSlackUserResponse() {
+  const useCase = new FetchReactionsForSlackUserResponse({
     slackGateway: new SlackGateway()
   });
 
   fetchReactionsUseCaseResponse = await useCase.execute({
-    slackUserLunchCycle: slackUserLunchCycle
+    slackUserResponse: slackUserResponse
   });
 }
 
@@ -99,7 +99,7 @@ function ThenReturnsTheReactions() {
   });
 }
 
-function GivenAFetchSlackReactionsForSlackUserLunchCycleResponseExists() {
+function GivenAFetchSlackReactionsForSlackUserResponseResponseExists() {
   fetchReactionsUseCaseResponse = {
     reactions: {
       ok: true,
@@ -122,26 +122,28 @@ function GivenAFetchSlackReactionsForSlackUserLunchCycleResponseExists() {
   };
 }
 
-async function WhenTheSlackUserLunchCycleIsUpdatedWithTheReactions() {
-  const useCase = new UpdateSlackUserLunchCycleWithReactions({
-    slackUserLunchCycleGateway: inMemorySlackUserLunchCycleGateway,
+async function WhenTheSlackUserResponseIsUpdatedWithTheReactions() {
+  const useCase = new UpdateSlackUserResponseWithReactions({
+    slackUserResponseGateway: inMemorySlackUserResponseGateway,
     lunchCycleGateway: inMemoryLunchCycleGateway
   });
 
   updateSULCWithReactions = await useCase.execute({
-    slackUserLunchCycle: slackUserLunchCycle,
+    slackUserResponse: slackUserResponse,
     reactions: fetchReactionsUseCaseResponse.reactions
   });
 }
 
-function ThenTheSlackUserLunchCycleHasCorrectEmojis() {
-  expect(updateSULCWithReactions.slackUserLunchCycle).to.eql({
-    userId: "U2147483697",
-    email: "test@example.com",
-    firstName: "Test",
-    messageChannel: "DM_CHANNEL_ID_1",
-    messageId: "1564484225.000400",
-    lunchCycleId: lunchCycle.id,
-    availableEmojis: [":pizza:", ":sushi:"]
-  });
+function ThenTheSlackUserResponseHasCorrectEmojis() {
+  expect(updateSULCWithReactions.slackUserResponse).to.eql(
+    new SlackUserResponse({
+      slackUserId: "U2147483697",
+      email: "test@example.com",
+      firstName: "Test",
+      messageChannel: "DM_CHANNEL_ID_1",
+      messageId: "1564484225.000400",
+      lunchCycleId: lunchCycle.id,
+      availableEmojis: [":pizza:", ":sushi:"]
+    })
+  );
 }

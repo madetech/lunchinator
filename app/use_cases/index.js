@@ -1,5 +1,5 @@
 module.exports = {
-  IsValidLunchinatorUser: require("./is_valid_lunchinator_user"),
+  IsLunchinatorAdmin: require("./is_lunchinator_admin"),
   CreateNewLunchCycle: require("./create_new_lunch_cycle"),
   SendLunchCyclePreview: require("./send_lunch_cycle_preview"),
   GetNewLunchCycleRestaurants: require("./get_new_lunch_cycle_restaurants"),
@@ -9,6 +9,6 @@ module.exports = {
   FetchAllSlackUsers: require("./fetch_all_slack_users"),
   VerifySlackRequest: require("./verify_slack_request"),
   GenerateSlackMessage: require("./generate_slack_message"),
-  FetchReactionsForSlackUserLunchCycle: require("./fetch_reactions_for_slack_user_lunch_cycle"),
-  UpdateSlackUserLunchCycleWithReactions: require("./update_slack_user_lunch_cycle_with_reactions")
+  FetchReactionsForSlackUserResponse: require("./fetch_reactions_for_slack_user_response"),
+  UpdateSlackUserResponseWithReactions: require("./update_slack_user_response_with_reactions")
 };

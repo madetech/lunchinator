@@ -3,7 +3,7 @@ require("module-alias/register");
 class SendDirectMessageToSlackUser {
   constructor(options) {
     this.slackGateway = options.slackGateway;
-    this.slackUserLunchCycleGateway = options.slackUserLunchCycleGateway;
+    this.slackUserResponseGateway = options.slackUserResponseGateway;
     this.generateSlackMessage = options.generateSlackMessage;
   }
 
@@ -14,7 +14,7 @@ class SendDirectMessageToSlackUser {
       this.generateSlackMessage.execute({ lunchCycle, firstName })
     );
 
-    const slackUserLunchCycle = await this.slackUserLunchCycleGateway.create({
+    const slackUserResponse = await this.slackUserResponseGateway.create({
       slackUser,
       slackMessageResponse,
       lunchCycle
@@ -22,7 +22,7 @@ class SendDirectMessageToSlackUser {
 
     return {
       slackMessageResponse,
-      slackUserLunchCycle
+      slackUserResponse
     };
   }
 }

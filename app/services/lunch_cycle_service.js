@@ -7,6 +7,7 @@ class LunchCycleService {
     this.verifySlackRequest = options.verifySlackRequest;
     this.getNewLunchCycleRestaurants = options.getNewLunchCycleRestaurants;
     this.generateSlackPreviewMessage = options.generateSlackPreviewMessage;
+    this.isLunchinatorAdmin = options.isLunchinatorAdmin;
   }
 
   async createLunchCycle({ userId, restaurants }) {
@@ -26,6 +27,11 @@ class LunchCycleService {
     });
 
     return response;
+  }
+
+  isAdmin(userId) {
+    var isLunchinatorAdminResponse = this.isLunchinatorAdmin.execute({ userId: userId });
+    return isLunchinatorAdminResponse.isValid;
   }
 
   verifyRequest(headers, body) {

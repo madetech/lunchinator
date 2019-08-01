@@ -8,11 +8,10 @@ describe("SendDirectMessageToSlackUser", function() {
 
   it("uses SlackGateway to send message", async function() {
     const gatewaySpy = { sendMessage: sinon.fake.returns(true) };
-    const slackUserLunchCycleStub = { create: sinon.fake.resolves({}) };
-
+    const slackUserResponseStub = { create: sinon.fake.resolves({}) };
     const useCase = new SendDirectMessageToSlackUser({
       slackGateway: gatewaySpy,
-      slackUserLunchCycleGateway: slackUserLunchCycleStub,
+      slackUserResponseGateway: slackUserResponseStub,
       generateSlackMessage: generateSlackMessage
     });
     const lunchCycleDummy = {};
@@ -27,15 +26,15 @@ describe("SendDirectMessageToSlackUser", function() {
     expect(response.slackMessageResponse).to.equal(true);
   });
 
-  it("uses SlackUserLunchCycleGateway to store the info we need", async function() {
+  it("uses SlackUserResponseGateway to store the info we need", async function() {
     const slackResponseDummy = {};
     const gatewayStub = { sendMessage: sinon.fake.returns(slackResponseDummy) };
-    const slackUserLunchCycleDummy = {};
-    const slackUserLunchCycleSpy = { create: sinon.fake.resolves(slackUserLunchCycleDummy) };
+    const slackUserResponseDummy = {};
+    const slackUserResponseSpy = { create: sinon.fake.resolves(slackUserResponseDummy) };
     const useCase = new SendDirectMessageToSlackUser({
       slackGateway: gatewayStub,
-      slackUserLunchCycleGateway: slackUserLunchCycleSpy,
-      generateSlackMessage: generateSlackMessage
+      generateSlackMessage: generateSlackMessage,
+      slackUserResponseGateway: slackUserResponseSpy
     });
 
     const lunchCycleDummy = {};
@@ -46,11 +45,11 @@ describe("SendDirectMessageToSlackUser", function() {
       lunchCycle: lunchCycleDummy
     });
 
-    expect(slackUserLunchCycleSpy.create).to.have.been.calledWith({
+    expect(slackUserResponseSpy.create).to.have.been.calledWith({
       slackUser: slackUserDummy,
       slackMessageResponse: slackResponseDummy,
       lunchCycle: lunchCycleDummy
     });
-    expect(response.slackUserLunchCycle).to.equal(slackUserLunchCycleDummy);
+    expect(response.slackUserResponse).to.equal(slackUserResponseDummy);
   });
 });
