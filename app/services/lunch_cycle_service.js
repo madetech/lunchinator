@@ -86,7 +86,7 @@ class LunchCycleService {
   }
 
   async exportResponsesToGoogleSheet({ lunchCycle }) {
-    await this.exportSlackUserResponsesForLunchCycleToGoogleSheet({ lunchCycle });
+    await this.exportSlackUserResponsesForLunchCycleToGoogleSheet.execute({ lunchCycle });
   }
 }
 
