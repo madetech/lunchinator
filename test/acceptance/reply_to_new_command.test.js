@@ -44,9 +44,9 @@ function GivenALunchCycleWithRestaurantsExists(restaurants) {
 }
 
 function ThenANewLunchCyclePreviewMessageIsCreated() {
-  var useCase = new GenerateSlackMessage({ firstName: null });
-  const response = useCase.execute({ lunchCycle });
-  message = response.message;
+  var useCase = new GenerateSlackMessage();
+  const response = useCase.execute({ lunchCycle, firstName: null });
+  message = response.text;
 
   const expected = [
     ":bowtie: 12/03/2020 restaurant1 vegan:2, meat:2, direction:googlemaps",

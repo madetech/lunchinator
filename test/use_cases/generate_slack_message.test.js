@@ -30,25 +30,25 @@ describe("GenerateSlackMessage", function() {
 
   it("can generate a lunch cycle message with a first name", function() {
     const slackFirstName = "Barry";
-    const useCase = new GenerateSlackMessage({ firstName: slackFirstName });
-    const response = useCase.execute({ lunchCycle: lunchCycle });
+    const useCase = new GenerateSlackMessage();
+    const response = useCase.execute({ lunchCycle: lunchCycle, firstName: slackFirstName });
 
     const expectedMessage =
       `Hey ${slackFirstName}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n` +
       expected.join("\n");
 
-    expect(response.message).to.be.eql(expectedMessage);
+    expect(response.text).to.be.eql(expectedMessage);
   });
 
   it("can generate a lunch cycle message without a first name", function() {
     const noFirstName = null;
-    const useCase = new GenerateSlackMessage({ firstName: noFirstName });
-    const response = useCase.execute({ lunchCycle: lunchCycle });
+    const useCase = new GenerateSlackMessage();
+    const response = useCase.execute({ lunchCycle: lunchCycle, firstName: noFirstName });
 
     const expectedMessage =
       `Hey {first name}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n` +
       expected.join("\n");
 
-    expect(response.message).to.be.eql(expectedMessage);
+    expect(response.text).to.be.eql(expectedMessage);
   });
 });

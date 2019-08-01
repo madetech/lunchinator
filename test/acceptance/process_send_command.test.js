@@ -6,6 +6,7 @@ const { SlackGateway, InMemorySlackUserResponseGateway } = require("@gateways");
 const {
   SendDirectMessageToSlackUser,
   FetchAllSlackUsers,
+  GenerateSlackMessage,
   IsLunchinatorAdmin
 } = require("@use_cases");
 
@@ -110,7 +111,8 @@ async function WhenTheDirectMessagesAreCreated() {
   const fakeSlackGateway = new SlackGateway();
   const useCase = new SendDirectMessageToSlackUser({
     slackGateway: fakeSlackGateway,
-    slackUserResponseGateway: new InMemorySlackUserResponseGateway()
+    slackUserResponseGateway: new InMemorySlackUserResponseGateway(),
+    generateSlackMessage: new GenerateSlackMessage()
   });
 
   const slackUsers = await fakeSlackGateway.fetchUsers();
@@ -122,6 +124,13 @@ async function WhenTheDirectMessagesAreCreated() {
 }
 
 function ThenDirectMessagesAreSent() {
+  expect(fakeSlackClient.postMessageStub).to.have.been.calledWith({
+    channel: "U2147483697",
+    text:
+      "Hey Test! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n" +
+      ":tada: 01/08/2019 restaurant1 vegan:2, meat:2, direction:googlemaps\n"
+  });
+
   expect(sendDirectMessageToSlackUserResponse.slackMessageResponse).to.eql({
     ok: true,
     channel: "DM_CHANNEL_ID",
