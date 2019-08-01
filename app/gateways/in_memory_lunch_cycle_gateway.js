@@ -23,6 +23,11 @@ class InMemoryLunchCycleGateway {
     return all.reverse()[0];
   }
 
+  async getCurrent() {
+    const all = await this.all();
+    return all.reverse()[0];
+  }
+
   async count() {
     return this.lunchCycles.length;
   }
