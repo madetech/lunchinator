@@ -13,7 +13,7 @@ const {
 let lunchCycle;
 let slashCommandResponse;
 let fetchAllSlackUsersResponse;
-let sendDirectMessageToSlackUserResponse;
+let sendDirectMessageResponses = [];
 let userList;
 let fakeSlackClient;
 
@@ -22,7 +22,10 @@ describe("ReceiveSendLunchCycleSlashCommand", function() {
     fakeSlackClient = new FakeSlackClient({ token: "NOT_VALID" });
     SlackGateway.prototype._slackClient = () => fakeSlackClient;
 
-    userList = [{ id: "U2147483697", profile: { email: "test@example.com", first_name: "Test" } }];
+    userList = [
+      { id: "U2147483697", profile: { email: "test1@example.com", first_name: "Test1" } },
+      { id: "U2147483698", profile: { email: "test2@example.com", first_name: "Test2" } }
+    ];
     fakeSlackClient.stubUserList(userList);
   });
 
@@ -102,9 +105,7 @@ async function WhenAllTheSlackUsersAreFetched() {
 }
 
 function ThenAListOfSlackUsersAreReturned() {
-  expect(fetchAllSlackUsersResponse.slackUsers).to.eql([
-    { id: "U2147483697", profile: { email: "test@example.com", first_name: "Test" } }
-  ]);
+  expect(fetchAllSlackUsersResponse.slackUsers).to.eql(userList);
 }
 
 async function WhenTheDirectMessagesAreCreated() {
@@ -117,42 +118,26 @@ async function WhenTheDirectMessagesAreCreated() {
 
   const slackUsers = await fakeSlackGateway.fetchUsers();
 
-  sendDirectMessageToSlackUserResponse = await useCase.execute({
-    slackUser: slackUsers[0],
-    lunchCycle: lunchCycle
+  slackUsers.forEach(async u => {
+    const response = await useCase.execute({
+      slackUser: u,
+      lunchCycle: lunchCycle
+    });
+
+    sendDirectMessageResponses.push(response);
   });
 }
 
 function ThenDirectMessagesAreSent() {
-  expect(fakeSlackClient.postMessageStub).to.have.been.calledWith({
-    channel: "U2147483697",
-    text:
-      "Hey Test! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n" +
-      ":tada: 01/08/2019 restaurant1 vegan:2, meat:2, direction:googlemaps\n"
-  });
+  sendDirectMessageResponses.forEach((r, i) => {
+    expect(r.slackMessageResponse.message.text).to.eql("Hello from Node!");
+    expect(r.slackUserResponse.email).to.eql(`test${i + 1}@example.com`);
 
-  expect(sendDirectMessageToSlackUserResponse.slackMessageResponse).to.eql({
-    ok: true,
-    channel: "DM_CHANNEL_ID",
-    ts: "1564484225.000400",
-    message: {
-      type: "message",
-      subtype: "bot_message",
-      text: "Hello from Node!",
-      ts: "1564484225.000400",
-      username: "Lunchinator",
-      bot_id: "BOT_ID"
-    }
+    expect(fakeSlackClient.postMessageStub).to.have.been.calledWith({
+      channel: userList[i].id,
+      text:
+        `Hey ${userList[i].first_name}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n` +
+        ":tada: 01/08/2019 restaurant1 vegan:2, meat:2, direction:googlemaps\n"
+    });
   });
-  expect(sendDirectMessageToSlackUserResponse.slackUserResponse).to.eql(
-    new SlackUserResponse({
-      slackUserId: "U2147483697",
-      email: "test@example.com",
-      firstName: "Test",
-      messageChannel: "DM_CHANNEL_ID",
-      messageId: "1564484225.000400",
-      lunchCycleId: 5,
-      availableEmojis: []
-    })
-  );
 }
