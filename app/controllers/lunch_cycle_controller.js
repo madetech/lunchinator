@@ -124,7 +124,7 @@ router.post("/get_responses", async function(req, res) {
 
   await lunchCycleService.fetchReactionsFromSlackUserResponses({ slackUserResponses });
 
-  await lunchCycleService.exportSlackUserResponsesForLunchCycleToGoogleSheet({ lunchCycle });
+  await lunchCycleService.exportResponsesToGoogleSheet({ lunchCycle });
 
   res.send("Updated Google Sheet Lunch Cycles.");
 });
