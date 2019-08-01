@@ -29,7 +29,7 @@ class InMemorySlackUserResponseGateway {
   async save({ slackUserResponse }) {
     const foundSlackUserResponse = this.slackUserResponses.find(sulc => {
       return (
-        sulc.userId === slackUserResponse.userId &&
+        sulc.slackUserId === slackUserResponse.slackUserId &&
         sulc.lunchCycleId === slackUserResponse.lunchCycleId
       );
     });
