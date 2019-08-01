@@ -17,6 +17,10 @@ if (envs.VALID_SLACK_USER_IDS) {
   envs.VALID_SLACK_USER_IDS = envs.VALID_SLACK_USER_IDS.split(",");
 }
 
+if (envs.DEV_MESSAGE_RECEIVERS) {
+  envs.DEV_MESSAGE_RECEIVERS = envs.DEV_MESSAGE_RECEIVERS.split(",");
+}
+
 envs.db = {
   user: envs.PGUSER,
   host: envs.PGHOST,

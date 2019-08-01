@@ -1,8 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const { LunchCycleService } = require("@services");
+const config = require("@app/config");
 
-const { PostgresLunchCycleGateway, GoogleSheetGateway, CryptoGateway } = require("@gateways");
+const {
+  PostgresLunchCycleGateway,
+  GoogleSheetGateway,
+  CryptoGateway,
+  SlackGateway,
+  PostgresSlackUserResponseGateway
+} = require("@gateways");
+
 const {
   GetNewLunchCycleRestaurants,
   GetPreviousLunchCycle,
@@ -10,7 +18,9 @@ const {
   VerifySlackRequest,
   GenerateSlackMessage,
   CreateNewLunchCycle,
-  IsLunchinatorAdmin
+  IsLunchinatorAdmin,
+  FetchAllSlackUsers,
+  SendDirectMessageToSlackUser
 } = require("@use_cases");
 
 router.post("/new", async function(req, res) {
@@ -56,6 +66,32 @@ router.post("/new", async function(req, res) {
   const message = lunchCycleService.getPreviewMessage(createResponse.lunchCycle);
 
   res.send(message);
+});
+
+router.post("/send", async function(req, res) {
+  const slackGateway = new SlackGateway();
+
+  const lunchCycleService = new LunchCycleService({
+    fetchAllSlackUsers: new FetchAllSlackUsers({
+      slackGateway: slackGateway
+    }),
+    sendDirectMessageToSlackUser: new SendDirectMessageToSlackUser({
+      slackGateway: slackGateway,
+      slackUserResponseGateway: new PostgresSlackUserResponseGateway(),
+      generateSlackMessage: new GenerateSlackMessage(),
+      lunchCycleGateway: new PostgresLunchCycleGateway()
+    })
+  });
+
+  let users = await lunchCycleService.fetchSlackUsers();
+
+  if (config.DEV_MESSAGE_RECEIVERS.length) {
+    users = users.filter(u => config.DEV_MESSAGE_RECEIVERS.indexOf(u.profile.email) > -1);
+  }
+
+  await lunchCycleService.sendMessagesToSlackUsers(users);
+
+  res.send("message sent to all users.");
 });
 
 module.exports = router;

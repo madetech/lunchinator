@@ -1,20 +1,21 @@
 const { expect, sinon } = require("../test_helper");
 const { SendDirectMessageToSlackUser } = require("@use_cases");
-const { SlackMessage } = require("@domain");
 
 describe("SendDirectMessageToSlackUser", function() {
   const slackMessageDummy = { message: "" };
   const generateSlackMessage = { execute: sinon.fake.returns(slackMessageDummy) };
 
   it("uses SlackGateway to send message", async function() {
+    const lunchCycleDummy = {};
     const gatewaySpy = { sendMessage: sinon.fake.returns(true) };
     const slackUserResponseStub = { create: sinon.fake.resolves({}) };
     const useCase = new SendDirectMessageToSlackUser({
       slackGateway: gatewaySpy,
       slackUserResponseGateway: slackUserResponseStub,
-      generateSlackMessage: generateSlackMessage
+      generateSlackMessage: generateSlackMessage,
+      lunchCycleGateway: { getCurrent: sinon.fake.returns(lunchCycleDummy) }
     });
-    const lunchCycleDummy = {};
+
     const slackUserDummy = { profile: { first_name: "Bob" } };
 
     const response = await useCase.execute({
@@ -28,16 +29,17 @@ describe("SendDirectMessageToSlackUser", function() {
 
   it("uses SlackUserResponseGateway to store the info we need", async function() {
     const slackResponseDummy = {};
+    const lunchCycleDummy = {};
     const gatewayStub = { sendMessage: sinon.fake.returns(slackResponseDummy) };
     const slackUserResponseDummy = {};
     const slackUserResponseSpy = { create: sinon.fake.resolves(slackUserResponseDummy) };
     const useCase = new SendDirectMessageToSlackUser({
       slackGateway: gatewayStub,
       generateSlackMessage: generateSlackMessage,
-      slackUserResponseGateway: slackUserResponseSpy
+      slackUserResponseGateway: slackUserResponseSpy,
+      lunchCycleGateway: { getCurrent: sinon.fake.returns(lunchCycleDummy) }
     });
 
-    const lunchCycleDummy = {};
     const slackUserDummy = { profile: { first_name: "Bob" } };
 
     const response = await useCase.execute({

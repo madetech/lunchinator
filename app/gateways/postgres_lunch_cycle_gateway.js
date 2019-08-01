@@ -44,6 +44,19 @@ class PostgresLunchCycleGateway {
     return foundLunchCycle;
   }
 
+  async getCurrent() {
+    const client = await this._client();
+    const result = await client.query("SELECT * FROM lunch_cycles ORDER BY id DESC LIMIT 1");
+    client.end();
+
+    let foundLunchCycle = null;
+    if (result.rows.length > 0) {
+      foundLunchCycle = new LunchCycle(result.rows[0]);
+    }
+
+    return foundLunchCycle;
+  }
+
   async _client() {
     const client = new Client(config.db);
     await client.connect();

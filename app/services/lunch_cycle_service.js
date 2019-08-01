@@ -8,6 +8,8 @@ class LunchCycleService {
     this.getNewLunchCycleRestaurants = options.getNewLunchCycleRestaurants;
     this.generateSlackMessage = options.generateSlackMessage;
     this.isLunchinatorAdmin = options.isLunchinatorAdmin;
+    this.fetchAllSlackUsers = options.fetchAllSlackUsers;
+    this.sendDirectMessageToSlackUser = options.sendDirectMessageToSlackUser;
   }
 
   async createLunchCycle({ userId, restaurants }) {
@@ -55,6 +57,18 @@ class LunchCycleService {
     });
 
     return response.text;
+  }
+
+  async fetchSlackUsers() {
+    const response = await this.fetchAllSlackUsers.execute();
+
+    return response.slackUsers;
+  }
+
+  async sendMessagesToSlackUsers(slackUsers) {
+    slackUsers.forEach(async slackUser => {
+      await this.sendDirectMessageToSlackUser.execute({ slackUser });
+    });
   }
 }
 
