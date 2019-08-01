@@ -3,7 +3,7 @@ const { RestaurantFactory } = require("../factories");
 const { FetchRestaurantsFromGoogleSheet } = require("@use_cases");
 const { Dietary, DietaryLevel } = require("@domain");
 
-describe("FetchRestaurantsFromGoogleSheet", async function() {
+describe("FetchRestaurantsFromGoogleSheet", function() {
   it("can fetch rows from google sheet", async function() {
     const fakeSheetGateway = {
       fetchRows: () => [
@@ -19,7 +19,7 @@ describe("FetchRestaurantsFromGoogleSheet", async function() {
           restaurant: "Nandos",
           save: () => {},
           vegan: "some",
-          vegetarian: "some", 
+          vegetarian: "some",
           direction: "googlemaps"
         }
       ]
