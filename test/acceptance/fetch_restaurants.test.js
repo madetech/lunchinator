@@ -34,7 +34,7 @@ let fetchRestaurantsFromGoogleSheetResponse;
 let inMemoryLunchCycleGateway;
 let getNewLunchCycleRestaurantsResponse;
 
-describe("Acceptance Test for Fetching Restaurants", async function() {
+describe("Acceptance Test for Fetching Restaurants", function() {
   beforeEach(function() {
     inMemoryLunchCycleGateway = new InMemoryLunchCycleGateway();
   });
@@ -50,7 +50,7 @@ describe("Acceptance Test for Fetching Restaurants", async function() {
     ThenTheNewLunchCycleRestaurantsWillBe(restaurantList.slice(0, 6));
   });
 
-  describe("when there is a previous lunch cycle with restaurants", async function() {
+  describe("when there is a previous lunch cycle with restaurants", function() {
     it("can get the restaurants for the new lunch cycle", async function() {
       GivenALunchCycleExistsWithRestaurants(restaurantList.slice(0, 6));
       await WhenWeGetTheLunchCycleRestaurants();
