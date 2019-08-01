@@ -10,6 +10,10 @@ class LunchCycleService {
     this.isLunchinatorAdmin = options.isLunchinatorAdmin;
     this.fetchAllSlackUsers = options.fetchAllSlackUsers;
     this.sendDirectMessageToSlackUser = options.sendDirectMessageToSlackUser;
+    this.fetchReactionsForSlackUserResponse = options.fetchReactionsForSlackUserResponse;
+    this.updateSlackUserResponseWithReactions = options.updateSlackUserResponseWithReactions;
+    this.exportSlackUserResponsesForLunchCycleToGoogleSheet =
+      options.exportSlackUserResponsesForLunchCycleToGoogleSheet;
   }
 
   async createLunchCycle({ userId, restaurants }) {
@@ -69,6 +73,20 @@ class LunchCycleService {
     slackUsers.forEach(async slackUser => {
       await this.sendDirectMessageToSlackUser.execute({ slackUser });
     });
+  }
+
+  async fetchReactionsFromSlackUserResponses({ slackUserResponses }) {
+    slackUserResponses.forEach(async slackUserResponse => {
+      const reactions = await this.fetchReactionsForSlackUserResponse.execute({
+        slackUserResponse
+      });
+
+      await this.updateSlackUserResponseWithReactions({ slackUserResponse, reactions });
+    });
+  }
+
+  async exportSlackUserResponsesForLunchCycleToGoogleSheet({ lunchCycle }) {
+    await this.exportSlackUserResponsesForLunchCycleToGoogleSheet({ lunchCycle });
   }
 }
 
