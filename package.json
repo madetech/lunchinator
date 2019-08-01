@@ -37,7 +37,8 @@
     "test": "NODE_ENV=test mocha \"test/**/*.test.js\"",
     "testw": "NODE_ENV=test mocha --watch \"test/**/*.test.js\"",
     "migrate": "node-pg-migrate",
-    "migrate-test": "NODE_ENV=test node-pg-migrate"
+    "migrate-test": "NODE_ENV=test node-pg-migrate",
+    "heroku-postbuild": "node-pg-migrate up"
   },
   "repository": {
     "type": "git",
