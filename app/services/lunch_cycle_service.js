@@ -6,7 +6,7 @@ class LunchCycleService {
     this.createNewLunchCycle = options.createNewLunchCycle;
     this.verifySlackRequest = options.verifySlackRequest;
     this.getNewLunchCycleRestaurants = options.getNewLunchCycleRestaurants;
-    this.generateSlackPreviewMessage = options.generateSlackPreviewMessage;
+    this.generateSlackMessage = options.generateSlackMessage;
     this.isLunchinatorAdmin = options.isLunchinatorAdmin;
   }
 
@@ -50,11 +50,11 @@ class LunchCycleService {
   }
 
   getPreviewMessage(lunchCycle) {
-    const response = this.generateSlackPreviewMessage.execute({
+    const response = this.generateSlackMessage.execute({
       lunchCycle: lunchCycle
     });
 
-    return response.message;
+    return response.text;
   }
 }
 

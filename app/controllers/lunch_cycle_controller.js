@@ -8,7 +8,7 @@ const {
   GetPreviousLunchCycle,
   FetchRestaurantsFromGoogleSheet,
   VerifySlackRequest,
-  GenerateSlackPreviewMessage,
+  GenerateSlackMessage,
   CreateNewLunchCycle,
   IsLunchinatorAdmin
 } = require("@use_cases");
@@ -31,16 +31,16 @@ router.post("/new", async function(req, res) {
         lunchCycleGateway: lunchCycleGateway
       })
     }),
-    generateSlackPreviewMessage: new GenerateSlackPreviewMessage(),
+    generateSlackMessage: new GenerateSlackMessage(),
     isLunchinatorAdmin: new IsLunchinatorAdmin()
   });
 
   if (!lunchCycleService.verifyRequest(req.headers, req.body)) {
-    res.send("error verifying slack request.");
+    return res.send("error verifying slack request.");
   }
 
   if (!lunchCycleService.isAdmin(req.body.user_id)) {
-    res.send("sorry, you are not authorised to do this.");
+    return res.send("sorry, you are not authorised to do this.");
   }
 
   const lunchCycleRestaurants = await lunchCycleService.getLunchCycleRestaurants();
@@ -50,7 +50,7 @@ router.post("/new", async function(req, res) {
   });
 
   if (createResponse.error) {
-    res.send(createResponse.error);
+    return res.send(createResponse.error);
   }
 
   const message = lunchCycleService.getPreviewMessage(createResponse.lunchCycle);

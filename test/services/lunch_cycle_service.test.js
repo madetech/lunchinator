@@ -77,13 +77,13 @@ describe("LunchCycleService", async function() {
 
   it("can get preview message", function() {
     const expected = "message";
-    const spy = { execute: sinon.fake.returns({ message: expected }) };
+    const spy = { execute: sinon.fake.returns({ text: expected }) };
 
     const service = new LunchCycleService({
       createNewLunchCycle: sinon.fake(),
       verifySlackRequest: sinon.fake(),
       getNewLunchCycleRestaurants: sinon.fake(),
-      generateSlackPreviewMessage: spy
+      generateSlackMessage: spy
     });
 
     const message = service.getPreviewMessage(new LunchCycle());
