@@ -6,8 +6,8 @@ class SendLunchCyclePreview {
     this.gateway = options.gateway;
   }
 
-  execute({message}) {
-    const isSent = this.gateway.sendMessage(new SlackMessage(message));
+  execute({ message }) {
+    const isSent = this.gateway.sendMessage(message);
     return { isSent: isSent };
   }
 }

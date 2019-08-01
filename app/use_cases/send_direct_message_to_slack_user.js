@@ -5,9 +5,11 @@ class SendDirectMessageToSlackUser {
     this.slackGateway = options.slackGateway;
     this.slackUserResponseGateway = options.slackUserResponseGateway;
     this.generateSlackMessage = options.generateSlackMessage;
+    this.lunchCycleGateway = options.lunchCycleGateway;
   }
 
-  async execute({ slackUser, lunchCycle }) {
+  async execute({ slackUser }) {
+    const lunchCycle = await this.lunchCycleGateway.getCurrent();
     const firstName = slackUser.profile.first_name;
     const slackMessageResponse = await this.slackGateway.sendMessage(
       slackUser,

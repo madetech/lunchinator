@@ -87,6 +87,6 @@ describe("PostgresLunchCycleGateway", function() {
     await postgresLunchCycleGateway.create(new LunchCycle());
     const expecting = await postgresLunchCycleGateway.create(new LunchCycle());
 
-    expect(await postgresLunchCycleGateway.findCurrent()).to.eql(expecting);
+    expect(await postgresLunchCycleGateway.getCurrent()).to.eql(expecting);
   });
 });

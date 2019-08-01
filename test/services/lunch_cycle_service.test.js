@@ -91,4 +91,50 @@ describe("LunchCycleService", async function() {
     expect(spy.execute).to.have.been.called;
     expect(message).to.be.equal(expected);
   });
+
+  it("can fetch all the slack users", async function() {
+    const expected = [
+      { id: "U2147483697", profile: { email: "test1@example.com", first_name: "Test1" } }
+    ];
+    const spy = { execute: sinon.fake.returns({ slackUsers: expected }) };
+
+    const service = new LunchCycleService({
+      createNewLunchCycle: sinon.fake(),
+      verifySlackRequest: sinon.fake(),
+      getNewLunchCycleRestaurants: sinon.fake(),
+      generateSlackMessage: sinon.fake(),
+      fetchAllSlackUsers: spy
+    });
+
+    const slackUsers = await service.fetchSlackUsers();
+
+    expect(spy.execute).to.have.been.called;
+    expect(slackUsers).to.eql(expected);
+  });
+
+  it("can send DM's to slack users", async function() {
+    const slackUsers = [
+      { id: "U2147483697", profile: { email: "test1@example.com", first_name: "Test1" } },
+      { id: "U2147483397", profile: { email: "test2@example.com", first_name: "Test2" } }
+    ];
+    const spy = {
+      execute: sinon.fake.returns({
+        slackMessageResponse: {},
+        slackUserResponse: {}
+      })
+    };
+
+    const service = new LunchCycleService({
+      createNewLunchCycle: sinon.fake(),
+      verifySlackRequest: sinon.fake(),
+      getNewLunchCycleRestaurants: sinon.fake(),
+      fetchAllSlackUsers: sinon.fake(),
+      generateSlackMessage: sinon.fake(),
+      sendDirectMessageToSlackUser: spy
+    });
+
+    await service.sendMessagesToSlackUsers(slackUsers, new LunchCycle());
+
+    expect(spy.execute).to.have.callCount(slackUsers.length);
+  });
 });
