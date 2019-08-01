@@ -6,6 +6,10 @@ class InMemorySlackUserResponseGateway {
     this.slackUserResponses = [];
   }
 
+  async findAllForLunchCycle({ lunchCycle }) {
+    return this.slackUserResponses.filter(sur => sur.lunchCycleId === lunchCycle.id);
+  }
+
   async create({ slackUser, slackMessageResponse, lunchCycle }) {
     const newSlackUserResponse = new SlackUserResponse({
       slackUserId: slackUser.id,

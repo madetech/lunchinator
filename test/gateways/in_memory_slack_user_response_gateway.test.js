@@ -73,4 +73,42 @@ describe("InMemorySlackUserResponseGateway", function() {
     expect(returnedSlackUserResponse).to.not.equal(slackUserResponse);
     expect(returnedSlackUserResponse).to.eql(slackUserResponse);
   });
+
+  it("can find correct lunch cycle", async function() {
+    const gateway = new InMemorySlackUserResponseGateway();
+    const slackUserResponse1 = new SlackUserResponse({
+      slackUserId: "U1",
+      email: "test@example.com",
+      firstName: "Test",
+      messageChannel: "DM_CHANNEL_ID",
+      messageId: "1564484225.000400",
+      lunchCycleId: 123,
+      availableEmojis: []
+    });
+    const slackUserResponse2 = new SlackUserResponse({
+      slackUserId: "U2",
+      email: "test@example.com",
+      firstName: "Test",
+      messageChannel: "DM_CHANNEL_ID",
+      messageId: "1564484225.000400",
+      lunchCycleId: 123,
+      availableEmojis: []
+    });
+    const slackUserResponse3 = new SlackUserResponse({
+      slackUserId: "U3",
+      email: "test@example.com",
+      firstName: "Test",
+      messageChannel: "DM_CHANNEL_ID",
+      messageId: "1564484225.000400",
+      lunchCycleId: 12345,
+      availableEmojis: []
+    });
+    const lunchCycle = { id: 123 };
+
+    gateway.slackUserResponses = [slackUserResponse1, slackUserResponse2, slackUserResponse3];
+
+    const results = await gateway.findAllForLunchCycle({ lunchCycle });
+
+    expect(results).to.eql([slackUserResponse1, slackUserResponse2]);
+  });
 });
