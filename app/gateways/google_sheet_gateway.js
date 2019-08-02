@@ -51,7 +51,7 @@ class GoogleSheetGateway {
     const info = await promisify(doc.getInfo)().catch(() => null);
 
     if (info === null) {
-      throw new Error("Cannot get info for Google Sheets document.");
+      throw new GoogleSheetGatewayError("Cannot get info for Google Sheets document.");
     }
 
     return info;
@@ -67,7 +67,7 @@ class GoogleSheetGateway {
     const rows = await promisify(sheet.getRows)().catch(() => null);
 
     if (rows === null) {
-      throw new Error("Cannot get rows for Google Sheets sheet.");
+      throw new GoogleSheetGatewayError("Cannot get rows for Google Sheets sheet.");
     }
 
     return rows;

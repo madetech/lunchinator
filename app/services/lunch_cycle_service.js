@@ -76,13 +76,13 @@ class LunchCycleService {
   }
 
   async fetchReactionsFromSlackUserResponses({ slackUserResponses }) {
-    slackUserResponses.forEach(async slackUserResponse => {
+    for (const slackUserResponse of slackUserResponses) {
       const reactions = await this.fetchReactionsForSlackUserResponse.execute({
         slackUserResponse
       });
 
       await this.updateSlackUserResponseWithReactions({ slackUserResponse, reactions });
-    });
+    }
   }
 
   async exportResponsesToGoogleSheet({ lunchCycle }) {

@@ -1,6 +1,6 @@
-const { expect } = require("../test_helper");
+const { expect, sinon } = require("../test_helper");
 const { FakeSlackClient } = require("../fakes");
-const { SlackGateway } = require("@gateways");
+const { SlackGateway, SlackGatewayError } = require("@gateways");
 
 let userList = [];
 let fakeSlackClient;
@@ -302,5 +302,38 @@ describe("SlackGateway", function() {
         ]
       }
     });
+  });
+
+  it("can handle errors when fetching users", async function() {
+    const gateway = new SlackGateway();
+    fakeSlackClient.users.list = sinon.fake.rejects(new Error("errrrrr"));
+
+    await expect(gateway.fetchUsers()).to.be.rejectedWith(
+      SlackGatewayError,
+      "error fetching the users from slack."
+    );
+  });
+
+  it("can handle errors when sending a message", async function() {
+    const gateway = new SlackGateway();
+    fakeSlackClient.chat.postMessage = sinon.fake.rejects(new Error("errrrrr"));
+    const slackUser = { id: "1" };
+    const message = { text: "f" };
+
+    await expect(gateway.sendMessage(slackUser, message)).to.be.rejectedWith(
+      SlackGatewayError,
+      "error sending message."
+    );
+  });
+
+  it("can handle errors when fetching reactions", async function() {
+    const gateway = new SlackGateway();
+    fakeSlackClient.reactions.get = sinon.fake.rejects(new Error("errrrrr"));
+    const args = { channel: "x", timestamp: "x" };
+
+    await expect(gateway.fetchReactionsFromMessage(args)).to.be.rejectedWith(
+      SlackGatewayError,
+      "error fetching reactions."
+    );
   });
 });
