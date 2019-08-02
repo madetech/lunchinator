@@ -81,7 +81,7 @@ class LunchCycleService {
         slackUserResponse
       });
 
-      await this.updateSlackUserResponseWithReactions({ slackUserResponse, reactions });
+      await this.updateSlackUserResponseWithReactions.execute({ slackUserResponse, reactions });
     });
   }
 
