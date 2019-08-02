@@ -10,7 +10,9 @@ class UpdateSlackUserResponseWithReactions {
     const selectedEmojis = reactions.message.reactions.map(r => r.name).join("|");
     lunchCycle.restaurants.map(restaurant => {
       if (restaurant.emoji.match(new RegExp(`(${selectedEmojis})`))) {
-        slackUserResponse.availableEmojis.push(restaurant.emoji);
+        if (slackUserResponse.availableEmojis.indexOf(restaurant.emoji) === -1) {
+          slackUserResponse.availableEmojis.push(restaurant.emoji);
+        }
       }
     });
 

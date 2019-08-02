@@ -97,7 +97,7 @@ class ExportSlackUserResponseToGoogleSheet {
     const restaurantsHash = lunchCycle.restaurants.reduce((hash, r, i) => {
       const nextDate = moment.utc(lunchCycle.starts_at).add(i * 7, "days");
       const header = `${r.name} - ${nextDate.format("DD/MM/YYYY")}`;
-      const headerKey = header.replace(/[()/\s]/g, "").toLowerCase();
+      const headerKey = header.replace(/[()/\s']/g, "").toLowerCase();
 
       hash[r.emoji] = {
         emoji: r.emoji,

@@ -4,6 +4,22 @@ const { LunchCycle } = require("@domain");
 const config = require("@app/config");
 
 class PostgresLunchCycleGateway {
+  async findById(wantedId) {
+    const client = await this._client();
+    const result = await client
+      .query({
+        text: "SELECT * FROM lunch_cycles WHERE id = $1",
+        values: [wantedId]
+      })
+      .finally(() => client.end());
+
+    if (result.rows[0]) {
+      return new LunchCycle(result.rows[0]);
+    }
+
+    return null;
+  }
+
   async count() {
     const client = await this._client();
     const result = await client.query("SELECT COUNT(*) as count FROM lunch_cycles");

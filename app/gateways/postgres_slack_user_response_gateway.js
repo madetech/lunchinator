@@ -54,7 +54,7 @@ class PostgresSlackUserResponseGateway {
     const result = await client
       .query({
         text:
-          "UPDATE slack_user_responses SET available_emojis = $1, updated_at = current_timestamp " +
+          "UPDATE slack_user_responses SET available_emojis = $1 " +
           "WHERE slack_user_id = $2 AND lunch_cycle_id = $3 RETURNING *",
         values: [
           JSON.stringify(slackUserResponse.availableEmojis),

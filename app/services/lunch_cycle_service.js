@@ -77,7 +77,7 @@ class LunchCycleService {
 
   async fetchReactionsFromSlackUserResponses({ slackUserResponses }) {
     slackUserResponses.forEach(async slackUserResponse => {
-      const reactions = await this.fetchReactionsForSlackUserResponse.execute({
+      const { reactions } = await this.fetchReactionsForSlackUserResponse.execute({
         slackUserResponse
       });
 
