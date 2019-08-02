@@ -122,9 +122,16 @@ router.post("/get_responses", async function(req, res) {
     lunchCycle
   });
 
-  await lunchCycleService.fetchReactionsFromSlackUserResponses({ slackUserResponses });
+  const {
+    updatedSlackUserResponses
+  } = await lunchCycleService.fetchReactionsFromSlackUserResponses({
+    slackUserResponses
+  });
 
-  await lunchCycleService.exportResponsesToGoogleSheet({ lunchCycle });
+  await lunchCycleService.exportResponsesToGoogleSheet({
+    lunchCycle,
+    slackUserResponses: updatedSlackUserResponses
+  });
 
   res.send("Updated Google Sheet Lunch Cycles.");
 });

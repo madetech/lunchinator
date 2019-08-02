@@ -76,17 +76,29 @@ class LunchCycleService {
   }
 
   async fetchReactionsFromSlackUserResponses({ slackUserResponses }) {
-    slackUserResponses.forEach(async slackUserResponse => {
+    const updatedSlackUserResponses = [];
+
+    await slackUserResponses.forEach(async slackUserResponse => {
       const { reactions } = await this.fetchReactionsForSlackUserResponse.execute({
         slackUserResponse
       });
 
-      await this.updateSlackUserResponseWithReactions.execute({ slackUserResponse, reactions });
+      const { updatedSlackUserResponse } = await this.updateSlackUserResponseWithReactions.execute({
+        slackUserResponse,
+        reactions
+      });
+
+      updatedSlackUserResponses.push(updatedSlackUserResponse);
     });
+
+    return { updatedSlackUserResponses };
   }
 
-  async exportResponsesToGoogleSheet({ lunchCycle }) {
-    await this.exportSlackUserResponsesForLunchCycleToGoogleSheet.execute({ lunchCycle });
+  async exportResponsesToGoogleSheet({ lunchCycle, slackUserResponses }) {
+    await this.exportSlackUserResponsesForLunchCycleToGoogleSheet.execute({
+      lunchCycle,
+      slackUserResponses
+    });
   }
 }
 

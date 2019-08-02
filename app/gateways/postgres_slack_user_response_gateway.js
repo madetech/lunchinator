@@ -49,7 +49,7 @@ class PostgresSlackUserResponseGateway {
     return SlackUserResponse.newFromDb(result.rows[0]);
   }
 
-  async save({ slackUserResponse }) {
+  async saveEmojis({ slackUserResponse, emojis }) {
     const client = await this._client();
     const result = await client
       .query({
@@ -57,7 +57,7 @@ class PostgresSlackUserResponseGateway {
           "UPDATE slack_user_responses SET available_emojis = $1 " +
           "WHERE slack_user_id = $2 AND lunch_cycle_id = $3 RETURNING *",
         values: [
-          JSON.stringify(slackUserResponse.availableEmojis),
+          JSON.stringify(emojis),
           slackUserResponse.slackUserId,
           slackUserResponse.lunchCycleId
         ]

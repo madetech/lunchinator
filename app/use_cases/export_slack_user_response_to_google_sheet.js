@@ -2,18 +2,14 @@ const config = require("@app/config");
 const moment = require("moment");
 
 class ExportSlackUserResponseToGoogleSheet {
-  constructor({ slackUserResponseGateway, googleSheetGateway }) {
-    this.slackUserResponseGateway = slackUserResponseGateway;
+  constructor({ googleSheetGateway }) {
     this.googleSheetGateway = googleSheetGateway;
   }
 
-  async execute({ lunchCycle }) {
+  async execute({ lunchCycle, slackUserResponses }) {
     const lunchCycleSheet = await this.googleSheetGateway.fetchSheet(
       config.LUNCH_CYCLE_RESPONSES_SHEET_ID
     );
-    const slackUserResponses = await this.slackUserResponseGateway.findAllForLunchCycle({
-      lunchCycle
-    });
 
     this.restaurantsHash = this._buildRestaurantsHash({ lunchCycle });
     this.allHeaderKeys = this._buildAllHeaderKeys();
