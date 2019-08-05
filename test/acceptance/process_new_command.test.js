@@ -18,20 +18,14 @@ describe("ReceiveNewLunchCycleSlashCommand", function() {
 
   it("can create a new lunch cycle", async function() {
     GivenANewLunchCycleCommand();
-    await WhenANewLunchCycleIsCreatedWith(
-      [RestaurantFactory.getRestaurant()],
-      "2020-01-01T00:00:00+01:00"
-    );
+    await WhenANewLunchCycleIsCreatedWith([RestaurantFactory.getRestaurant()]);
     ThenANewLunchCycleIsCreated();
   });
 
   it("can create a second lunch cycle", async function() {
     GivenALunchCycleExists();
     GivenANewLunchCycleCommand();
-    await WhenANewLunchCycleIsCreatedWith(
-      [RestaurantFactory.getRestaurant()],
-      "2020-01-01T00:00:00+01:00"
-    );
+    await WhenANewLunchCycleIsCreatedWith([RestaurantFactory.getRestaurant()]);
     ThenANewLunchCycleIsCreated();
     await ThenTheTotalCountOfLunchCyclesIs(2);
   });
@@ -48,18 +42,10 @@ describe("ReceiveNewLunchCycleSlashCommand", function() {
     });
   });
 
-  describe("date validation", function() {
-    it("can check that a valid start date has been provided", async function() {
-      GivenANewLunchCycleCommand();
-      await WhenANewLunchCycleIsCreatedWith([RestaurantFactory.getRestaurant()]);
-      ThenANewLunchCycleIsNotCreated();
-    });
-  });
-
   describe("restaurant validation", function() {
     it("can check that a list of restaurants has been provided", async function() {
       GivenANewLunchCycleCommand();
-      await WhenANewLunchCycleIsCreatedWith([], "2020-01-01T00:00:00+01:00");
+      await WhenANewLunchCycleIsCreatedWith([]);
       ThenANewLunchCycleIsNotCreated();
     });
   });
@@ -85,13 +71,12 @@ function GivenANewLunchCycleCommand() {
   slashCommandResponse = new SlashCommandFactory().getCommand();
 }
 
-async function WhenANewLunchCycleIsCreatedWith(restaurants, startsAt) {
+async function WhenANewLunchCycleIsCreatedWith(restaurants) {
   var useCase = new CreateNewLunchCycle({
     lunchCycleGateway: inMemoryLunchCycleGateway
   });
   createNewLunchCycleResponse = await useCase.execute({
-    restaurants: restaurants,
-    startsAt: startsAt
+    restaurants: restaurants
   });
 }
 

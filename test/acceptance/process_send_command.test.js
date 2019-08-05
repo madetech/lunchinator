@@ -1,7 +1,7 @@
-const { expect } = require("../test_helper");
+const { expect, sinon } = require("../test_helper");
 const { SlashCommandFactory, RestaurantFactory } = require("../factories");
 const { FakeSlackClient } = require("../fakes");
-const { LunchCycle, SlackUserResponse } = require("@domain");
+const { LunchCycle } = require("@domain");
 const { SlackGateway, InMemorySlackUserResponseGateway } = require("@gateways");
 const {
   SendDirectMessageToSlackUser,
@@ -113,7 +113,8 @@ async function WhenTheDirectMessagesAreCreated() {
   const useCase = new SendDirectMessageToSlackUser({
     slackGateway: fakeSlackGateway,
     slackUserResponseGateway: new InMemorySlackUserResponseGateway(),
-    generateSlackMessage: new GenerateSlackMessage()
+    generateSlackMessage: new GenerateSlackMessage(),
+    lunchCycleGateway: { getCurrent: sinon.fake.returns(lunchCycle) }
   });
 
   const slackUsers = await fakeSlackGateway.fetchUsers();

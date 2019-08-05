@@ -2,51 +2,10 @@ const express = require("express");
 const router = express.Router();
 const { LunchCycleService } = require("@services");
 const config = require("@app/config");
-
-const {
-  PostgresLunchCycleGateway,
-  GoogleSheetGateway,
-  CryptoGateway,
-  SlackGateway,
-  PostgresSlackUserResponseGateway
-} = require("@gateways");
-
-const {
-  GetNewLunchCycleRestaurants,
-  GetPreviousLunchCycle,
-  FetchRestaurantsFromGoogleSheet,
-  VerifySlackRequest,
-  GenerateSlackMessage,
-  CreateNewLunchCycle,
-  IsLunchinatorAdmin,
-  FetchAllSlackUsers,
-  SendDirectMessageToSlackUser,
-  FetchReactionsForSlackUserResponse,
-  UpdateSlackUserResponseWithReactions,
-  ExportSlackUserResponseToGoogleSheet
-} = require("@use_cases");
+const { PostgresLunchCycleGateway, PostgresSlackUserResponseGateway } = require("@gateways");
 
 router.post("/new", async function(req, res) {
-  const lunchCycleGateway = new PostgresLunchCycleGateway();
-
-  const lunchCycleService = new LunchCycleService({
-    createNewLunchCycle: new CreateNewLunchCycle({
-      lunchCycleGateway: lunchCycleGateway
-    }),
-    verifySlackRequest: new VerifySlackRequest({
-      gateway: new CryptoGateway()
-    }),
-    getNewLunchCycleRestaurants: new GetNewLunchCycleRestaurants({
-      fetchRestaurantsFromGoogleSheet: new FetchRestaurantsFromGoogleSheet({
-        googleSheetGateway: new GoogleSheetGateway()
-      }),
-      getPreviousLunchCycle: new GetPreviousLunchCycle({
-        lunchCycleGateway: lunchCycleGateway
-      })
-    }),
-    generateSlackMessage: new GenerateSlackMessage(),
-    isLunchinatorAdmin: new IsLunchinatorAdmin()
-  });
+  const lunchCycleService = new LunchCycleService();
 
   if (!lunchCycleService.verifyRequest(req.headers, req.body)) {
     return res.send("error verifying slack request.");
@@ -72,19 +31,7 @@ router.post("/new", async function(req, res) {
 });
 
 router.post("/send", async function(req, res) {
-  const slackGateway = new SlackGateway();
-
-  const lunchCycleService = new LunchCycleService({
-    fetchAllSlackUsers: new FetchAllSlackUsers({
-      slackGateway: slackGateway
-    }),
-    sendDirectMessageToSlackUser: new SendDirectMessageToSlackUser({
-      slackGateway: slackGateway,
-      slackUserResponseGateway: new PostgresSlackUserResponseGateway(),
-      generateSlackMessage: new GenerateSlackMessage(),
-      lunchCycleGateway: new PostgresLunchCycleGateway()
-    })
-  });
+  const lunchCycleService = new LunchCycleService();
 
   let users = await lunchCycleService.fetchSlackUsers();
 
@@ -97,36 +44,20 @@ router.post("/send", async function(req, res) {
   res.send("message sent to all users.");
 });
 
-router.post("/get_responses", async function(req, res) {
-  const slackGateway = new SlackGateway();
+router.post("/export", async function(req, res) {
   const postgresLunchCycleGateway = new PostgresLunchCycleGateway();
   const postgresSlackUserResponseGateway = new PostgresSlackUserResponseGateway();
-
-  const lunchCycle = await postgresLunchCycleGateway.getCurrent();
-
-  const lunchCycleService = new LunchCycleService({
-    fetchReactionsForSlackUserResponse: new FetchReactionsForSlackUserResponse({
-      slackGateway: slackGateway
-    }),
-    updateSlackUserResponseWithReactions: new UpdateSlackUserResponseWithReactions({
-      slackUserResponseGateway: postgresSlackUserResponseGateway,
-      lunchCycleGateway: postgresLunchCycleGateway
-    }),
-    exportSlackUserResponsesForLunchCycleToGoogleSheet: new ExportSlackUserResponseToGoogleSheet({
-      slackUserResponseGateway: postgresSlackUserResponseGateway,
-      googleSheetGateway: new GoogleSheetGateway()
-    })
-  });
+  const lunchCycleService = new LunchCycleService();
 
   const slackUserResponses = await postgresSlackUserResponseGateway.findAllForLunchCycle({
     lunchCycle
   });
-
   await lunchCycleService.fetchReactionsFromSlackUserResponses({ slackUserResponses });
 
+  const lunchCycle = await postgresLunchCycleGateway.getCurrent();
   await lunchCycleService.exportResponsesToGoogleSheet({ lunchCycle });
 
-  res.send("Updated Google Sheet Lunch Cycles.");
+  res.send("exported user responses to google sheet.");
 });
 
 module.exports = router;

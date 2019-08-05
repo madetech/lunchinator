@@ -1,5 +1,7 @@
+const moment = require("moment");
 const { expect, sinon } = require("../test_helper");
 const { RestaurantFactory } = require("../factories");
+const config = require("@app/config");
 const { LunchCycle } = require("@domain");
 const { CreateNewLunchCycle } = require("@use_cases");
 
@@ -33,22 +35,18 @@ describe("CreateNewLunchCycle", function() {
     expect(response.error).to.be.eql("invalid list of restaurants.");
   });
 
-  it("does not create a lunch cycle when an invalid start date is provided", async function() {
-    const useCase = new CreateNewLunchCycle({
-      lunchCycleGateway: {}
-    });
+  it("can calculate the correct start date", async function() {
+    const weeksAhead = 1;
 
-    const response = await useCase.execute({
-      restaurants: [RestaurantFactory.getRestaurant()],
-      startsAt: "xxx"
-    });
+    // get the friday in weeksAhead weeks time
+    const expected = moment
+      .utc()
+      .startOf("isoWeek")
+      .add(4, "days")
+      .add(weeksAhead, "week")
+      .format();
 
-    expect(response.lunchCycle).to.be.undefined;
-    expect(response.error).to.be.eql("invalid start date.");
-  });
-
-  it("creates a lunch cycle with the correct date when a date is provided", async function() {
-    const expected = "2020-01-25T00:00:00+01:00";
+    sinon.stub(config, "WEEKS_BEFORE_CYCLE_STARTS").get(() => weeksAhead);
 
     const useCase = new CreateNewLunchCycle({
       lunchCycleGateway: {
@@ -57,8 +55,7 @@ describe("CreateNewLunchCycle", function() {
     });
 
     const response = await useCase.execute({
-      restaurants: [RestaurantFactory.getRestaurant()],
-      startsAt: expected
+      restaurants: [RestaurantFactory.getRestaurant()]
     });
 
     expect(response.lunchCycle.starts_at).to.be.eql(expected);

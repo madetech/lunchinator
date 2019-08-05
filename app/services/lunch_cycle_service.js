@@ -1,35 +1,73 @@
-const config = require("@app/config");
-const moment = require("moment");
+const {
+  PostgresLunchCycleGateway,
+  GoogleSheetGateway,
+  CryptoGateway,
+  SlackGateway,
+  PostgresSlackUserResponseGateway
+} = require("@gateways");
+
+const {
+  GetNewLunchCycleRestaurants,
+  GetPreviousLunchCycle,
+  FetchRestaurantsFromGoogleSheet,
+  VerifySlackRequest,
+  GenerateSlackMessage,
+  CreateNewLunchCycle,
+  IsLunchinatorAdmin,
+  FetchAllSlackUsers,
+  SendDirectMessageToSlackUser,
+  FetchReactionsForSlackUserResponse,
+  UpdateSlackUserResponseWithReactions,
+  ExportSlackUserResponseToGoogleSheet
+} = require("@use_cases");
 
 class LunchCycleService {
-  constructor(options) {
-    this.createNewLunchCycle = options.createNewLunchCycle;
-    this.verifySlackRequest = options.verifySlackRequest;
-    this.getNewLunchCycleRestaurants = options.getNewLunchCycleRestaurants;
-    this.generateSlackMessage = options.generateSlackMessage;
-    this.isLunchinatorAdmin = options.isLunchinatorAdmin;
-    this.fetchAllSlackUsers = options.fetchAllSlackUsers;
-    this.sendDirectMessageToSlackUser = options.sendDirectMessageToSlackUser;
-    this.fetchReactionsForSlackUserResponse = options.fetchReactionsForSlackUserResponse;
-    this.updateSlackUserResponseWithReactions = options.updateSlackUserResponseWithReactions;
-    this.exportSlackUserResponsesForLunchCycleToGoogleSheet =
-      options.exportSlackUserResponsesForLunchCycleToGoogleSheet;
+  constructor() {
+    const lunchCycleGateway = new PostgresLunchCycleGateway();
+    const slackUserResponseGateway = new PostgresSlackUserResponseGateway();
+    const slackGateway = new SlackGateway();
+
+    this.createNewLunchCycle = new CreateNewLunchCycle({
+      lunchCycleGateway: lunchCycleGateway
+    });
+    this.verifySlackRequest = new VerifySlackRequest({ gateway: new CryptoGateway() });
+    this.getNewLunchCycleRestaurants = new GetNewLunchCycleRestaurants({
+      fetchRestaurantsFromGoogleSheet: new FetchRestaurantsFromGoogleSheet({
+        googleSheetGateway: new GoogleSheetGateway()
+      }),
+      getPreviousLunchCycle: new GetPreviousLunchCycle({
+        lunchCycleGateway: lunchCycleGateway
+      })
+    });
+    this.fetchAllSlackUsers = new FetchAllSlackUsers({
+      slackGateway: slackGateway
+    });
+    this.sendDirectMessageToSlackUser = new SendDirectMessageToSlackUser({
+      slackGateway: slackGateway,
+      slackUserResponseGateway: slackUserResponseGateway,
+      generateSlackMessage: new GenerateSlackMessage(),
+      lunchCycleGateway: lunchCycleGateway
+    });
+    this.generateSlackMessage = new GenerateSlackMessage();
+    this.isLunchinatorAdmin = new IsLunchinatorAdmin();
+    this.fetchReactionsForSlackUserResponse = new FetchReactionsForSlackUserResponse({
+      slackGateway: slackGateway
+    });
+    this.updateSlackUserResponseWithReactions = new UpdateSlackUserResponseWithReactions({
+      slackUserResponseGateway: slackUserResponseGateway,
+      lunchCycleGateway: lunchCycleGateway
+    });
+    this.exportSlackUserResponsesForLunchCycleToGoogleSheet = new ExportSlackUserResponseToGoogleSheet(
+      {
+        slackUserResponseGateway: slackUserResponseGateway,
+        googleSheetGateway: new GoogleSheetGateway()
+      }
+    );
   }
 
-  async createLunchCycle({ userId, restaurants }) {
-    const weeksBeforeCycleStarts = config.WEEKS_BEFORE_CYCLE_STARTS;
-
-    const startsAt = moment
-      .utc()
-      .startOf("isoWeek")
-      .add(4, "days")
-      .add(weeksBeforeCycleStarts, "week")
-      .format();
-
+  async createLunchCycle({ restaurants }) {
     const response = await this.createNewLunchCycle.execute({
-      userId: userId,
-      restaurants: restaurants,
-      startsAt: startsAt
+      restaurants: restaurants
     });
 
     return response;

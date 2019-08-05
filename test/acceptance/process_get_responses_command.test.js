@@ -81,7 +81,7 @@ function WhenTheCommandIsReceived() {
   slashCommandResponse = new SlashCommandFactory().getCommand(
     {},
     {
-      command: "/lunchinator_get_responses"
+      command: "/lunchinator_export"
     }
   );
 }
