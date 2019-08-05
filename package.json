@@ -27,6 +27,7 @@
     "eslint-plugin-prettier": "^3.1.0",
     "mocha": "^6.2.0",
     "nock": "^10.0.6",
+    "nyc": "^14.1.1",
     "prettier": "^1.18.2",
     "prettier-eslint": "^9.0.0",
     "sinon": "^7.3.2",
@@ -36,6 +37,7 @@
     "start": "node index.js",
     "test": "NODE_ENV=test mocha \"test/**/*.test.js\"",
     "testw": "NODE_ENV=test mocha --watch \"test/**/*.test.js\"",
+    "test-coverage": "NODE_ENV=test nyc --reporter=text mocha \"test/**/*.test.js\"",
     "migrate": "node-pg-migrate",
     "migrate-test": "NODE_ENV=test node-pg-migrate",
     "heroku-postbuild": "node-pg-migrate up"
