@@ -119,12 +119,22 @@ class LunchCycleService {
         slackUserResponse
       });
 
-      await this.updateSlackUserResponseWithReactions.execute({ slackUserResponse, reactions });
+      const { updatedSlackUserResponse } = await this.updateSlackUserResponseWithReactions.execute({
+        slackUserResponse,
+        reactions
+      });
+
+      updatedSlackUserResponses.push(updatedSlackUserResponse);
     }
+
+    return { updatedSlackUserResponses };
   }
 
-  async exportResponsesToGoogleSheet({ lunchCycle }) {
-    await this.exportSlackUserResponsesForLunchCycleToGoogleSheet.execute({ lunchCycle });
+  async exportResponsesToGoogleSheet({ lunchCycle, slackUserResponses }) {
+    await this.exportSlackUserResponsesForLunchCycleToGoogleSheet.execute({
+      lunchCycle,
+      slackUserResponses
+    });
   }
 }
 

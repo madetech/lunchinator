@@ -2,18 +2,14 @@ const config = require("@app/config");
 const moment = require("moment");
 
 class ExportSlackUserResponseToGoogleSheet {
-  constructor({ slackUserResponseGateway, googleSheetGateway }) {
-    this.slackUserResponseGateway = slackUserResponseGateway;
+  constructor({ googleSheetGateway }) {
     this.googleSheetGateway = googleSheetGateway;
   }
 
-  async execute({ lunchCycle }) {
+  async execute({ lunchCycle, slackUserResponses }) {
     const lunchCycleSheet = await this.googleSheetGateway.fetchSheet(
       config.LUNCH_CYCLE_RESPONSES_SHEET_ID
     );
-    const slackUserResponses = await this.slackUserResponseGateway.findAllForLunchCycle({
-      lunchCycle
-    });
 
     this.restaurantsHash = this._buildRestaurantsHash({ lunchCycle });
     this.allHeaderKeys = this._buildAllHeaderKeys();
@@ -97,7 +93,7 @@ class ExportSlackUserResponseToGoogleSheet {
     const restaurantsHash = lunchCycle.restaurants.reduce((hash, r, i) => {
       const nextDate = moment.utc(lunchCycle.starts_at).add(i * 7, "days");
       const header = `${r.name} - ${nextDate.format("DD/MM/YYYY")}`;
-      const headerKey = header.replace(/[()/\s]/g, "").toLowerCase();
+      const headerKey = header.replace(/[()/\s']/g, "").toLowerCase();
 
       hash[r.emoji] = {
         emoji: r.emoji,
