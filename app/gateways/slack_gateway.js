@@ -33,17 +33,12 @@ class SlackGateway {
   }
 
   async fetchReactionsFromMessage({ timestamp, channel }) {
-    console.log(timestamp);
-    console.log(channel);
     const response = await this._slackClient()
       .reactions.get({
         channel,
         timestamp
       })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
+      .catch(err => null);
 
     if (response === null) {
       throw new SlackGatewayError("error fetching reactions.");

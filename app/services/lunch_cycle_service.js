@@ -108,22 +108,22 @@ class LunchCycleService {
   }
 
   async sendMessagesToSlackUsers(slackUsers) {
-    slackUsers.forEach(async slackUser => {
+    for (const slackUser of slackUsers) {
       await this.sendDirectMessageToSlackUser.execute({ slackUser });
-    });
+    }
   }
 
   async fetchReactionsFromSlackUserResponses({ slackUserResponses }) {
     const updatedSlackUserResponses = [];
 
     for (const slackUserResponse of slackUserResponses) {
-      const reactions = await this.fetchReactionsForSlackUserResponse.execute({
+      const reactionsResponse = await this.fetchReactionsForSlackUserResponse.execute({
         slackUserResponse
       });
 
       const { updatedSlackUserResponse } = await this.updateSlackUserResponseWithReactions.execute({
         slackUserResponse,
-        reactions
+        reactions: reactionsResponse.reactions
       });
 
       updatedSlackUserResponses.push(updatedSlackUserResponse);

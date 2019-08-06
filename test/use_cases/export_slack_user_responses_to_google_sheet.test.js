@@ -5,7 +5,7 @@ const { ExportSlackUserResponseToGoogleSheet } = require("@use_cases");
 describe("ExportSlackUserResponseToGoogleSheet", function() {
   it("uses the correct Google Sheet ID", async function() {
     const lunchCycle = new LunchCycle({ id: 123 });
-    const fakeSheetGateway = { fetchSheet: sinon.stub().resolves({}) };
+    const fakeSheetGateway = { fetchDoc: sinon.stub().resolves({}) };
     const useCase = new ExportSlackUserResponseToGoogleSheet({
       googleSheetGateway: fakeSheetGateway
     });
@@ -18,6 +18,6 @@ describe("ExportSlackUserResponseToGoogleSheet", function() {
 
     await useCase.execute({ lunchCycle, slackUserResponses: [] });
 
-    expect(fakeSheetGateway.fetchSheet).to.have.been.calledOnceWith(dummySheetId);
+    expect(fakeSheetGateway.fetchDoc).to.have.been.calledOnceWith(dummySheetId);
   });
 });

@@ -10,7 +10,7 @@ class GoogleSheetGatewayError extends Error {
 }
 
 class GoogleSheetGateway {
-  async fetchSheet(sheetId) {
+  async fetchDoc(sheetId) {
     const doc = this.newGoogleSpreadsheet(sheetId);
     await this.doAuth(doc);
 
@@ -19,7 +19,7 @@ class GoogleSheetGateway {
 
   async fetchRows(sheetId) {
     try {
-      const doc = await this.fetchSheet(sheetId);
+      const doc = await this.fetchDoc(sheetId);
       const sheet = await this.getFirstSheet(doc);
       const rows = await this.getRows(sheet);
 
@@ -73,24 +73,21 @@ class GoogleSheetGateway {
     return rows;
   }
 
-  async addWorksheetTo({ sheet, title, headers }) {
+  async addWorksheetTo({ doc, title, headers }) {
     const addWorksheetPromise = promisify((options, cb) =>
-      sheet.addWorksheet(options, (err, newSheet) => cb(err, newSheet))
+      doc.addWorksheet(options, (err, newSheet) => cb(err, newSheet))
     );
     const newSheet = await addWorksheetPromise({ title, headers }).catch(() => null);
 
     if (newSheet === null) {
-      throw new GoogleSheetGatewayError("Cannot add worksheet to Google Sheets sheet.");
+      throw new GoogleSheetGatewayError("Cannot add worksheet to Google Sheets doc.");
     }
 
     return newSheet;
   }
 
   async addRow({ sheet, row }) {
-    const addRowPromise = promisify((options, cb) =>
-      sheet.addRow(options, (err, newRow) => cb(err, newRow))
-    );
-    const newRow = await addRowPromise(row).catch(() => null);
+    const newRow = await promisify(sheet.addRow)(row).catch(() => null);
 
     if (newRow === null) {
       throw new GoogleSheetGatewayError("Cannot add new row to Google Sheets sheet.");
@@ -100,8 +97,6 @@ class GoogleSheetGateway {
   }
 
   async saveRow({ row }) {
-    console.log(row);
-
     const newRow = await promisify(row.save)().catch(() => null);
 
     if (newRow === null) {

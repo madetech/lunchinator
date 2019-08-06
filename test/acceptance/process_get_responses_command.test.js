@@ -101,13 +101,13 @@ async function ThenTheResponsesWillHaveBeenExportedToExisting() {
   const lunchCycle = lunchCycles[0];
   const googleSheetGateway = new GoogleSheetGateway();
 
-  const sheet = {};
+  const doc = {};
   const worksheet = { title: moment.utc(lunchCycle.starts_at).format("DD/MM/YYYY") };
   const sheetInfo = { worksheets: [worksheet] };
   const row = { email: "test@example.com" };
   const rows = [row];
 
-  sinon.stub(googleSheetGateway, "fetchSheet").resolves(sheet);
+  sinon.stub(googleSheetGateway, "fetchDoc").resolves(doc);
   sinon.stub(googleSheetGateway, "getInfo").resolves(sheetInfo);
   sinon.stub(googleSheetGateway, "getRows").resolves(rows);
   sinon.stub(googleSheetGateway, "saveRow").resolves();
@@ -131,13 +131,13 @@ async function ThenTheResponsesWillHaveBeenExportedToExistingSheetNewRow() {
   const lunchCycle = lunchCycles[0];
   const googleSheetGateway = new GoogleSheetGateway();
 
-  const sheet = {};
+  const doc = {};
   const worksheet = { title: moment.utc(lunchCycle.starts_at).format("DD/MM/YYYY") };
   const sheetInfo = { worksheets: [worksheet] };
   const row = { email: "other.test@example.com" };
   const rows = [row];
 
-  sinon.stub(googleSheetGateway, "fetchSheet").resolves(sheet);
+  sinon.stub(googleSheetGateway, "fetchDoc").resolves(doc);
   sinon.stub(googleSheetGateway, "getInfo").resolves(sheetInfo);
   sinon.stub(googleSheetGateway, "getRows").resolves(rows);
   sinon.stub(googleSheetGateway, "addRow").resolves();
@@ -162,12 +162,12 @@ async function ThenTheResponsesWillHaveBeenExportedToNewSheetNewRow() {
   const lunchCycle = lunchCycles[0];
   const googleSheetGateway = new GoogleSheetGateway();
 
-  const sheet = {};
+  const doc = {};
   const worksheet = {};
   const sheetInfo = { worksheets: [] };
   const rows = [];
 
-  sinon.stub(googleSheetGateway, "fetchSheet").resolves(sheet);
+  sinon.stub(googleSheetGateway, "fetchDoc").resolves(doc);
   sinon.stub(googleSheetGateway, "getInfo").resolves(sheetInfo);
   sinon.stub(googleSheetGateway, "addWorksheetTo").resolves(worksheet);
   sinon.stub(googleSheetGateway, "getRows").resolves(rows);
@@ -183,7 +183,7 @@ async function ThenTheResponsesWillHaveBeenExportedToNewSheetNewRow() {
   expect(response).to.be.true;
 
   expect(googleSheetGateway.addWorksheetTo).to.have.been.calledWith({
-    sheet: sheet,
+    doc: doc,
     title: moment.utc(lunchCycle.starts_at).format("DD/MM/YYYY"),
     headers: ["First Name", "Email", "rest1 - 01/01/2020"]
   });
