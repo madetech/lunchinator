@@ -69,33 +69,24 @@ describe("PostgresSlackUserResponseGateway", function() {
   it("can save the correct record", async function() {
     const postgresSlackUserResponseGateway = new PostgresSlackUserResponseGateway();
 
-    const slackUserResponse1 = await postgresSlackUserResponseGateway.create({
+    const res1 = await postgresSlackUserResponseGateway.create({
       slackUser,
       slackMessageResponse,
       lunchCycle
     });
-    const slackUserResponse2 = await postgresSlackUserResponseGateway.create({
+    await postgresSlackUserResponseGateway.create({
       slackUser: { ...slackUser, id: "U123" },
       slackMessageResponse,
       lunchCycle
     });
 
-    slackUserResponse1.availableEmojis = [":pizza", ":sushi:"];
-
-    const returnedSlackUserResponse = await postgresSlackUserResponseGateway.save({
-      slackUserResponse: slackUserResponse1
+    const returnedSlackUserResponse = await postgresSlackUserResponseGateway.saveEmojis({
+      slackUserResponse: res1,
+      emojis: [":pizza", ":sushi:"]
     });
 
-    expect(slackUserResponse2.availableEmojis).to.eql([]);
-    expect({
-      slackUserId: returnedSlackUserResponse.slackUserId,
-      lunchCycleId: returnedSlackUserResponse.lunchCycleId,
-      availableEmojis: returnedSlackUserResponse.availableEmojis
-    }).to.eql({
-      slackUserId: slackUserResponse1.slackUserId,
-      lunchCycleId: slackUserResponse1.lunchCycleId,
-      availableEmojis: slackUserResponse1.availableEmojis
-    });
+    expect(returnedSlackUserResponse.slackUserId).to.eql(slackUser.id);
+    expect(returnedSlackUserResponse.availableEmojis).to.eql([":pizza", ":sushi:"]);
   });
 
   it("can retrive all Slack User Responses for a given lunchCycle", async function() {

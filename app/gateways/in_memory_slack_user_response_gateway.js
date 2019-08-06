@@ -26,7 +26,7 @@ class InMemorySlackUserResponseGateway {
     return newSlackUserResponse;
   }
 
-  async saveEmojis({ slackUserResponse }) {
+  async saveEmojis({ slackUserResponse, emojis }) {
     const foundSlackUserResponse = this.slackUserResponses.find(sulc => {
       return (
         sulc.slackUserId === slackUserResponse.slackUserId &&
@@ -35,7 +35,7 @@ class InMemorySlackUserResponseGateway {
     });
 
     if (foundSlackUserResponse) {
-      foundSlackUserResponse.availableEmojis = slackUserResponse.availableEmojis;
+      foundSlackUserResponse.availableEmojis = emojis;
 
       return foundSlackUserResponse;
     }

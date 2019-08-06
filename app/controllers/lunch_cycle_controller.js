@@ -49,6 +49,8 @@ router.post("/export", async function(req, res) {
   const postgresSlackUserResponseGateway = new PostgresSlackUserResponseGateway();
   const lunchCycleService = new LunchCycleService();
 
+  const lunchCycle = await postgresLunchCycleGateway.getCurrent();
+
   const slackUserResponses = await postgresSlackUserResponseGateway.findAllForLunchCycle({
     lunchCycle
   });

@@ -62,16 +62,19 @@ describe("InMemorySlackUserResponseGateway", function() {
 
     gateway.slackUserResponses = [{ ...slackUserResponse }];
 
-    slackUserResponse.availableEmojis = [":pizza:"];
+    expect(await gateway.count()).to.eql(1);
+
+    const returnedSlackUserResponse = await gateway.saveEmojis({
+      slackUserResponse,
+      emojis: [":pizza:"]
+    });
 
     expect(await gateway.count()).to.eql(1);
 
-    const returnedSlackUserResponse = await gateway.save({ slackUserResponse });
-
-    expect(await gateway.count()).to.eql(1);
-
-    expect(returnedSlackUserResponse).to.not.equal(slackUserResponse);
-    expect(returnedSlackUserResponse).to.eql(slackUserResponse);
+    expect(returnedSlackUserResponse.messageId).to.eql(slackUserResponse.messageId);
+    expect(returnedSlackUserResponse.availableEmojis).to.not.equal(
+      slackUserResponse.availableEmojis
+    );
   });
 
   it("can find correct lunch cycle", async function() {

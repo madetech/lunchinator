@@ -9,6 +9,7 @@ class UpdateSlackUserResponseWithReactions {
     const emojis = [];
 
     const selectedEmojis = reactions.message.reactions.map(r => r.name).join("|");
+
     lunchCycle.restaurants.map(restaurant => {
       if (restaurant.emoji.match(new RegExp(`(${selectedEmojis})`))) {
         emojis.push(restaurant.emoji);

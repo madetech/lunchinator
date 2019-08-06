@@ -135,7 +135,7 @@ async function WhenTheSlackUserResponseIsUpdatedWithTheReactions() {
 }
 
 function ThenTheSlackUserResponseHasCorrectEmojis() {
-  expect(updateSULCWithReactions.slackUserResponse).to.eql(
+  expect(updateSULCWithReactions.updatedSlackUserResponse).to.eql(
     new SlackUserResponse({
       slackUserId: "U2147483697",
       email: "test@example.com",

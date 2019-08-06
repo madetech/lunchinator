@@ -13,6 +13,7 @@ const { IsLunchinatorAdmin, ExportSlackUserResponseToGoogleSheet } = require("@u
 let inMemoryLunchCycleGateway;
 let inMemorySlackUserResponseGateway;
 let slashCommandResponse;
+let slackUserResponse;
 
 describe("Process Get Responses Slash Command", function() {
   beforeEach(function() {
@@ -58,7 +59,7 @@ function GivenALunchCycleExists() {
 async function GivenASlackUserResponseExists() {
   const lunchCycles = await inMemoryLunchCycleGateway.all();
 
-  const slackUserResponse = await inMemorySlackUserResponseGateway.create({
+  slackUserResponse = await inMemorySlackUserResponseGateway.create({
     slackUser: {
       id: "U2147483697",
       profile: {
@@ -73,8 +74,11 @@ async function GivenASlackUserResponseExists() {
     lunchCycle: lunchCycles[0]
   });
 
-  slackUserResponse.availableEmojis = [":bowtie:"];
-  await inMemorySlackUserResponseGateway.save({ slackUserResponse });
+  const emojis = [":bowtie:"];
+  slackUserResponse = await inMemorySlackUserResponseGateway.saveEmojis({
+    slackUserResponse,
+    emojis
+  });
 }
 
 function WhenTheCommandIsReceived() {
@@ -113,7 +117,7 @@ async function ThenTheResponsesWillHaveBeenExportedToExisting() {
     googleSheetGateway: googleSheetGateway
   });
 
-  const response = await useCase.execute({ lunchCycle });
+  const response = await useCase.execute({ lunchCycle, slackUserResponses: [slackUserResponse] });
 
   expect(response).to.be.true;
 
@@ -143,7 +147,7 @@ async function ThenTheResponsesWillHaveBeenExportedToExistingSheetNewRow() {
     googleSheetGateway: googleSheetGateway
   });
 
-  const response = await useCase.execute({ lunchCycle });
+  const response = await useCase.execute({ lunchCycle, slackUserResponses: [slackUserResponse] });
 
   expect(response).to.be.true;
 
@@ -174,7 +178,7 @@ async function ThenTheResponsesWillHaveBeenExportedToNewSheetNewRow() {
     googleSheetGateway: googleSheetGateway
   });
 
-  const response = await useCase.execute({ lunchCycle });
+  const response = await useCase.execute({ lunchCycle, slackUserResponses: [slackUserResponse] });
 
   expect(response).to.be.true;
 
