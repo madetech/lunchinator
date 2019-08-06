@@ -274,7 +274,8 @@ describe("SlackGateway", function() {
 
     expect(fakeSlackClient.postMessageStub).to.have.been.calledWith({
       channel: slackUser.id,
-      text: messageText
+      text: messageText,
+      as_user: true
     });
   });
 

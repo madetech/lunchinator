@@ -136,6 +136,7 @@ function ThenDirectMessagesAreSent() {
     expect(r.slackUserResponse.email).to.eql(`test${i + 1}@example.com`);
 
     expect(fakeSlackClient.postMessageStub).to.have.been.calledWith({
+      as_user: true,
       channel: userList[i].id,
       text:
         `Hey ${userList[i].profile.first_name}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n` +
