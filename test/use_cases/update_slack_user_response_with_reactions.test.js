@@ -7,7 +7,7 @@ describe("UpdateSlackUserResponseWithReactions", function() {
     const lunchCycleGatewaySpy = { findById: sinon.stub().returns({ restaurants: [] }) };
     const slackUserResponse = { lunchCycleId: 123 };
     const useCase = new UpdateSlackUserResponseWithReactions({
-      slackUserResponseGateway: { save: sinon.stub().resolves(slackUserResponse) },
+      slackUserResponseGateway: { saveEmojis: sinon.stub().resolves(slackUserResponse) },
       lunchCycleGateway: lunchCycleGatewaySpy
     });
 
@@ -17,10 +17,10 @@ describe("UpdateSlackUserResponseWithReactions", function() {
   });
 
   it("uses the LunchCycle Restaurants list for valid reactions", async function() {
-    const slackUserResponse = { availableEmojis: [] };
+    const slackUserResponse = { availableEmojis: [":sushi:", ":pizza:"] };
     const useCase = new UpdateSlackUserResponseWithReactions({
       slackUserResponseGateway: {
-        save: sinon.stub().resolves(slackUserResponse)
+        saveEmojis: sinon.stub().resolves(slackUserResponse)
       },
       lunchCycleGateway: {
         findById: sinon.stub().returns({
@@ -42,14 +42,15 @@ describe("UpdateSlackUserResponseWithReactions", function() {
     };
 
     const resposne = await useCase.execute({ slackUserResponse, reactions });
-
-    expect(resposne.slackUserResponse.availableEmojis).to.eql([":sushi:", ":pizza:"]);
+    expect(resposne.updatedSlackUserResponse.availableEmojis).to.eql(
+      slackUserResponse.availableEmojis
+    );
   });
 
   it("uses the slackUserResponseGateway to save the available emojis", async function() {
     const slackUserResponse = { availableEmojis: [] };
     const slackUserResponseGatewaySpy = {
-      save: sinon.stub().resolves()
+      saveEmojis: sinon.stub().resolves()
     };
     const useCase = new UpdateSlackUserResponseWithReactions({
       slackUserResponseGateway: slackUserResponseGatewaySpy,
@@ -65,6 +66,9 @@ describe("UpdateSlackUserResponseWithReactions", function() {
 
     await useCase.execute({ slackUserResponse, reactions });
 
-    expect(slackUserResponseGatewaySpy.save).to.have.been.calledWith({ slackUserResponse });
+    expect(slackUserResponseGatewaySpy.saveEmojis).to.have.been.calledWith({
+      slackUserResponse,
+      emojis: [":pizza:"]
+    });
   });
 });

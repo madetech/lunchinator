@@ -49,13 +49,22 @@ router.post("/export", async function(req, res) {
   const postgresSlackUserResponseGateway = new PostgresSlackUserResponseGateway();
   const lunchCycleService = new LunchCycleService();
 
+  const lunchCycle = await postgresLunchCycleGateway.getCurrent();
+
   const slackUserResponses = await postgresSlackUserResponseGateway.findAllForLunchCycle({
     lunchCycle
   });
-  await lunchCycleService.fetchReactionsFromSlackUserResponses({ slackUserResponses });
 
-  const lunchCycle = await postgresLunchCycleGateway.getCurrent();
-  await lunchCycleService.exportResponsesToGoogleSheet({ lunchCycle });
+  const {
+    updatedSlackUserResponses
+  } = await lunchCycleService.fetchReactionsFromSlackUserResponses({
+    slackUserResponses
+  });
+
+  await lunchCycleService.exportResponsesToGoogleSheet({
+    lunchCycle,
+    slackUserResponses: updatedSlackUserResponses
+  });
 
   res.send("exported user responses to google sheet.");
 });

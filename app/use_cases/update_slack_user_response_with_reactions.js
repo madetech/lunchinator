@@ -6,19 +6,22 @@ class UpdateSlackUserResponseWithReactions {
 
   async execute({ slackUserResponse, reactions }) {
     const lunchCycle = await this.lunchCycleGateway.findById(slackUserResponse.lunchCycleId);
+    const emojis = [];
 
     const selectedEmojis = reactions.message.reactions.map(r => r.name).join("|");
+
     lunchCycle.restaurants.map(restaurant => {
       if (restaurant.emoji.match(new RegExp(`(${selectedEmojis})`))) {
-        slackUserResponse.availableEmojis.push(restaurant.emoji);
+        emojis.push(restaurant.emoji);
       }
     });
 
-    const updatedSlackUserResponse = await this.slackUserResponseGateway.save({
-      slackUserResponse
+    const updatedSlackUserResponse = await this.slackUserResponseGateway.saveEmojis({
+      slackUserResponse,
+      emojis
     });
 
-    return { slackUserResponse: updatedSlackUserResponse };
+    return { updatedSlackUserResponse };
   }
 }
 

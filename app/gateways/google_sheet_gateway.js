@@ -100,6 +100,8 @@ class GoogleSheetGateway {
   }
 
   async saveRow({ row }) {
+    console.log(row);
+
     const newRow = await promisify(row.save)().catch(() => null);
 
     if (newRow === null) {
