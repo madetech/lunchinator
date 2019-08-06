@@ -1,8 +1,8 @@
 class DietaryLevel {
-  static Great = 2;
-  static Some = 1;
-  static None = 0;
-  static Unknown = -1;
+  static Great = ":green_heart:";
+  static Some = ":orange_heart:";
+  static None = ":broken_heart:";
+  static Unknown = ":question:";
 
   static getLevel(levelAsString) {
     switch (levelAsString.toLowerCase()) {

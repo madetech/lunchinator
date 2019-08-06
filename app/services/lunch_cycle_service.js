@@ -94,11 +94,11 @@ class LunchCycleService {
   }
 
   getPreviewMessage(lunchCycle) {
-    const response = this.generateSlackMessage.execute({
+    const message = this.generateSlackMessage.execute({
       lunchCycle: lunchCycle
     });
 
-    return response.text;
+    return message;
   }
 
   async fetchSlackUsers() {
