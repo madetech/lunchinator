@@ -60,7 +60,6 @@ class PostgresLunchCycleGateway {
       foundLunchCycle = new LunchCycle(result.rows[1]);
     }
 
-    console.log(foundLunchCycle);
     return foundLunchCycle;
   }
 
