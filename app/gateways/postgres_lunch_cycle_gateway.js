@@ -31,9 +31,8 @@ class PostgresLunchCycleGateway {
   async create(lunchCycle) {
     const client = await this._client();
     const result = await client.query({
-      text:
-        "INSERT INTO lunch_cycles(restaurants, starts_at, is_sent) VALUES($1,$2,$3) RETURNING *",
-      values: [JSON.stringify(lunchCycle.restaurants), lunchCycle.starts_at, false]
+      text: "INSERT INTO lunch_cycles(restaurants, starts_at) VALUES($1,$2) RETURNING *",
+      values: [JSON.stringify(lunchCycle.restaurants), lunchCycle.starts_at]
     });
     client.end();
 
