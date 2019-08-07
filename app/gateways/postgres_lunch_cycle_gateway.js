@@ -31,8 +31,9 @@ class PostgresLunchCycleGateway {
   async create(lunchCycle) {
     const client = await this._client();
     const result = await client.query({
-      text: "INSERT INTO lunch_cycles(restaurants, starts_at) VALUES($1,$2) RETURNING *",
-      values: [JSON.stringify(lunchCycle.restaurants), lunchCycle.starts_at]
+      text:
+        "INSERT INTO lunch_cycles(restaurants, starts_at, is_sent) VALUES($1,$2,$3) RETURNING *",
+      values: [JSON.stringify(lunchCycle.restaurants), lunchCycle.starts_at, false]
     });
     client.end();
 
@@ -50,7 +51,7 @@ class PostgresLunchCycleGateway {
   async findPrevious() {
     const client = await this._client();
     const result = await client.query(
-      "SELECT * FROM lunch_cycles WHERE is_sent = true ORDER BY id DESC LIMIT 1"
+      "SELECT * FROM lunch_cycles WHERE is_sent IS TRUE ORDER BY id DESC LIMIT 1"
     );
     client.end();
 

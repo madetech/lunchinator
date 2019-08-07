@@ -77,13 +77,7 @@ describe("PostgresLunchCycleGateway", function() {
     const lc_2 = await postgresLunchCycleGateway.create(new LunchCycle());
     const lc_3 = await postgresLunchCycleGateway.create(new LunchCycle());
 
-    lc_1.is_sent = false;
-    lc_2.is_sent = false;
-    lc_3.is_sent = true;
-
-    console.log(lc_1);
-    console.log(lc_2);
-    console.log(lc_3);
+    console.log(await postgresLunchCycleGateway.all());
 
     expect(await postgresLunchCycleGateway.findPrevious()).to.eql(lc_3);
   });
