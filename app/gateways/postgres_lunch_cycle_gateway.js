@@ -51,15 +51,16 @@ class PostgresLunchCycleGateway {
   async findPrevious() {
     const client = await this._client();
     const result = await client.query(
-      "SELECT * FROM lunch_cycles WHERE is_sent IS TRUE ORDER BY id DESC LIMIT 1"
+      "SELECT * FROM lunch_cycles ORDER BY created_at DESC LIMIT 2"
     );
     client.end();
 
     let foundLunchCycle = null;
     if (result.rows.length > 0) {
-      foundLunchCycle = new LunchCycle(result.rows[0]);
+      foundLunchCycle = new LunchCycle(result.rows[1]);
     }
 
+    console.log(foundLunchCycle);
     return foundLunchCycle;
   }
 
