@@ -1,5 +1,5 @@
 exports.shorthands = undefined;
 
-exports.down = pgm => {
+exports.up = pgm => {
   pgm.dropColumns("lunch_cycles", ["is_sent"]);
 };
