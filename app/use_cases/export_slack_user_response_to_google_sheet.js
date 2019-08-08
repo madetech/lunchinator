@@ -7,16 +7,14 @@ class ExportSlackUserResponseToGoogleSheet {
   }
 
   async execute({ lunchCycle, slackUserResponses }) {
-    const lunchCycleSheet = await this.googleSheetGateway.fetchSheet(
-      config.LUNCH_CYCLE_RESPONSES_SHEET_ID
-    );
+    const doc = await this.googleSheetGateway.fetchDoc(config.LUNCH_CYCLE_RESPONSES_SHEET_ID);
 
     this.restaurantsHash = this._buildRestaurantsHash({ lunchCycle });
     this.allHeaderKeys = this._buildAllHeaderKeys();
 
     const lunchCycleWorksheet = await this.findOrCreateLunchCycleWorksheet({
       lunchCycle,
-      lunchCycleSheet
+      doc
     });
 
     await this.fillInWorksheet({ slackUserResponses, lunchCycleWorksheet });
@@ -24,10 +22,10 @@ class ExportSlackUserResponseToGoogleSheet {
     return true;
   }
 
-  async findOrCreateLunchCycleWorksheet({ lunchCycle, lunchCycleSheet }) {
+  async findOrCreateLunchCycleWorksheet({ lunchCycle, doc }) {
     const lunchCycleSheetTitle = moment.utc(lunchCycle.starts_at).format("DD/MM/YYYY");
 
-    const sheetInfo = await this.googleSheetGateway.getInfo(lunchCycleSheet);
+    const sheetInfo = await this.googleSheetGateway.getInfo(doc);
     const foundWorksheet = sheetInfo.worksheets.find(ws => ws.title === lunchCycleSheetTitle);
 
     if (foundWorksheet) {
@@ -39,7 +37,7 @@ class ExportSlackUserResponseToGoogleSheet {
     });
 
     const worksheet = await this.googleSheetGateway.addWorksheetTo({
-      sheet: lunchCycleSheet,
+      doc: doc,
       title: lunchCycleSheetTitle,
       headers: ["First Name", "Email"].concat(restaurantsHeader)
     });
@@ -50,7 +48,7 @@ class ExportSlackUserResponseToGoogleSheet {
   async fillInWorksheet({ slackUserResponses, lunchCycleWorksheet }) {
     const rows = await this.googleSheetGateway.getRows(lunchCycleWorksheet);
 
-    slackUserResponses.forEach(async slackUserResponse => {
+    for (const slackUserResponse of slackUserResponses) {
       const existingRow = rows.find(r => r.email === slackUserResponse.email);
       const rowObject = this._buildRowObject({ slackUserResponse });
 
@@ -66,7 +64,7 @@ class ExportSlackUserResponseToGoogleSheet {
           row: rowObject
         });
       }
-    });
+    }
   }
 
   _buildRowObject({ slackUserResponse }) {

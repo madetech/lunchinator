@@ -1,4 +1,5 @@
 const { expect, sinon } = require("../test_helper");
+const moment = require("moment");
 const { SlashCommandFactory, RestaurantFactory } = require("../factories");
 const { FakeSlackClient } = require("../fakes");
 const { LunchCycle } = require("@domain");
@@ -119,14 +120,14 @@ async function WhenTheDirectMessagesAreCreated() {
 
   const slackUsers = await fakeSlackGateway.fetchUsers();
 
-  slackUsers.forEach(async u => {
+  for (const u of slackUsers) {
     const response = await useCase.execute({
       slackUser: u,
       lunchCycle: lunchCycle
     });
 
     sendDirectMessageResponses.push(response);
-  });
+  }
 }
 
 function ThenDirectMessagesAreSent() {
@@ -135,10 +136,13 @@ function ThenDirectMessagesAreSent() {
     expect(r.slackUserResponse.email).to.eql(`test${i + 1}@example.com`);
 
     expect(fakeSlackClient.postMessageStub).to.have.been.calledWith({
+      as_user: true,
       channel: userList[i].id,
       text:
-        `Hey ${userList[i].first_name}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n` +
-        ":tada: 01/08/2019 restaurant1 vegan:2, meat:2, direction:googlemaps\n"
+        `Hey ${userList[i].profile.first_name}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n` +
+        `:tada: ${moment().format(
+          "DD/MM/YYYY"
+        )} restaurant1 vegan:2, meat:2, direction:googlemaps\n`
     });
   });
 }
