@@ -27,7 +27,11 @@ class GetNewLunchCycleRestaurants {
   findNextRestaurants(allRestaurants, previousLunchCycle) {
     const [lastRestaurant] = previousLunchCycle.restaurants.slice(-1);
 
-    const indexOfLastRestaurant = allRestaurants.findIndex(res => res.name === lastRestaurant.name);
+    let indexOfLastRestaurant = 0;
+
+    if (lastRestaurant) {
+      indexOfLastRestaurant = allRestaurants.findIndex(res => res.name === lastRestaurant.name);
+    }
 
     let nextRestaurants = allRestaurants.slice(indexOfLastRestaurant + 1);
     if (nextRestaurants.length < config.CYCLE_LENGTH) {
