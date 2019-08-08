@@ -18,13 +18,11 @@ class SlackGateway {
   }
 
   async sendMessage(slackUser, message) {
-    console.log("MESSAGE")
-    console.log(message.text);
     const response = await this._slackClient()
       .chat.postMessage(
       {
           "channel": slackUser.id,
-          "blocks": [{"type": "section", "text": {"type": "plain_text", "text": "Hello world"}}]
+          "blocks": message.blocks
       })
       .catch(err => null);
 

@@ -238,8 +238,8 @@ describe("SlackGateway", function() {
   });
 
   it("can postMessage to correct Channel", async function() {
-    const messageText = "hello";
-    const slackMessageDummy = { text: messageText };
+    const blocks = "hello";
+    const slackMessageDummy = { blocks: blocks };
     const slackUser = {
       id: "USLACKID1",
       team_id: "TEAM_ID",
@@ -274,7 +274,7 @@ describe("SlackGateway", function() {
 
     expect(fakeSlackClient.postMessageStub).to.have.been.calledWith({
       channel: slackUser.id,
-      text: messageText
+      blocks: blocks
     });
   });
 

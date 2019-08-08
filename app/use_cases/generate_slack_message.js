@@ -3,10 +3,10 @@ const moment = require("moment");
 class GenerateSlackMessage {
   execute({ lunchCycle, firstName }) {
     const blocks = []
-    let preview
+    let preview=""
     if (!firstName) {
       firstName = "{first name}";
-      preview= "THIS IS A PREVIEW\n"
+      preview= "THIS IS A PREVIEW \n"
     }
 
     blocks.push(
@@ -14,7 +14,7 @@ class GenerateSlackMessage {
         "type": "section",
         "text": {
           "type": "mrkdwn",
-          "text": `${preview} \*Hey\* ${firstName}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n`
+          "text": `${preview}\*Hey\* ${firstName}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n`
         }
       },
       {
