@@ -1,4 +1,5 @@
 const express = require("express");
+const request = require("request");
 const router = express.Router();
 const { LunchCycleService } = require("@services");
 const config = require("@app/config");
@@ -45,28 +46,43 @@ router.post("/send", async function(req, res) {
 });
 
 router.post("/export", async function(req, res) {
+  const responseURL = req.body.response_url;
+
   const postgresLunchCycleGateway = new PostgresLunchCycleGateway();
   const postgresSlackUserResponseGateway = new PostgresSlackUserResponseGateway();
   const lunchCycleService = new LunchCycleService();
+  try {
+    const lunchCycle = await postgresLunchCycleGateway.getCurrent();
 
-  const lunchCycle = await postgresLunchCycleGateway.getCurrent();
+    const slackUserResponses = await postgresSlackUserResponseGateway.findAllForLunchCycle({
+      lunchCycle
+    });
 
-  const slackUserResponses = await postgresSlackUserResponseGateway.findAllForLunchCycle({
-    lunchCycle
-  });
+    const {
+      updatedSlackUserResponses
+    } = await lunchCycleService.fetchReactionsFromSlackUserResponses({
+      slackUserResponses
+    });
 
-  const {
-    updatedSlackUserResponses
-  } = await lunchCycleService.fetchReactionsFromSlackUserResponses({
-    slackUserResponses
-  });
+    res.send({ text: "exporting user responses to google sheet..." });
 
-  await lunchCycleService.exportResponsesToGoogleSheet({
-    lunchCycle,
-    slackUserResponses: updatedSlackUserResponses
-  });
+    await lunchCycleService.exportResponsesToGoogleSheet({
+      lunchCycle,
+      slackUserResponses: updatedSlackUserResponses
+    });
 
-  res.send("exported user responses to google sheet.");
+    request.post({
+      headers: { "content-type": "application/json" },
+      url: responseURL,
+      json: { text: "Exported to google sheet!" }
+    });
+  } catch (error) {
+    request.post({
+      headers: { "content-type": "application/json" },
+      url: responseURL,
+      json: { text: "Error exporting" }
+    });
+  }
 });
 
 module.exports = router;
