@@ -1,5 +1,5 @@
 require("module-alias/register");
-const Slack = require("@slack/web-api");
+const Slack = require("slack");
 const config = require("@app/config");
 
 class SlackGateway {
