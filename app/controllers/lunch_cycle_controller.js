@@ -27,7 +27,7 @@ router.post("/new", async function(req, res) {
 
   const message = lunchCycleService.getPreviewMessage(createResponse.lunchCycle);
 
-  res.send(message);
+  res.json(message);
 });
 
 router.post("/send", async function(req, res) {

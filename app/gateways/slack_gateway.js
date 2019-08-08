@@ -21,7 +21,8 @@ class SlackGateway {
     const response = await this._slackClient()
       .chat.postMessage({
         channel: slackUser.id,
-        text: message.text,
+        blocks: message.blocks,
+        text: "",
         as_user: true
       })
       .catch(err => null);
@@ -39,10 +40,7 @@ class SlackGateway {
         channel,
         timestamp
       })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
+      .catch(err => null);
 
     if (response === null) {
       throw new SlackGatewayError("error fetching reactions.");

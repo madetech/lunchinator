@@ -20,11 +20,12 @@ class FakeSlackClient {
       message: {
         type: "message",
         subtype: "bot_message",
-        text: "Hello from Node!",
+        text: "",
         ts: "1564484225.000400",
         username: "Lunchinator",
         bot_id: "BOT_ID"
-      }
+      },
+      blocks:[]
     });
 
     const reactionsStub = sinon.stub(this.reactions, "get");
