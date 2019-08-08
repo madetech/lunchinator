@@ -238,7 +238,7 @@ describe("SlackGateway", function() {
   });
 
   it("can postMessage to correct Channel", async function() {
-    const blocks = "hello";
+    const blocks = [];
     const slackMessageDummy = { blocks: blocks };
     const slackUser = {
       id: "USLACKID1",
@@ -263,18 +263,21 @@ describe("SlackGateway", function() {
       message: {
         type: "message",
         subtype: "bot_message",
-        text: "Hello from Node!",
+        text: "",
         ts: "1564484225.000400",
         username: "Lunchinator",
         bot_id: "BOT_ID"
-      }
+      },
+      blocks:[]
     });
 
     expect(sendMessageResponse.channel).to.not.eql(slackUser.id);
 
     expect(fakeSlackClient.postMessageStub).to.have.been.calledWith({
       channel: slackUser.id,
-      blocks: blocks
+      blocks: blocks,
+      as_user: true,
+      text:""
     });
   });
 
@@ -318,7 +321,7 @@ describe("SlackGateway", function() {
     const gateway = new SlackGateway();
     fakeSlackClient.chat.postMessage = sinon.fake.rejects(new Error("errrrrr"));
     const slackUser = { id: "1" };
-    const message = { text: "f" };
+    const message = { blocks: [] };
 
     await expect(gateway.sendMessage(slackUser, message)).to.be.rejectedWith(
       SlackGatewayError,

@@ -1,5 +1,4 @@
 const { expect, sinon } = require("../test_helper");
-const moment = require("moment");
 const { SlashCommandFactory, RestaurantFactory } = require("../factories");
 const { FakeSlackClient } = require("../fakes");
 const { LunchCycle } = require("@domain");
@@ -125,24 +124,53 @@ async function WhenTheDirectMessagesAreCreated() {
       slackUser: u,
       lunchCycle: lunchCycle
     });
-
     sendDirectMessageResponses.push(response);
   }
 }
 
 function ThenDirectMessagesAreSent() {
   sendDirectMessageResponses.forEach((r, i) => {
-    expect(r.slackMessageResponse.message.text).to.eql("Hello from Node!");
-    expect(r.slackUserResponse.email).to.eql(`test${i + 1}@example.com`);
+    expect(r.slackMessageResponse.blocks).to.eql([]);
+    expect(r.slackUserResponse.email).to.eql(`${userList[i].profile.email}`);
 
     expect(fakeSlackClient.postMessageStub).to.have.been.calledWith({
       as_user: true,
       channel: userList[i].id,
-      text:
-        `Hey ${userList[i].profile.first_name}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n` +
-        `:tada: ${moment().format(
-          "DD/MM/YYYY"
-        )} restaurant1 vegan:2, meat:2, direction:googlemaps\n`
+      text: "",
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text:
+              `*Hey* ${userList[i].profile.first_name}! It’s time to enter the draw for the next ` +
+              "cycle of company lunches. Let us know which dates " +
+              "you’ll be available on by reacting with the matching " +
+              "emoji.\n\n"
+          }
+        },
+        { type: "divider" },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text:
+              ":tada: 08/08/2019   <googlemaps|restaurant1>    " +
+              "vegan:green_heart:  vegetarian :orange_heart:  meat:green_heart:  " +
+              "halal:question:"
+          }
+        },
+        { type: "divider" },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text:
+              ":green_heart: = Great          :orange_heart: = Some      " +
+              "    :broken_heart: = None          :question: = Unknown"
+          }
+        }
+      ]
     });
   });
 }
