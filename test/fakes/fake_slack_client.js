@@ -25,7 +25,7 @@ class FakeSlackClient {
         username: "Lunchinator",
         bot_id: "BOT_ID"
       },
-      blocks:[]
+      blocks: []
     });
 
     const reactionsStub = sinon.stub(this.reactions, "get");

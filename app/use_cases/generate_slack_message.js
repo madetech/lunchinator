@@ -23,18 +23,17 @@ class GenerateSlackMessage {
     );
 
     lunchCycle.restaurants.forEach((r, i) => {
-      const nextDate = moment.utc(lunchCycle.starts_at).add(i * 7, "days");
+      const nextDate = moment
+        .utc(lunchCycle.starts_at)
+        .add(i * 7, "days")
+        .format("DD/MM/YYYY");
 
       blocks.push(
         {
           type: "section",
           text: {
             type: "mrkdwn",
-            text: `${r.emoji} ${nextDate.format("DD/MM/YYYY")}   \<${r.direction}\|${
-              r.name
-            }\>    vegan${r.dietaries.vegan}  vegetarian ${r.dietaries.vegetarian}  meat${
-              r.dietaries.meat
-            }  halal${r.dietaries.halal}`
+            text: `${r.emoji} ${nextDate}   \<${r.direction}\|${r.name}\>    vegan${r.dietaries.vegan}  vegetarian ${r.dietaries.vegetarian}  meat${r.dietaries.meat}  halal${r.dietaries.halal}`
           }
         },
         {

@@ -40,7 +40,7 @@ class CreateNewLunchCycle {
   }
 
   isValidDate(dateString) {
-    const mo = moment(new Date(dateString));
+    const mo = moment(new Date(dateString)).endOf("day");
     return mo.isValid() && mo.isAfter();
   }
 }
