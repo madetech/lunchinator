@@ -12,5 +12,7 @@ module.exports = {
   FetchReactionsForSlackUserResponse: require("./fetch_reactions_for_slack_user_response"),
   UpdateSlackUserResponseWithReactions: require("./update_slack_user_response_with_reactions"),
   ExportSlackUserResponseToGoogleSheet: require("./export_slack_user_response_to_google_sheet"),
-  FindNonResponderIds: require("./find_non_responder_ids")
+  FindNonResponderIds: require("./find_non_responder_ids"),
+  GenerateReminderMessage: require("./generate_reminder_message"),
+  SendReminderToLateResponder: require("./send_reminder_to_late_responder")
 };

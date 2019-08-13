@@ -18,7 +18,10 @@ const {
   SendDirectMessageToSlackUser,
   FetchReactionsForSlackUserResponse,
   UpdateSlackUserResponseWithReactions,
-  ExportSlackUserResponseToGoogleSheet
+  ExportSlackUserResponseToGoogleSheet,
+  FindNonResponderIds,
+  GenerateReminderMessage,
+  SendReminderToLateResponder
 } = require("@use_cases");
 
 class LunchCycleService {
@@ -63,6 +66,14 @@ class LunchCycleService {
         googleSheetGateway: new GoogleSheetGateway()
       }
     );
+    this.findNonRespondersIds = new FindNonResponderIds({
+      lunchCycleGateway: PostgresLunchCycleGateway,
+      userResponseGateway: slackUserResponseGateway
+    });
+    this.sendReminderToLateResponder = new SendReminderToLateResponder({
+      slackGateway: slackGateway,
+      generateReminderMessage: new GenerateReminderMessage()
+    });
   }
 
   async createLunchCycle({ restaurants }) {
@@ -110,6 +121,12 @@ class LunchCycleService {
   async sendMessagesToSlackUsers(slackUsers) {
     for (const slackUser of slackUsers) {
       await this.sendDirectMessageToSlackUser.execute({ slackUser });
+    }
+  }
+  async remindLateResponders() {
+    const nonResponders = await this.findNonRespondersIds.execute();
+    for (const nonResponder of nonResponders) {
+      await this.sendReminderToLateResponder.execute({ nonResponder });
     }
   }
 

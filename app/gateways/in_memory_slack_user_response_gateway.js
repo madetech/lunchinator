@@ -1,3 +1,4 @@
+require("module-alias/register");
 const { SlackUserResponse } = require("@domain");
 
 class InMemorySlackUserResponseGateway {

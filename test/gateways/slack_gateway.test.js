@@ -268,7 +268,7 @@ describe("SlackGateway", function() {
         username: "Lunchinator",
         bot_id: "BOT_ID"
       },
-      blocks:[]
+      blocks: []
     });
 
     expect(sendMessageResponse.channel).to.not.eql(slackUser.id);
@@ -277,9 +277,30 @@ describe("SlackGateway", function() {
       channel: slackUser.id,
       blocks: blocks,
       as_user: true,
-      text:""
+      text: ""
     });
   });
+
+  // it("can postMessage to the correct user", async function() {
+  //   const slackMessageDummy = { text: "" };
+  //   const slackChannelId = "";
+  //   const gateway = new SlackGateway();
+  //   const sendMessageResponse = await gateway.sendDirectMessage(slackChannelId, slackMessageDummy);
+
+  //   expect(sendMessageResponse).to.eql({
+  //     ok: true,
+  //     channel: "DM_CHANNEL_ID",
+  //     ts: "1564484225.000400",
+  //     message: {
+  //       type: "message",
+  //       subtype: "bot_message",
+  //       text: "",
+  //       ts: "1564484225.000400",
+  //       username: "Lunchinator",
+  //       bot_id: "BOT_ID"
+  //     }
+  //   });
+  // });
 
   it("can get reactions for a message", async function() {
     const slackApiParams = { channel: "DM_CHANNEL_ID_1", timestamp: "1564484225.000400" };

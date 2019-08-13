@@ -85,4 +85,10 @@ router.post("/export", async function(req, res) {
   }
 });
 
+router.post("/reminder", async function(req, res) {
+  const lunchCycleService = new LunchCycleService();
+  await lunchCycleService.remindLateResponders();
+  res.send("reminder has been sent non responders");
+});
+
 module.exports = router;

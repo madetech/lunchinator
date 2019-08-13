@@ -34,6 +34,22 @@ class SlackGateway {
     return response;
   }
 
+  async sendDirectMessage(slackUserId, message) {
+    const response = await this._slackClient()
+      .chat.postMessage({
+        channel: slackUserId,
+        text: message.text,
+        as_user: true
+      })
+      .catch(err => null);
+
+    if (response === null) {
+      throw new SlackGatewayError("error reminder sending message.");
+    }
+
+    return response;
+  }
+
   async fetchReactionsFromMessage({ timestamp, channel }) {
     const response = await this._slackClient()
       .reactions.get({
