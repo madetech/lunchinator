@@ -104,7 +104,10 @@ class LunchCycleService {
     return response.restaurants;
   }
 
-  getPreviewMessage(lunchCycle) {
+  async getPreviewMessage() {
+    const postgresLunchCycleGateway = new PostgresLunchCycleGateway();
+    const lunchCycle = await postgresLunchCycleGateway.getCurrent();
+
     const message = this.generateSlackMessage.execute({
       lunchCycle: lunchCycle
     });
@@ -130,10 +133,18 @@ class LunchCycleService {
     }
   }
 
-  async fetchReactionsFromSlackUserResponses({ slackUserResponses }) {
-    const updatedSlackUserResponses = [];
+  async fetchUserResponses() {
+    const postgresLunchCycleGateway = new PostgresLunchCycleGateway();
+    const postgresSlackUserResponseGateway = new PostgresSlackUserResponseGateway();
+    const lunchCycle = await postgresLunchCycleGateway.getCurrent();
 
-    for (const slackUserResponse of slackUserResponses) {
+    const userResponses = await postgresSlackUserResponseGateway.findAllForLunchCycle({
+      lunchCycle
+    });
+
+    const updatedResponses = [];
+
+    for (const slackUserResponse of userResponses) {
       const reactionsResponse = await this.fetchReactionsForSlackUserResponse.execute({
         slackUserResponse
       });
@@ -143,13 +154,16 @@ class LunchCycleService {
         reactions: reactionsResponse.reactions
       });
 
-      updatedSlackUserResponses.push(updatedSlackUserResponse);
+      updatedResponses.push(updatedSlackUserResponse);
     }
 
-    return { updatedSlackUserResponses };
+    return updatedResponses;
   }
 
-  async exportResponsesToGoogleSheet({ lunchCycle, slackUserResponses }) {
+  async exportResponsesToGoogleSheet(slackUserResponses) {
+    const postgresLunchCycleGateway = new PostgresLunchCycleGateway();
+    const lunchCycle = await postgresLunchCycleGateway.getCurrent();
+
     await this.exportSlackUserResponsesForLunchCycleToGoogleSheet.execute({
       lunchCycle,
       slackUserResponses

@@ -63,13 +63,13 @@ describe("LunchCycleService", async function() {
     expect(restaurants).to.be.eql(restaurantList);
   });
 
-  it("can get preview message", function() {
+  it("can get preview message", async function() {
     const expected = { text: "message" };
     const service = new LunchCycleService();
     const spy = { execute: sinon.fake.returns(expected) };
     sinon.stub(service, "generateSlackMessage").value(spy);
 
-    const message = service.getPreviewMessage(new LunchCycle());
+    const message = await service.getPreviewMessage(new LunchCycle());
 
     expect(spy.execute).to.have.been.called;
     expect(message).to.be.equal(expected);
@@ -103,5 +103,13 @@ describe("LunchCycleService", async function() {
     await service.sendMessagesToSlackUsers(slackUsers, new LunchCycle());
 
     expect(spy.execute).to.have.been.callCount(slackUsers.length);
+  });
+
+  it("can fetch user reactions", function() {
+    // todo
+  });
+
+  it("can export the responses", function() {
+    // todo
   });
 });
