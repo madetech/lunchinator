@@ -254,7 +254,7 @@ describe("SlackGateway", function() {
     };
     const gateway = new SlackGateway();
 
-    const sendMessageResponse = await gateway.sendMessage(slackUser, slackMessageDummy);
+    const sendMessageResponse = await gateway.sendMessageWithBlocks(slackUser, slackMessageDummy);
 
     expect(sendMessageResponse).to.eql({
       ok: true,
@@ -344,7 +344,7 @@ describe("SlackGateway", function() {
     const slackUser = { id: "1" };
     const message = { blocks: [] };
 
-    await expect(gateway.sendMessage(slackUser, message)).to.be.rejectedWith(
+    await expect(gateway.sendMessageWithBlocks(slackUser, message)).to.be.rejectedWith(
       SlackGatewayError,
       "error sending message."
     );

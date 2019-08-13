@@ -4,7 +4,7 @@ const { SendReminderToLateResponder } = require("@use_cases");
 describe("SendReminderToLateResponder", function() {
   it("can send a reminder to a late responder", async function() {
     const lateResponderId = "slackUserId";
-    const gatewaySpy = { sendDirectMessage: sinon.fake.returns(true) };
+    const gatewaySpy = { sendMessageWithText: sinon.fake.returns(true) };
     const reminderMessageDummy = { text: "" };
     const generateReminderMessage = { execute: sinon.fake.returns(reminderMessageDummy) };
     const useCase = new SendReminderToLateResponder({
@@ -12,7 +12,7 @@ describe("SendReminderToLateResponder", function() {
       generateReminderMessage: generateReminderMessage
     });
     const response = await useCase.execute({ slackUserId: lateResponderId });
-    expect(gatewaySpy.sendDirectMessage).to.have.been.calledWith(
+    expect(gatewaySpy.sendMessageWithText).to.have.been.calledWith(
       lateResponderId,
       reminderMessageDummy
     );

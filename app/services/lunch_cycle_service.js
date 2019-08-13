@@ -67,7 +67,7 @@ class LunchCycleService {
       }
     );
     this.findNonRespondersIds = new FindNonResponderIds({
-      lunchCycleGateway: PostgresLunchCycleGateway,
+      lunchCycleGateway: lunchCycleGateway,
       userResponseGateway: slackUserResponseGateway
     });
     this.sendReminderToLateResponder = new SendReminderToLateResponder({

@@ -17,7 +17,7 @@ class SlackGateway {
     );
   }
 
-  async sendMessage(slackUser, message) {
+  async sendMessageWithBlocks(slackUser, message) {
     const response = await this._slackClient()
       .chat.postMessage({
         channel: slackUser.id,
@@ -34,7 +34,7 @@ class SlackGateway {
     return response;
   }
 
-  async sendDirectMessage(slackUserId, message) {
+  async sendMessageWithText(slackUserId, message) {
     const response = await this._slackClient()
       .chat.postMessage({
         channel: slackUserId,
