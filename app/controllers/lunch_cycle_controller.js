@@ -3,7 +3,6 @@ const request = require("request");
 const router = express.Router();
 const { LunchCycleService } = require("@services");
 const config = require("@app/config");
-const { PostgresLunchCycleGateway, PostgresSlackUserResponseGateway } = require("@gateways");
 
 router.post("/new", async function(req, res) {
   const lunchCycleService = new LunchCycleService();
@@ -18,15 +17,15 @@ router.post("/new", async function(req, res) {
 
   const lunchCycleRestaurants = await lunchCycleService.getLunchCycleRestaurants();
 
-  const createResponse = await lunchCycleService.createLunchCycle({
+  const response = await lunchCycleService.createLunchCycle({
     restaurants: lunchCycleRestaurants
   });
 
-  if (createResponse.error) {
-    return res.send(createResponse.error);
+  if (response.error) {
+    return res.send(response.error);
   }
 
-  const message = lunchCycleService.getPreviewMessage(createResponse.lunchCycle);
+  const message = await lunchCycleService.getPreviewMessage();
 
   res.json(message);
 });
@@ -36,6 +35,7 @@ router.post("/send", async function(req, res) {
 
   let users = await lunchCycleService.fetchSlackUsers();
 
+  // limit the users receiving the message in dev so we dont spam em all!
   if (config.DEV_MESSAGE_RECEIVERS.length) {
     users = users.filter(u => config.DEV_MESSAGE_RECEIVERS.indexOf(u.profile.email) > -1);
   }
@@ -46,43 +46,28 @@ router.post("/send", async function(req, res) {
 });
 
 router.post("/export", async function(req, res) {
-  const responseURL = req.body.response_url;
+  res.send({ text: "exporting user responses to google sheet..." });
 
-  const postgresLunchCycleGateway = new PostgresLunchCycleGateway();
-  const postgresSlackUserResponseGateway = new PostgresSlackUserResponseGateway();
-  const lunchCycleService = new LunchCycleService();
   try {
-    const lunchCycle = await postgresLunchCycleGateway.getCurrent();
-
-    const slackUserResponses = await postgresSlackUserResponseGateway.findAllForLunchCycle({
-      lunchCycle
-    });
-
-    const {
-      updatedSlackUserResponses
-    } = await lunchCycleService.fetchReactionsFromSlackUserResponses({
-      slackUserResponses
-    });
-
-    res.send({ text: "exporting user responses to google sheet..." });
-
-    await lunchCycleService.exportResponsesToGoogleSheet({
-      lunchCycle,
-      slackUserResponses: updatedSlackUserResponses
-    });
-
-    request.post({
-      headers: { "content-type": "application/json" },
-      url: responseURL,
-      json: { text: "Exported to google sheet!" }
-    });
-  } catch (error) {
-    request.post({
-      headers: { "content-type": "application/json" },
-      url: responseURL,
-      json: { text: "Error exporting" }
-    });
+    const lunchCycleService = new LunchCycleService();
+    const userResponses = await lunchCycleService.fetchUserResponses();
+    await lunchCycleService.exportResponsesToGoogleSheet(userResponses);
+    postSlackResponse(req.body.response_url, "exported to google sheet!");
+  } catch (err) {
+    console.log(err);
+    postSlackResponse(
+      req.body.response_url,
+      "sorry, there was an error exporting. please try again."
+    );
   }
 });
+
+function postSlackResponse(url, text) {
+  request.post({
+    headers: { "content-type": "application/json" },
+    url: url,
+    json: { text }
+  });
+}
 
 module.exports = router;
