@@ -50,8 +50,8 @@ router.post("/export", async function(req, res) {
 
   try {
     const lunchCycleService = new LunchCycleService();
-    const userResponses = await lunchCycleService.fetchUserResponses();
-    await lunchCycleService.exportResponsesToGoogleSheet(userResponses);
+    await lunchCycleService.updateLunchers();
+    await lunchCycleService.exportLunchers();
     postSlackResponse(req.body.response_url, "exported to google sheet!");
   } catch (err) {
     console.log(err);

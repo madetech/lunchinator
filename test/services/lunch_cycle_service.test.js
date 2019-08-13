@@ -105,11 +105,11 @@ describe("LunchCycleService", async function() {
     expect(spy.execute).to.have.been.callCount(slackUsers.length);
   });
 
-  it("can fetch user reactions", function() {
+  it("can fetch luncher reactions", function() {
     // todo
   });
 
-  it("can export the responses", function() {
+  it("can export the lunchers", function() {
     // todo
   });
 });

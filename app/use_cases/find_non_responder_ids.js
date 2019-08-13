@@ -6,9 +6,9 @@ class FindNonResponderIds {
 
   async execute() {
     const lunchCycle = await this.lunchCycleGateway.getCurrent();
-    const users = await this.userResponseGateway.findAllForLunchCycle({ lunchCycle });
+    const lunchers = await this.userResponseGateway.findAllForLunchCycle({ lunchCycle });
 
-    const nonResponders = users
+    const nonResponders = lunchers
       .filter(user => user.availableEmojis.length === 0)
       .map(user => user.slackUserId);
 

@@ -16,7 +16,7 @@ class SendDirectMessageToSlackUser {
       this.generateSlackMessage.execute({ lunchCycle, firstName })
     );
 
-    const slackUserResponse = await this.slackUserResponseGateway.create({
+    const luncher = await this.slackUserResponseGateway.create({
       slackUser,
       slackMessageResponse,
       lunchCycle
@@ -24,7 +24,7 @@ class SendDirectMessageToSlackUser {
 
     return {
       slackMessageResponse,
-      slackUserResponse
+      luncher
     };
   }
 }

@@ -16,9 +16,9 @@ const {
   IsLunchinatorAdmin,
   FetchAllSlackUsers,
   SendDirectMessageToSlackUser,
-  FetchReactionsForSlackUserResponse,
-  UpdateSlackUserResponseWithReactions,
-  ExportSlackUserResponseToGoogleSheet
+  FetchReactionsForLuncher,
+  UpdateLuncherReactions,
+  ExportLunchersToGoogleSheet
 } = require("@use_cases");
 
 class LunchCycleService {
@@ -50,19 +50,18 @@ class LunchCycleService {
     });
     this.generateSlackMessage = new GenerateSlackMessage();
     this.isLunchinatorAdmin = new IsLunchinatorAdmin();
-    this.fetchReactionsForSlackUserResponse = new FetchReactionsForSlackUserResponse({
+    this.fetchLuncherReactions = new FetchReactionsForLuncher({
       slackGateway: slackGateway
     });
-    this.updateSlackUserResponseWithReactions = new UpdateSlackUserResponseWithReactions({
+    this.updateLuncherReactions = new UpdateLuncherReactions({
       slackUserResponseGateway: slackUserResponseGateway,
       lunchCycleGateway: lunchCycleGateway
     });
-    this.exportSlackUserResponsesForLunchCycleToGoogleSheet = new ExportSlackUserResponseToGoogleSheet(
-      {
-        slackUserResponseGateway: slackUserResponseGateway,
-        googleSheetGateway: new GoogleSheetGateway()
-      }
-    );
+    this.exportLunchersToGoogleSheet = new ExportLunchersToGoogleSheet({
+      slackUserResponseGateway: slackUserResponseGateway,
+      googleSheetGateway: new GoogleSheetGateway(),
+      lunchCycleGateway: lunchCycleGateway
+    });
   }
 
   async createLunchCycle({ restaurants }) {
@@ -116,41 +115,21 @@ class LunchCycleService {
     }
   }
 
-  async fetchUserResponses() {
+  async updateLunchers() {
     const postgresLunchCycleGateway = new PostgresLunchCycleGateway();
     const postgresSlackUserResponseGateway = new PostgresSlackUserResponseGateway();
+
     const lunchCycle = await postgresLunchCycleGateway.getCurrent();
+    const lunchers = await postgresSlackUserResponseGateway.findAllForLunchCycle({ lunchCycle });
 
-    const userResponses = await postgresSlackUserResponseGateway.findAllForLunchCycle({
-      lunchCycle
-    });
-
-    const updatedResponses = [];
-
-    for (const slackUserResponse of userResponses) {
-      const reactionsResponse = await this.fetchReactionsForSlackUserResponse.execute({
-        slackUserResponse
-      });
-
-      const { updatedSlackUserResponse } = await this.updateSlackUserResponseWithReactions.execute({
-        slackUserResponse,
-        reactions: reactionsResponse.reactions
-      });
-
-      updatedResponses.push(updatedSlackUserResponse);
+    for (const luncher of lunchers) {
+      const response = await this.fetchLuncherReactions.execute({ luncher });
+      await this.updateLuncherReactions.execute({ luncher, reactions: response.reactions });
     }
-
-    return updatedResponses;
   }
 
-  async exportResponsesToGoogleSheet(slackUserResponses) {
-    const postgresLunchCycleGateway = new PostgresLunchCycleGateway();
-    const lunchCycle = await postgresLunchCycleGateway.getCurrent();
-
-    await this.exportSlackUserResponsesForLunchCycleToGoogleSheet.execute({
-      lunchCycle,
-      slackUserResponses
-    });
+  async exportLunchers() {
+    await this.exportLunchersToGoogleSheet.execute();
   }
 }
 

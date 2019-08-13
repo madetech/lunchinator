@@ -9,8 +9,8 @@ module.exports = {
   FetchAllSlackUsers: require("./fetch_all_slack_users"),
   VerifySlackRequest: require("./verify_slack_request"),
   GenerateSlackMessage: require("./generate_slack_message"),
-  FetchReactionsForSlackUserResponse: require("./fetch_reactions_for_slack_user_response"),
-  UpdateSlackUserResponseWithReactions: require("./update_slack_user_response_with_reactions"),
-  ExportSlackUserResponseToGoogleSheet: require("./export_slack_user_response_to_google_sheet"),
+  FetchReactionsForLuncher: require("./fetch_reactions_for_luncher"),
+  UpdateLuncherReactions: require("./update_luncher_reactions"),
+  ExportLunchersToGoogleSheet: require("./export_lunchers_to_google_sheet"),
   FindNonResponderIds: require("./find_non_responder_ids")
 };

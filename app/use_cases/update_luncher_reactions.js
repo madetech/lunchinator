@@ -1,11 +1,11 @@
-class UpdateSlackUserResponseWithReactions {
+class UpdateLuncherReactions {
   constructor(options) {
     this.slackUserResponseGateway = options.slackUserResponseGateway;
     this.lunchCycleGateway = options.lunchCycleGateway;
   }
 
-  async execute({ slackUserResponse, reactions }) {
-    const lunchCycle = await this.lunchCycleGateway.findById(slackUserResponse.lunchCycleId);
+  async execute({ luncher, reactions }) {
+    const lunchCycle = await this.lunchCycleGateway.getCurrent();
     const emojis = [];
 
     if (reactions.message.reactions) {
@@ -18,13 +18,10 @@ class UpdateSlackUserResponseWithReactions {
       });
     }
 
-    const updatedSlackUserResponse = await this.slackUserResponseGateway.saveEmojis({
-      slackUserResponse,
-      emojis
-    });
+    const updatedLuncher = await this.slackUserResponseGateway.saveEmojis({ luncher, emojis });
 
-    return { updatedSlackUserResponse };
+    return { updatedLuncher };
   }
 }
 
-module.exports = UpdateSlackUserResponseWithReactions;
+module.exports = UpdateLuncherReactions;

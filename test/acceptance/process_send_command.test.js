@@ -140,7 +140,7 @@ async function WhenTheDirectMessagesAreCreated() {
 function ThenDirectMessagesAreSent() {
   sendDirectMessageResponses.forEach((r, i) => {
     expect(r.slackMessageResponse.blocks).to.eql([]);
-    expect(r.slackUserResponse.email).to.eql(`${userList[i].profile.email}`);
+    expect(r.luncher.email).to.eql(`${userList[i].profile.email}`);
 
     let nextDate = moment.utc(lunchCycle.starts_at).format("DD/MM/YYYY");
 

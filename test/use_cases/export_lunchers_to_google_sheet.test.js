@@ -1,13 +1,15 @@
 const { expect, sinon, config } = require("../test_helper");
 const { LunchCycle } = require("@domain");
-const { ExportSlackUserResponseToGoogleSheet } = require("@use_cases");
+const { ExportLunchersToGoogleSheet } = require("@use_cases");
 
-describe("ExportSlackUserResponseToGoogleSheet", function() {
+describe("ExportLunchersToGoogleSheet", function() {
   it("uses the correct Google Sheet ID", async function() {
     const lunchCycle = new LunchCycle({ id: 123 });
     const fakeSheetGateway = { fetchDoc: sinon.stub().resolves({}) };
-    const useCase = new ExportSlackUserResponseToGoogleSheet({
-      googleSheetGateway: fakeSheetGateway
+    const useCase = new ExportLunchersToGoogleSheet({
+      googleSheetGateway: fakeSheetGateway,
+      slackUserResponseGateway: { findAllForLunchCycle: sinon.stub().resolves([]) },
+      lunchCycleGateway: { getCurrent: sinon.stub().resolves(lunchCycle) }
     });
 
     const dummySheetId = "dummy";
@@ -16,7 +18,7 @@ describe("ExportSlackUserResponseToGoogleSheet", function() {
     sinon.stub(useCase, "findOrCreateLunchCycleWorksheet");
     sinon.stub(useCase, "fillInWorksheet");
 
-    await useCase.execute({ lunchCycle, slackUserResponses: [] });
+    await useCase.execute();
 
     expect(fakeSheetGateway.fetchDoc).to.have.been.calledOnceWith(dummySheetId);
   });

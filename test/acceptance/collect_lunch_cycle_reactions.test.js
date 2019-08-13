@@ -1,21 +1,18 @@
 const { expect } = require("../test_helper");
 const { RestaurantFactory } = require("../factories");
-const { LunchCycle, SlackUserResponse } = require("@domain");
+const { LunchCycle, Luncher } = require("@domain");
 const { FakeSlackClient } = require("../fakes");
 const {
   SlackGateway,
   InMemoryLunchCycleGateway,
   InMemorySlackUserResponseGateway
 } = require("@gateways");
-const {
-  FetchReactionsForSlackUserResponse,
-  UpdateSlackUserResponseWithReactions
-} = require("@use_cases");
+const { FetchReactionsForLuncher, UpdateLuncherReactions } = require("@use_cases");
 
 let lunchCycle;
-let slackUserResponse;
-let fetchReactionsUseCaseResponse;
-let updateSULCWithReactions;
+let luncher;
+let fetchReactionsResponse;
+let updateResponse;
 let inMemoryLunchCycleGateway;
 let fakeSlackClient;
 let inMemorySlackUserResponseGateway;
@@ -28,17 +25,17 @@ describe("Collect Lunch Cycle Reactions", function() {
     inMemorySlackUserResponseGateway = new InMemorySlackUserResponseGateway();
   });
 
-  it("can get reactions for a Slack User Response", async function() {
+  it("can get reactions for a Luncher", async function() {
     await GivenASlackUserResponseExists();
-    await WhenReactionsAreRetrivedForTheSlackUserResponse();
+    await WhenReactionsAreRetrivedForTheLuncher();
     ThenReturnsTheReactions();
   });
 
-  it("can update a Slack User Response with the reactions", async function() {
+  it("can update a Luncher with the reactions", async function() {
     await GivenASlackUserResponseExists();
-    GivenAFetchSlackReactionsForSlackUserResponseResponseExists();
-    await WhenTheSlackUserResponseIsUpdatedWithTheReactions();
-    ThenTheSlackUserResponseHasCorrectEmojis();
+    GivenReactionsForLuncherExists();
+    await WhenTheLuncherIsUpdatedWithTheReactions();
+    ThenTheLuncherHasCorrectEmojis();
   });
 });
 
@@ -53,7 +50,7 @@ async function GivenASlackUserResponseExists() {
     })
   );
 
-  slackUserResponse = await inMemorySlackUserResponseGateway.create({
+  luncher = await inMemorySlackUserResponseGateway.create({
     slackUser: {
       id: "U2147483697",
       profile: {
@@ -69,18 +66,16 @@ async function GivenASlackUserResponseExists() {
   });
 }
 
-async function WhenReactionsAreRetrivedForTheSlackUserResponse() {
-  const useCase = new FetchReactionsForSlackUserResponse({
+async function WhenReactionsAreRetrivedForTheLuncher() {
+  const useCase = new FetchReactionsForLuncher({
     slackGateway: new SlackGateway()
   });
 
-  fetchReactionsUseCaseResponse = await useCase.execute({
-    slackUserResponse: slackUserResponse
-  });
+  fetchReactionsResponse = await useCase.execute({ luncher });
 }
 
 function ThenReturnsTheReactions() {
-  expect(fetchReactionsUseCaseResponse.reactions).to.eql({
+  expect(fetchReactionsResponse.reactions).to.eql({
     ok: true,
     type: "message",
     channel: "DM_CHANNEL_ID_1",
@@ -99,8 +94,8 @@ function ThenReturnsTheReactions() {
   });
 }
 
-function GivenAFetchSlackReactionsForSlackUserResponseResponseExists() {
-  fetchReactionsUseCaseResponse = {
+function GivenReactionsForLuncherExists() {
+  fetchReactionsResponse = {
     reactions: {
       ok: true,
       type: "message",
@@ -122,21 +117,21 @@ function GivenAFetchSlackReactionsForSlackUserResponseResponseExists() {
   };
 }
 
-async function WhenTheSlackUserResponseIsUpdatedWithTheReactions() {
-  const useCase = new UpdateSlackUserResponseWithReactions({
+async function WhenTheLuncherIsUpdatedWithTheReactions() {
+  const useCase = new UpdateLuncherReactions({
     slackUserResponseGateway: inMemorySlackUserResponseGateway,
     lunchCycleGateway: inMemoryLunchCycleGateway
   });
 
-  updateSULCWithReactions = await useCase.execute({
-    slackUserResponse: slackUserResponse,
-    reactions: fetchReactionsUseCaseResponse.reactions
+  updateResponse = await useCase.execute({
+    luncher,
+    reactions: fetchReactionsResponse.reactions
   });
 }
 
-function ThenTheSlackUserResponseHasCorrectEmojis() {
-  expect(updateSULCWithReactions.updatedSlackUserResponse).to.eql(
-    new SlackUserResponse({
+function ThenTheLuncherHasCorrectEmojis() {
+  expect(updateResponse.updatedLuncher).to.eql(
+    new Luncher({
       slackUserId: "U2147483697",
       email: "test@example.com",
       firstName: "Test",
