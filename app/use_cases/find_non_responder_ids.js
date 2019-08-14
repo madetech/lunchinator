@@ -8,12 +8,12 @@ class FindNonResponderIds {
     const lunchCycle = await this.lunchCycleGateway.getCurrent();
     const lunchers = await this.userResponseGateway.findAllForLunchCycle({ lunchCycle });
 
-    const nonResponders = lunchers
+    const nonResponderIds = lunchers
       .filter(user => user.availableEmojis.length === 0)
       .map(user => user.slackUserId);
 
     return {
-      nonResponders: nonResponders
+      nonResponderIds
     };
   }
 }
