@@ -48,7 +48,10 @@ class GoogleSheetGateway {
   }
 
   async getInfo(doc) {
-    const info = await promisify(doc.getInfo)().catch(() => null);
+    const info = await promisify(doc.getInfo)().catch(err => {
+      console.log(err);
+      return null;
+    });
 
     if (info === null) {
       throw new GoogleSheetGatewayError("Cannot get info for Google Sheets document.");
