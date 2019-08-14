@@ -15,7 +15,7 @@ describe("FindNonResponderIds", function() {
     });
 
     const response = await useCase.execute();
-    expect(response.nonResponders).to.eql(expectedUserIds);
+    expect(response.nonResponderIds).to.eql(expectedUserIds);
   });
 
   it("can find non responders when one person has responded", async function() {
@@ -31,7 +31,7 @@ describe("FindNonResponderIds", function() {
       lunchCycleGateway: { getCurrent: sinon.stub().returns({ id: "1" }) }
     });
     const response = await useCase.execute();
-    expect(response.nonResponders).to.eql(expectedUserIds);
+    expect(response.nonResponderIds).to.eql(expectedUserIds);
   });
 
   it("can't find non responders when everyone has responded", async function() {
@@ -46,6 +46,6 @@ describe("FindNonResponderIds", function() {
     });
 
     const response = await useCase.execute();
-    expect(response.nonResponders).to.eql([]);
+    expect(response.nonResponderIds).to.eql([]);
   });
 });

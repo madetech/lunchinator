@@ -4,10 +4,10 @@ class SendReminderToLateResponder {
     this.generateReminderMessage = options.generateReminderMessage;
   }
 
-  async execute({ slackUserId }) {
+  async execute({ nonResponderId }) {
     const slackMessageResponse = await this.slackGateway.sendMessageWithText(
-      slackUserId,
-      this.generateReminderMessage.execute({ slackUserId })
+      nonResponderId,
+      this.generateReminderMessage.execute({ nonResponderId })
     );
 
     return {

@@ -127,9 +127,9 @@ class LunchCycleService {
     }
   }
   async remindLateResponders() {
-    const nonResponders = await this.findNonRespondersIds.execute();
-    for (const nonResponder of nonResponders) {
-      await this.sendReminderToLateResponder.execute({ nonResponder });
+    const response = await this.findNonRespondersIds.execute();
+    for (const nonResponderId of response.nonResponderIds) {
+      await this.sendReminderToLateResponder.execute({ nonResponderId });
     }
   }
 

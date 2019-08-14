@@ -41,10 +41,13 @@ class SlackGateway {
         text: message.text,
         as_user: true
       })
-      .catch(err => null);
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
 
     if (response === null) {
-      throw new SlackGatewayError("error reminder sending message.");
+      throw new SlackGatewayError("error sending reminder message.");
     }
 
     return response;

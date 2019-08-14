@@ -281,26 +281,52 @@ describe("SlackGateway", function() {
     });
   });
 
-  // it("can postMessage to the correct user", async function() {
-  //   const slackMessageDummy = { text: "" };
-  //   const slackChannelId = "";
-  //   const gateway = new SlackGateway();
-  //   const sendMessageResponse = await gateway.sendDirectMessage(slackChannelId, slackMessageDummy);
+  it("can postMessage to the correct user", async function() {
+    const slackMessageDummy = { text: "" };
+    const slackChannelId = "";
+    const spy = {
+      postMessage: sinon.fake.resolves({
+        ok: true,
+        channel: "DM_CHANNEL_ID", // Differs from sent Channel ID (User ID)
+        ts: "1564484225.000400",
+        message: {
+          type: "message",
+          subtype: "bot_message",
+          text: "",
+          ts: "1564484225.000400",
+          username: "Lunchinator",
+          bot_id: "BOT_ID"
+        }
+      })
+    };
+    const gateway = new SlackGateway();
 
-  //   expect(sendMessageResponse).to.eql({
-  //     ok: true,
-  //     channel: "DM_CHANNEL_ID",
-  //     ts: "1564484225.000400",
-  //     message: {
-  //       type: "message",
-  //       subtype: "bot_message",
-  //       text: "",
-  //       ts: "1564484225.000400",
-  //       username: "Lunchinator",
-  //       bot_id: "BOT_ID"
-  //     }
-  //   });
-  // });
+    fakeSlackClient.chat = spy;
+
+    const sendMessageResponse = await gateway.sendMessageWithText(
+      slackChannelId,
+      slackMessageDummy
+    );
+
+    expect(sendMessageResponse).to.eql({
+      ok: true,
+      channel: "DM_CHANNEL_ID",
+      ts: "1564484225.000400",
+      message: {
+        type: "message",
+        subtype: "bot_message",
+        text: "",
+        ts: "1564484225.000400",
+        username: "Lunchinator",
+        bot_id: "BOT_ID"
+      }
+    });
+    expect(spy.postMessage).to.have.been.calledWith({
+      channel: slackChannelId,
+      text: slackMessageDummy.text,
+      as_user: true
+    });
+  });
 
   it("can get reactions for a message", async function() {
     const slackApiParams = { channel: "DM_CHANNEL_ID_1", timestamp: "1564484225.000400" };

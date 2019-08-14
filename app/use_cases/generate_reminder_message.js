@@ -1,8 +1,7 @@
-const moment = require("moment");
 class GenerateReminderMessage {
-  execute({ slackUserId }) {
+  execute({ nonResponderId }) {
     return {
-      text: `Hi <@${slackUserId}>, please respond with your prefrences for the lunchers draw!`
+      text: `Hi <@${nonResponderId}>, please respond with your preferences for the lunchers draw!`
     };
   }
 }

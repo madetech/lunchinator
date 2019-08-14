@@ -26,7 +26,7 @@ describe("DealWithNonResponders", function() {
       userResponseGateway: userResponseGateway
     });
     const response = await useCase.execute();
-    expect(response.nonResponders).to.eql(expectedUserIds);
+    expect(response.nonResponderIds).to.eql(expectedUserIds);
   });
 
   it("can find non responders when one person has responded", async function() {
@@ -57,7 +57,7 @@ describe("DealWithNonResponders", function() {
     });
 
     const response = await useCase.execute();
-    expect(response.nonResponders).to.eql(expectedUserIds);
+    expect(response.nonResponderIds).to.eql(expectedUserIds);
   });
 
   it("can't find non responders when everyone has responded", async function() {
@@ -91,6 +91,6 @@ describe("DealWithNonResponders", function() {
     });
 
     const response = await useCase.execute();
-    expect(response.nonResponders).to.eql([]);
+    expect(response.nonResponderIds).to.eql([]);
   });
 });
