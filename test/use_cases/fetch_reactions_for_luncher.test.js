@@ -1,10 +1,10 @@
 const { expect, sinon } = require("../test_helper");
-const { FetchReactionsForSlackUserResponse } = require("@use_cases");
+const { FetchReactionsForLuncher } = require("@use_cases");
 
-describe("FetchReactionsForSlackUserResponse", function() {
+describe("FetchReactionsForLuncher", function() {
   it("can use the slack gateway to get reactions", async function() {
     const expectedReactions = {};
-    const slackUserResponse = {
+    const luncher = {
       userId: "U2147483697",
       email: "test@example.com",
       firstName: "Test",
@@ -15,16 +15,16 @@ describe("FetchReactionsForSlackUserResponse", function() {
     };
 
     const slackGatewaySpy = { fetchReactionsFromMessage: sinon.fake.resolves(expectedReactions) };
-    const useCase = new FetchReactionsForSlackUserResponse({
+    const useCase = new FetchReactionsForLuncher({
       slackGateway: slackGatewaySpy
     });
 
-    const response = await useCase.execute({ slackUserResponse: slackUserResponse });
+    const response = await useCase.execute({ luncher });
     expect(response.reactions).to.equal(expectedReactions);
 
     expect(slackGatewaySpy.fetchReactionsFromMessage).to.have.been.calledWith({
-      timestamp: slackUserResponse.messageId,
-      channel: slackUserResponse.messageChannel
+      timestamp: luncher.messageId,
+      channel: luncher.messageChannel
     });
   });
 });

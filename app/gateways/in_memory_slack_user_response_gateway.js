@@ -1,17 +1,16 @@
-require("module-alias/register");
-const { SlackUserResponse } = require("@domain");
+const { Luncher } = require("@domain");
 
 class InMemorySlackUserResponseGateway {
   constructor() {
-    this.slackUserResponses = [];
+    this.lunchers = [];
   }
 
   async findAllForLunchCycle({ lunchCycle }) {
-    return this.slackUserResponses.filter(sur => sur.lunchCycleId === lunchCycle.id);
+    return this.lunchers.filter(sur => sur.lunchCycleId === lunchCycle.id);
   }
 
   async create({ slackUser, slackMessageResponse, lunchCycle }) {
-    const newSlackUserResponse = new SlackUserResponse({
+    const luncher = new Luncher({
       slackUserId: slackUser.id,
       email: slackUser.profile.email,
       firstName: slackUser.profile.first_name,
@@ -21,30 +20,26 @@ class InMemorySlackUserResponseGateway {
       availableEmojis: []
     });
 
-    this.slackUserResponses.push(newSlackUserResponse);
+    this.lunchers.push(luncher);
 
-    return newSlackUserResponse;
+    return luncher;
   }
 
-  async saveEmojis({ slackUserResponse, emojis }) {
-    const foundSlackUserResponse = this.slackUserResponses.find(sulc => {
-      return (
-        sulc.slackUserId === slackUserResponse.slackUserId &&
-        sulc.lunchCycleId === slackUserResponse.lunchCycleId
-      );
+  async saveEmojis({ luncher, emojis }) {
+    const foundLuncher = this.lunchers.find(l => {
+      return l.slackUserId === luncher.slackUserId && l.lunchCycleId === luncher.lunchCycleId;
     });
 
-    if (foundSlackUserResponse) {
-      foundSlackUserResponse.availableEmojis = emojis;
-
-      return foundSlackUserResponse;
+    if (foundLuncher) {
+      foundLuncher.availableEmojis = emojis;
+      return foundLuncher;
     }
 
     return null;
   }
 
   async count() {
-    return this.slackUserResponses.length;
+    return this.lunchers.length;
   }
 }
 

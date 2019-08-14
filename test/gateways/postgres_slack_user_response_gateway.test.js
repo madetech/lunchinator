@@ -1,5 +1,5 @@
 const { expect, clearPostgres } = require("../test_helper");
-const { LunchCycle, SlackUserResponse } = require("@domain");
+const { LunchCycle, Luncher } = require("@domain");
 const { PostgresLunchCycleGateway, PostgresSlackUserResponseGateway } = require("@gateways");
 
 describe("PostgresSlackUserResponseGateway", function() {
@@ -33,14 +33,14 @@ describe("PostgresSlackUserResponseGateway", function() {
   it("can create a Slack User Response", async function() {
     const postgresSlackUserResponseGateway = new PostgresSlackUserResponseGateway();
 
-    const slackUserResponse = await postgresSlackUserResponseGateway.create({
+    const luncher = await postgresSlackUserResponseGateway.create({
       slackUser,
       slackMessageResponse,
       lunchCycle
     });
 
-    expect(slackUserResponse).to.eql(
-      new SlackUserResponse({
+    expect(luncher).to.eql(
+      new Luncher({
         slackUserId: "U2147483697",
         email: "test@example.com",
         firstName: "Test",
@@ -69,7 +69,7 @@ describe("PostgresSlackUserResponseGateway", function() {
   it("can save the correct record", async function() {
     const postgresSlackUserResponseGateway = new PostgresSlackUserResponseGateway();
 
-    const res1 = await postgresSlackUserResponseGateway.create({
+    const luncher = await postgresSlackUserResponseGateway.create({
       slackUser,
       slackMessageResponse,
       lunchCycle
@@ -80,13 +80,13 @@ describe("PostgresSlackUserResponseGateway", function() {
       lunchCycle
     });
 
-    const returnedSlackUserResponse = await postgresSlackUserResponseGateway.saveEmojis({
-      slackUserResponse: res1,
+    const updatedLuncher = await postgresSlackUserResponseGateway.saveEmojis({
+      luncher,
       emojis: [":pizza", ":sushi:"]
     });
 
-    expect(returnedSlackUserResponse.slackUserId).to.eql(slackUser.id);
-    expect(returnedSlackUserResponse.availableEmojis).to.eql([":pizza", ":sushi:"]);
+    expect(updatedLuncher.slackUserId).to.eql(slackUser.id);
+    expect(updatedLuncher.availableEmojis).to.eql([":pizza", ":sushi:"]);
   });
 
   it("can retrive all Slack User Responses for a given lunchCycle", async function() {
@@ -97,7 +97,7 @@ describe("PostgresSlackUserResponseGateway", function() {
       slackMessageResponse,
       lunchCycle
     });
-    const firstOrderedSlackUserResponse = await postgresSlackUserResponseGateway.create({
+    const firstLuncher = await postgresSlackUserResponseGateway.create({
       slackUser: { ...slackUser, id: "U123" },
       slackMessageResponse,
       lunchCycle
@@ -112,6 +112,6 @@ describe("PostgresSlackUserResponseGateway", function() {
       lunchCycle
     });
     expect(listWithResults.length).to.eql(2);
-    expect(listWithResults[0]).to.eql(firstOrderedSlackUserResponse);
+    expect(listWithResults[0]).to.eql(firstLuncher);
   });
 });

@@ -1,6 +1,6 @@
-class SlackUserResponse {
+class Luncher {
   static newFromDb(dbObject) {
-    return new SlackUserResponse({
+    return new Luncher({
       slackUserId: dbObject.slack_user_id,
       lunchCycleId: dbObject.lunch_cycle_id,
       email: dbObject.email,
@@ -22,4 +22,4 @@ class SlackUserResponse {
   }
 }
 
-module.exports = SlackUserResponse;
+module.exports = Luncher;

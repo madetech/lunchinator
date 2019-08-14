@@ -1,5 +1,5 @@
 const { expect } = require("../test_helper");
-const { SlackUserResponse } = require("@domain");
+const { Luncher } = require("@domain");
 const { InMemorySlackUserResponseGateway } = require("@gateways");
 
 describe("InMemorySlackUserResponseGateway", function() {
@@ -27,7 +27,7 @@ describe("InMemorySlackUserResponseGateway", function() {
 
     expect(await gateway.count()).to.eql(0);
 
-    const newSlackUserResponse = await gateway.create({
+    const luncher = await gateway.create({
       slackUser,
       slackMessageResponse,
       lunchCycle
@@ -35,8 +35,8 @@ describe("InMemorySlackUserResponseGateway", function() {
 
     expect(await gateway.count()).to.eql(1);
 
-    expect(newSlackUserResponse).to.eql(
-      new SlackUserResponse({
+    expect(luncher).to.eql(
+      new Luncher({
         slackUserId: "U2147483697",
         email: "test@example.com",
         firstName: "Test",
@@ -50,7 +50,7 @@ describe("InMemorySlackUserResponseGateway", function() {
 
   it("can save", async function() {
     const gateway = new InMemorySlackUserResponseGateway();
-    const slackUserResponse = new SlackUserResponse({
+    const luncher = new Luncher({
       slackUserId: "U2147483697",
       email: "test@example.com",
       firstName: "Test",
@@ -60,26 +60,24 @@ describe("InMemorySlackUserResponseGateway", function() {
       availableEmojis: []
     });
 
-    gateway.slackUserResponses = [{ ...slackUserResponse }];
+    gateway.lunchers = [{ ...luncher }];
 
     expect(await gateway.count()).to.eql(1);
 
-    const returnedSlackUserResponse = await gateway.saveEmojis({
-      slackUserResponse,
+    const updatedLuncher = await gateway.saveEmojis({
+      luncher,
       emojis: [":pizza:"]
     });
 
     expect(await gateway.count()).to.eql(1);
 
-    expect(returnedSlackUserResponse.messageId).to.eql(slackUserResponse.messageId);
-    expect(returnedSlackUserResponse.availableEmojis).to.not.equal(
-      slackUserResponse.availableEmojis
-    );
+    expect(updatedLuncher.messageId).to.eql(luncher.messageId);
+    expect(updatedLuncher.availableEmojis).to.not.equal(luncher.availableEmojis);
   });
 
   it("can find correct lunch cycle", async function() {
     const gateway = new InMemorySlackUserResponseGateway();
-    const slackUserResponse1 = new SlackUserResponse({
+    const luncher1 = new Luncher({
       slackUserId: "U1",
       email: "test@example.com",
       firstName: "Test",
@@ -88,7 +86,7 @@ describe("InMemorySlackUserResponseGateway", function() {
       lunchCycleId: 123,
       availableEmojis: []
     });
-    const slackUserResponse2 = new SlackUserResponse({
+    const luncher2 = new Luncher({
       slackUserId: "U2",
       email: "test@example.com",
       firstName: "Test",
@@ -97,7 +95,7 @@ describe("InMemorySlackUserResponseGateway", function() {
       lunchCycleId: 123,
       availableEmojis: []
     });
-    const slackUserResponse3 = new SlackUserResponse({
+    const luncher3 = new Luncher({
       slackUserId: "U3",
       email: "test@example.com",
       firstName: "Test",
@@ -108,10 +106,10 @@ describe("InMemorySlackUserResponseGateway", function() {
     });
     const lunchCycle = { id: 123 };
 
-    gateway.slackUserResponses = [slackUserResponse1, slackUserResponse2, slackUserResponse3];
+    gateway.lunchers = [luncher1, luncher2, luncher3];
 
     const results = await gateway.findAllForLunchCycle({ lunchCycle });
 
-    expect(results).to.eql([slackUserResponse1, slackUserResponse2]);
+    expect(results).to.eql([luncher1, luncher2]);
   });
 });

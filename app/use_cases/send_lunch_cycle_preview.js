@@ -1,6 +1,3 @@
-require("module-alias/register");
-const { SlackMessage } = require("@domain");
-
 class SendLunchCyclePreview {
   constructor(options) {
     this.gateway = options.gateway;

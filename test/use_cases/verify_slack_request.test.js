@@ -1,4 +1,4 @@
-const { expect, sinon } = require("../test_helper");
+const { expect } = require("../test_helper");
 const { VerifySlackRequest } = require("@use_cases");
 
 describe("VerifySlackRequest", function() {

@@ -1,32 +1,35 @@
 const config = require("@app/config");
 const moment = require("moment");
 
-class ExportSlackUserResponseToGoogleSheet {
-  constructor({ googleSheetGateway }) {
+class ExportLunchersToGoogleSheet {
+  constructor({ googleSheetGateway, slackUserResponseGateway, lunchCycleGateway }) {
     this.googleSheetGateway = googleSheetGateway;
+    this.slackUserResponseGateway = slackUserResponseGateway;
+    this.lunchCycleGateway = lunchCycleGateway;
   }
 
-  async execute({ lunchCycle, slackUserResponses }) {
+  async execute() {
+    const lunchCycle = await this.lunchCycleGateway.getCurrent();
+    const lunchers = await this.slackUserResponseGateway.findAllForLunchCycle({ lunchCycle });
     const doc = await this.googleSheetGateway.fetchDoc(config.LUNCH_CYCLE_RESPONSES_SHEET_ID);
 
     this.restaurantsHash = this._buildRestaurantsHash({ lunchCycle });
     this.allHeaderKeys = this._buildAllHeaderKeys();
 
-    const lunchCycleWorksheet = await this.findOrCreateLunchCycleWorksheet({
+    const worksheet = await this.findOrCreateLunchCycleWorksheet({
       lunchCycle,
       doc
     });
 
-    await this.fillInWorksheet({ slackUserResponses, lunchCycleWorksheet });
+    await this.fillInWorksheet({ lunchers, worksheet });
 
     return true;
   }
 
   async findOrCreateLunchCycleWorksheet({ lunchCycle, doc }) {
-    const lunchCycleSheetTitle = moment.utc(lunchCycle.starts_at).format("DD/MM/YYYY");
-
-    const sheetInfo = await this.googleSheetGateway.getInfo(doc);
-    const foundWorksheet = sheetInfo.worksheets.find(ws => ws.title === lunchCycleSheetTitle);
+    const workSheetTitle = moment.utc(lunchCycle.starts_at).format("DD/MM/YYYY");
+    const docInfo = await this.googleSheetGateway.getInfo(doc);
+    const foundWorksheet = docInfo.worksheets.find(ws => ws.title === workSheetTitle);
 
     if (foundWorksheet) {
       return foundWorksheet;
@@ -38,19 +41,19 @@ class ExportSlackUserResponseToGoogleSheet {
 
     const worksheet = await this.googleSheetGateway.addWorksheetTo({
       doc: doc,
-      title: lunchCycleSheetTitle,
+      title: workSheetTitle,
       headers: ["First Name", "Email"].concat(restaurantsHeader)
     });
 
     return worksheet;
   }
 
-  async fillInWorksheet({ slackUserResponses, lunchCycleWorksheet }) {
-    const rows = await this.googleSheetGateway.getRows(lunchCycleWorksheet);
+  async fillInWorksheet({ lunchers, worksheet }) {
+    const rows = await this.googleSheetGateway.getRows(worksheet);
 
-    for (const slackUserResponse of slackUserResponses) {
-      const existingRow = rows.find(r => r.email === slackUserResponse.email);
-      const rowObject = this._buildRowObject({ slackUserResponse });
+    for (const luncher of lunchers) {
+      const existingRow = rows.find(r => r.email === luncher.email);
+      const rowObject = this._buildRowObject({ luncher });
 
       if (existingRow) {
         // Cannot do `{ ...existingRow, ...rowObject }` as the `#save()` function doesn't work.
@@ -60,17 +63,17 @@ class ExportSlackUserResponseToGoogleSheet {
         await this.googleSheetGateway.saveRow({ row: existingRow });
       } else {
         await this.googleSheetGateway.addRow({
-          sheet: lunchCycleWorksheet,
+          sheet: worksheet,
           row: rowObject
         });
       }
     }
   }
 
-  _buildRowObject({ slackUserResponse }) {
+  _buildRowObject({ luncher }) {
     const rowObject = {
-      firstname: slackUserResponse.firstName,
-      email: slackUserResponse.email
+      firstname: luncher.firstName,
+      email: luncher.email
     };
 
     // Blank out all restaurants
@@ -79,7 +82,7 @@ class ExportSlackUserResponseToGoogleSheet {
     });
 
     // Set availablity
-    slackUserResponse.availableEmojis.forEach(e => {
+    luncher.availableEmojis.forEach(e => {
       const foundRestaurant = this.restaurantsHash[e];
       rowObject[foundRestaurant.headerKey] = "x";
     });
@@ -117,4 +120,4 @@ class ExportSlackUserResponseToGoogleSheet {
   }
 }
 
-module.exports = ExportSlackUserResponseToGoogleSheet;
+module.exports = ExportLunchersToGoogleSheet;

@@ -39,7 +39,7 @@ describe("DealWithNonResponders", function() {
       lunchCycleGateway: lunchCycleGateway
     });
 
-    const res1 = await userResponseGateway.create({
+    const luncher1 = await userResponseGateway.create({
       slackUser: { id: "1", profile: { first_name: "user1", email: "test1@test.com" } },
       slackMessageResponse: { channel: "ch", ts: "ts1" },
       lunchCycle: { id: "1" }
@@ -52,7 +52,7 @@ describe("DealWithNonResponders", function() {
     });
 
     await userResponseGateway.saveEmojis({
-      slackUserResponse: res1,
+      luncher: luncher1,
       emojis: [":emoji:"]
     });
 
@@ -68,25 +68,25 @@ describe("DealWithNonResponders", function() {
       lunchCycleGateway: lunchCycleGateway
     });
 
-    const res1 = await userResponseGateway.create({
+    const luncher1 = await userResponseGateway.create({
       slackUser: { id: "1", profile: { first_name: "user1", email: "test1@test.com" } },
       slackMessageResponse: { channel: "ch", ts: "ts1" },
       lunchCycle: { id: "1" }
     });
 
-    const res2 = await userResponseGateway.create({
+    const luncher2 = await userResponseGateway.create({
       slackUser: { id: "2", profile: { first_name: "user2", email: "test2@test.com" } },
       slackMessageResponse: { channel: "ch", ts: "ts2" },
       lunchCycle: { id: "1" }
     });
 
     await userResponseGateway.saveEmojis({
-      slackUserResponse: res1,
+      luncher: luncher1,
       emojis: [":emoji:"]
     });
 
     await userResponseGateway.saveEmojis({
-      slackUserResponse: res2,
+      luncher: luncher2,
       emojis: [":emoji:"]
     });
 

@@ -1,6 +1,6 @@
 require("module-alias/register");
 const { Client } = require("pg");
-const { SlackUserResponse } = require("@domain");
+const { Luncher } = require("@domain");
 const config = require("@app/config");
 
 class PostgresSlackUserResponseGateway {
@@ -12,11 +12,11 @@ class PostgresSlackUserResponseGateway {
     });
     client.end();
 
-    return result.rows.map(r => SlackUserResponse.newFromDb(r));
+    return result.rows.map(r => Luncher.newFromDb(r));
   }
 
   async create({ slackUser, slackMessageResponse, lunchCycle }) {
-    const newSlackUserResponse = {
+    const luncher = {
       slack_user_id: slackUser.id,
       lunch_cycle_id: lunchCycle.id,
       email: slackUser.profile.email,
@@ -35,37 +35,33 @@ class PostgresSlackUserResponseGateway {
           "slack_user_id, lunch_cycle_id, email, first_name, message_channel, message_id, " +
           "available_emojis) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *",
         values: [
-          newSlackUserResponse.slack_user_id,
-          newSlackUserResponse.lunch_cycle_id,
-          newSlackUserResponse.email,
-          newSlackUserResponse.first_name,
-          newSlackUserResponse.message_channel,
-          newSlackUserResponse.message_id,
+          luncher.slack_user_id,
+          luncher.lunch_cycle_id,
+          luncher.email,
+          luncher.first_name,
+          luncher.message_channel,
+          luncher.message_id,
           JSON.stringify(lunchCycle.available_emojis)
         ]
       })
       .finally(() => client.end());
 
-    return SlackUserResponse.newFromDb(result.rows[0]);
+    return Luncher.newFromDb(result.rows[0]);
   }
 
-  async saveEmojis({ slackUserResponse, emojis }) {
+  async saveEmojis({ luncher, emojis }) {
     const client = await this._client();
     const result = await client
       .query({
         text:
           "UPDATE slack_user_responses SET available_emojis = $1 " +
           "WHERE slack_user_id = $2 AND lunch_cycle_id = $3 RETURNING *",
-        values: [
-          JSON.stringify(emojis),
-          slackUserResponse.slackUserId,
-          slackUserResponse.lunchCycleId
-        ]
+        values: [JSON.stringify(emojis), luncher.slackUserId, luncher.lunchCycleId]
       })
       .finally(() => client.end());
 
     if (result.rows[0]) {
-      return SlackUserResponse.newFromDb(result.rows[0]);
+      return Luncher.newFromDb(result.rows[0]);
     }
 
     return null;

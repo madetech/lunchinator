@@ -55,6 +55,6 @@ describe("SendDirectMessageToSlackUser", function() {
       slackMessageResponse: slackResponseDummy,
       lunchCycle: lunchCycleDummy
     });
-    expect(response.slackUserResponse).to.equal(slackUserResponseDummy);
+    expect(response.luncher).to.equal(slackUserResponseDummy);
   });
 });

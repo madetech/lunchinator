@@ -8,12 +8,12 @@ const {
   InMemorySlackUserResponseGateway,
   GoogleSheetGateway
 } = require("@gateways");
-const { IsLunchinatorAdmin, ExportSlackUserResponseToGoogleSheet } = require("@use_cases");
+const { IsLunchinatorAdmin, ExportLunchersToGoogleSheet } = require("@use_cases");
 
 let inMemoryLunchCycleGateway;
 let inMemorySlackUserResponseGateway;
 let slashCommandResponse;
-let slackUserResponse;
+let luncher;
 
 describe("Process Get Responses Slash Command", function() {
   beforeEach(function() {
@@ -22,28 +22,28 @@ describe("Process Get Responses Slash Command", function() {
     slashCommandResponse = undefined;
   });
 
-  it("can export SlackUserResponses to Existing Google Sheets and existing row", async function() {
+  it("can export Lunchers to Existing Google Sheets and existing row", async function() {
     GivenALunchCycleExists();
-    await GivenASlackUserResponseExists();
+    await GivenALuncherExists();
     WhenTheCommandIsReceived();
     ThenTheUserIsValid();
-    await ThenTheResponsesWillHaveBeenExportedToExisting();
+    await ThenTheLunchersWillHaveBeenExportedToExisting();
   });
 
-  it("can export SlackUserResponses to Existing Google Sheets and new row", async function() {
+  it("can export Lunchers to Existing Google Sheets and new row", async function() {
     GivenALunchCycleExists();
-    await GivenASlackUserResponseExists();
+    await GivenALuncherExists();
     WhenTheCommandIsReceived();
     ThenTheUserIsValid();
-    await ThenTheResponsesWillHaveBeenExportedToExistingSheetNewRow();
+    await ThenTheLunchersWillHaveBeenExportedToExistingSheetNewRow();
   });
 
   it("can export SlackUserResponses to new Google Sheets and new row", async function() {
     GivenALunchCycleExists();
-    await GivenASlackUserResponseExists();
+    await GivenALuncherExists();
     WhenTheCommandIsReceived();
     ThenTheUserIsValid();
-    await ThenTheResponsesWillHaveBeenExportedToNewSheetNewRow();
+    await ThenTheLunchersWillHaveBeenExportedToNewSheetNewRow();
   });
 });
 
@@ -56,10 +56,10 @@ function GivenALunchCycleExists() {
   );
 }
 
-async function GivenASlackUserResponseExists() {
+async function GivenALuncherExists() {
   const lunchCycles = await inMemoryLunchCycleGateway.all();
 
-  slackUserResponse = await inMemorySlackUserResponseGateway.create({
+  luncher = await inMemorySlackUserResponseGateway.create({
     slackUser: {
       id: "U2147483697",
       profile: {
@@ -75,8 +75,8 @@ async function GivenASlackUserResponseExists() {
   });
 
   const emojis = [":bowtie:"];
-  slackUserResponse = await inMemorySlackUserResponseGateway.saveEmojis({
-    slackUserResponse,
+  luncher = await inMemorySlackUserResponseGateway.saveEmojis({
+    luncher,
     emojis
   });
 }
@@ -96,7 +96,7 @@ function ThenTheUserIsValid() {
   expect(response.isValid).to.be.true;
 }
 
-async function ThenTheResponsesWillHaveBeenExportedToExisting() {
+async function ThenTheLunchersWillHaveBeenExportedToExisting() {
   const lunchCycles = await inMemoryLunchCycleGateway.all();
   const lunchCycle = lunchCycles[0];
   const googleSheetGateway = new GoogleSheetGateway();
@@ -112,12 +112,13 @@ async function ThenTheResponsesWillHaveBeenExportedToExisting() {
   sinon.stub(googleSheetGateway, "getRows").resolves(rows);
   sinon.stub(googleSheetGateway, "saveRow").resolves();
 
-  const useCase = new ExportSlackUserResponseToGoogleSheet({
+  const useCase = new ExportLunchersToGoogleSheet({
     slackUserResponseGateway: inMemorySlackUserResponseGateway,
-    googleSheetGateway: googleSheetGateway
+    googleSheetGateway: googleSheetGateway,
+    lunchCycleGateway: inMemoryLunchCycleGateway
   });
 
-  const response = await useCase.execute({ lunchCycle, slackUserResponses: [slackUserResponse] });
+  const response = await useCase.execute({ lunchCycle, lunchers: [luncher] });
 
   expect(response).to.be.true;
 
@@ -126,7 +127,7 @@ async function ThenTheResponsesWillHaveBeenExportedToExisting() {
   });
 }
 
-async function ThenTheResponsesWillHaveBeenExportedToExistingSheetNewRow() {
+async function ThenTheLunchersWillHaveBeenExportedToExistingSheetNewRow() {
   const lunchCycles = await inMemoryLunchCycleGateway.all();
   const lunchCycle = lunchCycles[0];
   const googleSheetGateway = new GoogleSheetGateway();
@@ -142,12 +143,13 @@ async function ThenTheResponsesWillHaveBeenExportedToExistingSheetNewRow() {
   sinon.stub(googleSheetGateway, "getRows").resolves(rows);
   sinon.stub(googleSheetGateway, "addRow").resolves();
 
-  const useCase = new ExportSlackUserResponseToGoogleSheet({
+  const useCase = new ExportLunchersToGoogleSheet({
     slackUserResponseGateway: inMemorySlackUserResponseGateway,
-    googleSheetGateway: googleSheetGateway
+    googleSheetGateway: googleSheetGateway,
+    lunchCycleGateway: inMemoryLunchCycleGateway
   });
 
-  const response = await useCase.execute({ lunchCycle, slackUserResponses: [slackUserResponse] });
+  const response = await useCase.execute({ lunchCycle, lunchers: [luncher] });
 
   expect(response).to.be.true;
 
@@ -157,7 +159,7 @@ async function ThenTheResponsesWillHaveBeenExportedToExistingSheetNewRow() {
   });
 }
 
-async function ThenTheResponsesWillHaveBeenExportedToNewSheetNewRow() {
+async function ThenTheLunchersWillHaveBeenExportedToNewSheetNewRow() {
   const lunchCycles = await inMemoryLunchCycleGateway.all();
   const lunchCycle = lunchCycles[0];
   const googleSheetGateway = new GoogleSheetGateway();
@@ -173,12 +175,13 @@ async function ThenTheResponsesWillHaveBeenExportedToNewSheetNewRow() {
   sinon.stub(googleSheetGateway, "getRows").resolves(rows);
   sinon.stub(googleSheetGateway, "addRow").resolves();
 
-  const useCase = new ExportSlackUserResponseToGoogleSheet({
+  const useCase = new ExportLunchersToGoogleSheet({
     slackUserResponseGateway: inMemorySlackUserResponseGateway,
-    googleSheetGateway: googleSheetGateway
+    googleSheetGateway: googleSheetGateway,
+    lunchCycleGateway: inMemoryLunchCycleGateway
   });
 
-  const response = await useCase.execute({ lunchCycle, slackUserResponses: [slackUserResponse] });
+  const response = await useCase.execute({ lunchCycle, lunchers: [luncher] });
 
   expect(response).to.be.true;
 
