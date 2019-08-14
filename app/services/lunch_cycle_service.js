@@ -11,7 +11,7 @@ const {
   GetPreviousLunchCycle,
   FetchRestaurantsFromGoogleSheet,
   VerifySlackRequest,
-  GenerateSlackMessage,
+  GenerateLunchersMessage,
   CreateNewLunchCycle,
   IsLunchinatorAdmin,
   FetchAllSlackUsers,
@@ -48,10 +48,10 @@ class LunchCycleService {
     this.sendDirectMessageToSlackUser = new SendDirectMessageToSlackUser({
       slackGateway: slackGateway,
       slackUserResponseGateway: slackUserResponseGateway,
-      generateSlackMessage: new GenerateSlackMessage(),
+      generateLunchersMessage: new GenerateLunchersMessage(),
       lunchCycleGateway: lunchCycleGateway
     });
-    this.generateSlackMessage = new GenerateSlackMessage();
+    this.generateLuncherMessage = new GenerateLunchersMessage();
     this.isLunchinatorAdmin = new IsLunchinatorAdmin();
     this.fetchLuncherReactions = new FetchReactionsForLuncher({
       slackGateway: slackGateway
@@ -108,7 +108,7 @@ class LunchCycleService {
     const postgresLunchCycleGateway = new PostgresLunchCycleGateway();
     const lunchCycle = await postgresLunchCycleGateway.getCurrent();
 
-    const message = this.generateSlackMessage.execute({
+    const message = this.generateLuncherMessage.execute({
       lunchCycle: lunchCycle
     });
 

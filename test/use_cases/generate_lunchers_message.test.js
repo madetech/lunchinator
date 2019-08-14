@@ -1,4 +1,4 @@
-const { GenerateSlackMessage } = require("@use_cases");
+const { GenerateLunchersMessage } = require("@use_cases");
 const { expect } = require("../test_helper");
 const { RestaurantFactory } = require("../factories");
 const { LunchCycle } = require("@domain");
@@ -16,7 +16,7 @@ const restaurantList = [
   RestaurantFactory.getRestaurant({ name: "restaurant6", emoji: ":relaxed:", date: "16/04/2020" })
 ];
 
-describe("GenerateSlackMessage", function() {
+describe("GenerateLunchersMessage", function() {
   const lunchCycle = new LunchCycle({
     restaurants: restaurantList,
     starts_at: new Date("2020-03-12T00:00:00")
@@ -24,7 +24,7 @@ describe("GenerateSlackMessage", function() {
 
   it("can generate a lunch cycle message with a first name", function() {
     const slackFirstName = "Barry";
-    const useCase = new GenerateSlackMessage();
+    const useCase = new GenerateLunchersMessage();
     const response = useCase.execute({ lunchCycle: lunchCycle, firstName: slackFirstName });
 
     const expected = [
@@ -70,7 +70,7 @@ describe("GenerateSlackMessage", function() {
   it("can generate a lunch cycle message without a first name", function() {
     const noFirstName = null;
     const preview = "THIS IS A PREVIEW \n";
-    const useCase = new GenerateSlackMessage();
+    const useCase = new GenerateLunchersMessage();
     const response = useCase.execute({ lunchCycle: lunchCycle, firstName: noFirstName });
 
     const expected = [
