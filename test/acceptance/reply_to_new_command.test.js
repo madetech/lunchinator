@@ -5,7 +5,7 @@ const { InMemoryLunchCycleGateway } = require("@gateways");
 const { LunchCycle } = require("@domain");
 
 class FakeSlackGateway {
-  sendMessage(slackMessage) {
+  sendMessageWithBlocks(slackMessage) {
     return true;
   }
 }

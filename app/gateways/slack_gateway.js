@@ -17,7 +17,7 @@ class SlackGateway {
     );
   }
 
-  async sendMessage(slackUser, message) {
+  async sendMessageWithBlocks(slackUser, message) {
     const response = await this._slackClient()
       .chat.postMessage({
         channel: slackUser.id,
@@ -29,6 +29,25 @@ class SlackGateway {
 
     if (response === null) {
       throw new SlackGatewayError("error sending message.");
+    }
+
+    return response;
+  }
+
+  async sendMessageWithText(slackUserId, message) {
+    const response = await this._slackClient()
+      .chat.postMessage({
+        channel: slackUserId,
+        text: message.text,
+        as_user: true
+      })
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+
+    if (response === null) {
+      throw new SlackGatewayError("error sending reminder message.");
     }
 
     return response;

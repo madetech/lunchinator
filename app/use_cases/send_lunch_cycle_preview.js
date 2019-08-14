@@ -4,7 +4,7 @@ class SendLunchCyclePreview {
   }
 
   execute({ message }) {
-    const isSent = this.gateway.sendMessage(message);
+    const isSent = this.gateway.sendMessageWithBlocks(message);
     return { isSent: isSent };
   }
 }
