@@ -1,6 +1,5 @@
-require("module-alias/register");
-const moment = require("moment");
 const config = require("@app/config");
+const moment = require("moment");
 const { LunchCycle } = require("@domain");
 
 class CreateNewLunchCycle {
@@ -15,13 +14,11 @@ class CreateNewLunchCycle {
       };
     }
 
-    // finds the friday after WEEKS_BEFORE_CYCLE_STARTS weeks
     const startsAt = moment
       .utc()
       .startOf("isoWeek")
       .add(4, "days")
-      .add(config.WEEKS_BEFORE_CYCLE_STARTS, "week")
-      .format();
+      .add(config.WEEKS_BEFORE_CYCLE_STARTS, "week");
 
     if (!startsAt || !this.isValidDate(startsAt)) {
       return {
@@ -29,19 +26,28 @@ class CreateNewLunchCycle {
       };
     }
 
+    this.setRestaurantDates(restaurants, startsAt);
+
     const lunchCycle = await this.lunchCycleGateway.create(
       new LunchCycle({
         restaurants: restaurants,
-        starts_at: startsAt
+        starts_at: startsAt.format()
       })
     );
 
     return { lunchCycle };
   }
 
-  isValidDate(dateString) {
-    const mo = moment(new Date(dateString)).endOf("day");
-    return mo.isValid() && mo.isAfter();
+  isValidDate(date) {
+    const clone = date.clone().endOf("day");
+    return clone.isValid() && clone.isAfter();
+  }
+
+  setRestaurantDates(restaurants, startsAt) {
+    const clone = startsAt.clone();
+    restaurants.forEach((r, i) => {
+      r.date = clone.add(i * 7, "days").format("DD/MM/YYYY");
+    });
   }
 }
 

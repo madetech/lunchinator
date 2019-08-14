@@ -57,17 +57,18 @@ describe("ReceiveSendLunchCycleSlashCommand", function() {
   });
 });
 
-function GivenALunchCycleExists() {
-  const startsAt = moment
-    .utc()
-    .startOf("isoWeek")
-    .add(4, "days")
-    .add(0, "week")
-    .format();
+const startsAt = moment
+  .utc()
+  .startOf("isoWeek")
+  .add(4, "days")
+  .add(0, "week");
 
+function GivenALunchCycleExists() {
   lunchCycle = new LunchCycle({
     id: 5,
-    restaurants: [RestaurantFactory.getRestaurant({ emoji: ":tada:" })],
+    restaurants: [
+      RestaurantFactory.getRestaurant({ emoji: ":tada:", date: startsAt.format("DD/MM/YYYY") })
+    ],
     starts_at: startsAt
   });
 }
@@ -142,8 +143,6 @@ function ThenDirectMessagesAreSent() {
     expect(r.slackMessageResponse.blocks).to.eql([]);
     expect(r.luncher.email).to.eql(`${userList[i].profile.email}`);
 
-    let nextDate = moment.utc(lunchCycle.starts_at).format("DD/MM/YYYY");
-
     expect(fakeSlackClient.postMessageStub).to.have.been.calledWith({
       as_user: true,
       channel: userList[i].id,
@@ -166,7 +165,7 @@ function ThenDirectMessagesAreSent() {
           text: {
             type: "mrkdwn",
             text:
-              `:tada: ${nextDate}   <googlemaps|restaurant1>    ` +
+              `:tada: ${startsAt.format("DD/MM/YYYY")}   <googlemaps|restaurant1>    ` +
               "vegan:green_heart:  vegetarian :orange_heart:  meat:green_heart:  " +
               "halal:question:"
           }

@@ -1,4 +1,4 @@
-const { expect } = require("../test_helper");
+const { expect, sinon } = require("../test_helper");
 const { RestaurantFactory, GoogleSheetRowFactory } = require("../factories");
 const { InMemoryLunchCycleGateway } = require("@gateways");
 const { LunchCycle } = require("@domain");
@@ -71,32 +71,27 @@ async function GivenANewLunchCycleHasBeenCreated() {
   await inMemoryLunchCycleGateway.create(new LunchCycle(options));
 }
 
-class FakeGoogleSheetGateway {
-  fetchRows(sheetId) {
-    return rawGoogleSheetRestaurantList;
-  }
-}
-
 function GivenALunchCycleExistsWithRestaurants(restaurants) {
   inMemoryLunchCycleGateway.create(new LunchCycle({ restaurants: restaurants }));
 }
 
 async function WhenTheRestaurantsAreFetchedFromTheGoogleSheet() {
-  const fakeGoogleSheetGateway = new FakeGoogleSheetGateway();
   const useCase = new FetchRestaurantsFromGoogleSheet({
-    googleSheetGateway: fakeGoogleSheetGateway
+    googleSheetGateway: { fetchRows: sinon.fake.returns(rawGoogleSheetRestaurantList) }
   });
   fetchRestaurantsFromGoogleSheetResponse = await useCase.execute();
 }
 
 function ThenTheRestaurantListWillBe(expected) {
-  expect(fetchRestaurantsFromGoogleSheetResponse.restaurants).to.eql(expected);
+  expect(fetchRestaurantsFromGoogleSheetResponse.restaurants.map(r => r.name)).to.eql(
+    expected.map(r => r.name)
+  );
 }
 
 async function WhenWeGetTheLunchCycleRestaurants() {
   const useCase = new GetNewLunchCycleRestaurants({
     fetchRestaurantsFromGoogleSheet: new FetchRestaurantsFromGoogleSheet({
-      googleSheetGateway: new FakeGoogleSheetGateway()
+      googleSheetGateway: { fetchRows: sinon.fake.returns(rawGoogleSheetRestaurantList) }
     }),
     getPreviousLunchCycle: new GetPreviousLunchCycle({
       lunchCycleGateway: inMemoryLunchCycleGateway
@@ -107,5 +102,7 @@ async function WhenWeGetTheLunchCycleRestaurants() {
 }
 
 function ThenTheNewLunchCycleRestaurantsWillBe(expected) {
-  expect(getNewLunchCycleRestaurantsResponse.restaurants).to.eql(expected);
+  expect(getNewLunchCycleRestaurantsResponse.restaurants.map(r => r.name)).to.eql(
+    expected.map(r => r.name)
+  );
 }

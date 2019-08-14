@@ -9,38 +9,41 @@ class GetNewLunchCycleRestaurants {
   async execute() {
     const prevResponse = await this.getPreviousLunchCycle.execute();
     const fetchResponse = await this.fetchRestaurantsFromGoogleSheet.execute();
-    const allRestaurants = fetchResponse.restaurants;
 
-    let newRestaurants;
+    const restaurants = this.findNextRestaurants(
+      fetchResponse.restaurants,
+      prevResponse.previousLunchCycle
+    );
 
-    if (prevResponse.previousLunchCycle != null && prevResponse.previousLunchCycle.restaurants) {
-      newRestaurants = this.findNextRestaurants(allRestaurants, prevResponse.previousLunchCycle);
-    } else {
-      newRestaurants = allRestaurants.slice(0, config.CYCLE_LENGTH);
-    }
-
-    return {
-      restaurants: newRestaurants
-    };
+    return { restaurants: restaurants };
   }
 
   findNextRestaurants(allRestaurants, previousLunchCycle) {
-    const [lastRestaurant] = previousLunchCycle.restaurants.slice(-1);
-
-    let indexOfLastRestaurant = 0;
-
-    if (lastRestaurant) {
-      indexOfLastRestaurant = allRestaurants.findIndex(res => res.name === lastRestaurant.name);
+    if (previousLunchCycle === null || !previousLunchCycle || !previousLunchCycle.restaurants) {
+      return allRestaurants.slice(0, config.CYCLE_LENGTH);
     }
 
-    let nextRestaurants = allRestaurants.slice(indexOfLastRestaurant + 1);
+    const indexOfLastRestaurant = this.getIndexOfLastRestaurant(allRestaurants, previousLunchCycle);
+
+    const nextRestaurants = allRestaurants.slice(indexOfLastRestaurant + 1);
     if (nextRestaurants.length < config.CYCLE_LENGTH) {
-      nextRestaurants = nextRestaurants.concat(
+      // if at the end of list wrap around to the top again
+      return nextRestaurants.concat(
         allRestaurants.slice(0, config.CYCLE_LENGTH - nextRestaurants.length)
       );
     }
 
     return nextRestaurants;
+  }
+
+  getIndexOfLastRestaurant(allRestaurants, previousLunchCycle) {
+    const [lastRestaurant] = previousLunchCycle.restaurants.slice(-1);
+
+    if (lastRestaurant) {
+      return allRestaurants.findIndex(res => res.name === lastRestaurant.name);
+    }
+
+    return 0;
   }
 }
 

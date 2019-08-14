@@ -105,7 +105,6 @@ class LunchCycleService {
 
   async fetchSlackUsers() {
     const response = await this.fetchAllSlackUsers.execute();
-
     return response.slackUsers;
   }
 

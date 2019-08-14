@@ -1,7 +1,6 @@
 const moment = require("moment");
-const { expect, sinon } = require("../test_helper");
+const { expect, sinon, config } = require("../test_helper");
 const { RestaurantFactory } = require("../factories");
-const config = require("@app/config");
 const { LunchCycle } = require("@domain");
 const { CreateNewLunchCycle } = require("@use_cases");
 
@@ -15,9 +14,7 @@ describe("CreateNewLunchCycle", function() {
     });
 
     const response = await useCase.execute({
-      userId: "validUserId",
-      restaurants: [RestaurantFactory.getRestaurant()],
-      startsAt: "2020-01-01T00:00:00+01:00"
+      restaurants: [RestaurantFactory.getRestaurant()]
     });
 
     expect(gatewaySpy.create).to.have.been.calledWith(sinon.match.instanceOf(LunchCycle));
@@ -36,28 +33,30 @@ describe("CreateNewLunchCycle", function() {
   });
 
   it("can calculate the correct start date", async function() {
-    const weeksAhead = 1;
+    sinon.stub(config, "WEEKS_BEFORE_CYCLE_STARTS").get(() => 1);
 
-    // get the friday in weeksAhead weeks time
-    const expected = moment
+    const expectedDate = moment
       .utc()
       .startOf("isoWeek")
       .add(4, "days")
-      .add(weeksAhead, "week")
-      .format();
+      .add(config.WEEKS_BEFORE_CYCLE_STARTS, "week");
 
-    sinon.stub(config, "WEEKS_BEFORE_CYCLE_STARTS").get(() => weeksAhead);
+    const expectedRestaurants = [
+      RestaurantFactory.getRestaurant({
+        date: expectedDate.format("DD/MM/YYYY")
+      })
+    ];
 
-    const useCase = new CreateNewLunchCycle({
-      lunchCycleGateway: {
-        create: sinon.fake.returns(new LunchCycle({ starts_at: expected }))
-      }
-    });
+    const lunchCycleGatewaySpy = { create: sinon.fake.resolves({}) };
+    const useCase = new CreateNewLunchCycle({ lunchCycleGateway: lunchCycleGatewaySpy });
 
-    const response = await useCase.execute({
-      restaurants: [RestaurantFactory.getRestaurant()]
-    });
+    await useCase.execute({ restaurants: [RestaurantFactory.getRestaurant()] });
 
-    expect(response.lunchCycle.starts_at).to.be.eql(expected);
+    expect(lunchCycleGatewaySpy.create).to.have.been.calledWith(
+      new LunchCycle({
+        restaurants: expectedRestaurants,
+        starts_at: expectedDate.format()
+      })
+    );
   });
 });

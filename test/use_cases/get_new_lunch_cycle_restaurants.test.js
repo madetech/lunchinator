@@ -2,18 +2,19 @@ const { expect, sinon } = require("../test_helper");
 const { RestaurantFactory } = require("../factories");
 const { GetNewLunchCycleRestaurants } = require("@use_cases");
 
-describe("GetNewLunchCycleRestaurants", async function() {
+describe("GetNewLunchCycleRestaurants", function() {
+  const restaurants = [
+    RestaurantFactory.getRestaurant({ name: "restaurant1", emoji: ":bowtie:" }),
+    RestaurantFactory.getRestaurant({ name: "restaurant2", emoji: ":smile:" }),
+    RestaurantFactory.getRestaurant({ name: "restaurant3", emoji: ":simple_smile:" }),
+    RestaurantFactory.getRestaurant({ name: "restaurant4", emoji: ":laughing:" }),
+    RestaurantFactory.getRestaurant({ name: "restaurant5", emoji: ":blush:" }),
+    RestaurantFactory.getRestaurant({ name: "restaurant6", emoji: ":relaxed:" }),
+    RestaurantFactory.getRestaurant({ name: "restaurant7", emoji: ":smirk:" }),
+    RestaurantFactory.getRestaurant({ name: "restaurant8", emoji: ":heart_eyes:" })
+  ];
+
   it("uses the previous lunch cycle's restaurants", async function() {
-    const restaurants = [
-      RestaurantFactory.getRestaurant({ name: "restaurant1", emoji: ":bowtie:" }),
-      RestaurantFactory.getRestaurant({ name: "restaurant2", emoji: ":smile:" }),
-      RestaurantFactory.getRestaurant({ name: "restaurant3", emoji: ":simple_smile:" }),
-      RestaurantFactory.getRestaurant({ name: "restaurant4", emoji: ":laughing:" }),
-      RestaurantFactory.getRestaurant({ name: "restaurant5", emoji: ":blush:" }),
-      RestaurantFactory.getRestaurant({ name: "restaurant6", emoji: ":relaxed:" }),
-      RestaurantFactory.getRestaurant({ name: "restaurant7", emoji: ":smirk:" }),
-      RestaurantFactory.getRestaurant({ name: "restaurant8", emoji: ":heart_eyes:" })
-    ];
     const fetchRestaurantsFromGoogleSheetStub = {
       execute: sinon.fake.returns({ restaurants })
     };
@@ -41,16 +42,6 @@ describe("GetNewLunchCycleRestaurants", async function() {
   });
 
   it("can handle no previous lunch cycle", async function() {
-    const restaurants = [
-      RestaurantFactory.getRestaurant({ name: "restaurant1", emoji: ":bowtie:" }),
-      RestaurantFactory.getRestaurant({ name: "restaurant2", emoji: ":smile:" }),
-      RestaurantFactory.getRestaurant({ name: "restaurant3", emoji: ":simple_smile:" }),
-      RestaurantFactory.getRestaurant({ name: "restaurant4", emoji: ":laughing:" }),
-      RestaurantFactory.getRestaurant({ name: "restaurant5", emoji: ":blush:" }),
-      RestaurantFactory.getRestaurant({ name: "restaurant6", emoji: ":relaxed:" }),
-      RestaurantFactory.getRestaurant({ name: "restaurant7", emoji: ":smirk:" }),
-      RestaurantFactory.getRestaurant({ name: "restaurant8", emoji: ":heart_eyes:" })
-    ];
     const fetchRestaurantsFromGoogleSheetStub = {
       execute: sinon.fake.returns({ restaurants })
     };

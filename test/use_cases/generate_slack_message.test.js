@@ -4,12 +4,16 @@ const { RestaurantFactory } = require("../factories");
 const { LunchCycle } = require("@domain");
 
 const restaurantList = [
-  RestaurantFactory.getRestaurant({ name: "restaurant1", emoji: ":bowtie:" }),
-  RestaurantFactory.getRestaurant({ name: "restaurant2", emoji: ":smile:" }),
-  RestaurantFactory.getRestaurant({ name: "restaurant3", emoji: ":simple_smile:" }),
-  RestaurantFactory.getRestaurant({ name: "restaurant4", emoji: ":laughing:" }),
-  RestaurantFactory.getRestaurant({ name: "restaurant5", emoji: ":blush:" }),
-  RestaurantFactory.getRestaurant({ name: "restaurant6", emoji: ":relaxed:" })
+  RestaurantFactory.getRestaurant({ name: "restaurant1", emoji: ":bowtie:", date: "12/03/2020" }),
+  RestaurantFactory.getRestaurant({ name: "restaurant2", emoji: ":smile:", date: "19/03/2020" }),
+  RestaurantFactory.getRestaurant({
+    name: "restaurant3",
+    emoji: ":simple_smile:",
+    date: "26/03/2020"
+  }),
+  RestaurantFactory.getRestaurant({ name: "restaurant4", emoji: ":laughing:", date: "02/04/2020" }),
+  RestaurantFactory.getRestaurant({ name: "restaurant5", emoji: ":blush:", date: "09/04/2020" }),
+  RestaurantFactory.getRestaurant({ name: "restaurant6", emoji: ":relaxed:", date: "16/04/2020" })
 ];
 
 describe("GenerateSlackMessage", function() {
@@ -23,94 +27,88 @@ describe("GenerateSlackMessage", function() {
     const useCase = new GenerateSlackMessage();
     const response = useCase.execute({ lunchCycle: lunchCycle, firstName: slackFirstName });
 
-    const dates=["12/03/2020", "19/03/2020", "26/03/2020", "02/04/2020", "09/04/2020", "16/04/2020"]
     const expected = [
       {
-        "type": "section",
-        "text": {
-          "type": "mrkdwn",
-          "text": `\*Hey\* ${slackFirstName}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n`
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `\*Hey\* ${slackFirstName}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n`
         }
       },
       {
-        "type": "divider"
-      }];
-    
-      restaurantList.forEach((r, i) => {
-    
-        expected.push(
-          {
-            "type": "section",
-            "text": {
-              "type": "mrkdwn",
-              "text": `${r.emoji} ${dates[i]}   \<${r.direction}\|${r.name}\>    vegan${r.dietaries.vegan}  vegetarian ${r.dietaries.vegetarian}  meat${r.dietaries.meat}  halal${r.dietaries.halal}`, 
-            },
-          }, 
-          {
-            "type": "divider"
-          }
-        )
-      });
-    
+        type: "divider"
+      }
+    ];
+
+    restaurantList.forEach(r => {
       expected.push(
         {
-        "type": "section",
-          "text": {
-            "type": "mrkdwn",
-            "text": "\:green_heart\: = Great          \:orange_heart\: = Some          \:broken_heart\: = None          \:question\: = Unknown"
-      }}
-      )
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `${r.emoji} ${r.date}   \<${r.direction}\|${r.name}\>    vegan${r.dietaries.vegan}  vegetarian ${r.dietaries.vegetarian}  meat${r.dietaries.meat}  halal${r.dietaries.halal}`
+          }
+        },
+        {
+          type: "divider"
+        }
+      );
+    });
+
+    expected.push({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text:
+          ":green_heart: = Great          :orange_heart: = Some          :broken_heart: = None          :question: = Unknown"
+      }
+    });
 
     expect(response.blocks).to.be.eql(expected);
   });
 
   it("can generate a lunch cycle message without a first name", function() {
     const noFirstName = null;
-    const preview="THIS IS A PREVIEW \n"
+    const preview = "THIS IS A PREVIEW \n";
     const useCase = new GenerateSlackMessage();
     const response = useCase.execute({ lunchCycle: lunchCycle, firstName: noFirstName });
 
-    const dates=["12/03/2020", "19/03/2020", "26/03/2020", "02/04/2020", "09/04/2020", "16/04/2020"]
     const expected = [
       {
-        "type": "section",
-        "text": {
-          "type": "mrkdwn",
-          "text": `${preview}\*Hey\* {first name}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n`
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `${preview}\*Hey\* {first name}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n`
         }
       },
       {
-        "type": "divider"
-      }];
-    
-      restaurantList.forEach((r, i) => {
-    
-        expected.push(
-          {
-            "type": "section",
-            "text": {
-              "type": "mrkdwn",
-              "text": `${r.emoji} ${dates[i]}   \<${r.direction}\|${r.name}\>    vegan${r.dietaries.vegan}  vegetarian ${r.dietaries.vegetarian}  meat${r.dietaries.meat}  halal${r.dietaries.halal}`, 
-            },
-          }, 
-          {
-            "type": "divider"
-          }
-        )
-      });
-    
+        type: "divider"
+      }
+    ];
+
+    restaurantList.forEach(r => {
       expected.push(
         {
-        "type": "section",
-          "text": {
-            "type": "mrkdwn",
-            "text": "\:green_heart\: = Great          \:orange_heart\: = Some          \:broken_heart\: = None          \:question\: = Unknown"
-      }}
-      )
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `${r.emoji} ${r.date}   \<${r.direction}\|${r.name}\>    vegan${r.dietaries.vegan}  vegetarian ${r.dietaries.vegetarian}  meat${r.dietaries.meat}  halal${r.dietaries.halal}`
+          }
+        },
+        {
+          type: "divider"
+        }
+      );
+    });
 
-    const expectedMessage =
-      `Hey {first name}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n` +
-      expected.join("\n");
+    expected.push({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text:
+          ":green_heart: = Great          :orange_heart: = Some          :broken_heart: = None          :question: = Unknown"
+      }
+    });
 
     expect(response.blocks).to.be.eql(expected);
   });
