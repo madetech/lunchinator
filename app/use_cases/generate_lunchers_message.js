@@ -1,6 +1,6 @@
 const moment = require("moment");
 
-class GenerateSlackMessage {
+class GenerateLunchersMessage {
   execute({ lunchCycle, firstName }) {
     const blocks = [];
     let preview = "";
@@ -52,4 +52,4 @@ class GenerateSlackMessage {
   }
 }
 
-module.exports = GenerateSlackMessage;
+module.exports = GenerateLunchersMessage;

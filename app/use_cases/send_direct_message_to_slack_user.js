@@ -4,7 +4,7 @@ class SendDirectMessageToSlackUser {
   constructor(options) {
     this.slackGateway = options.slackGateway;
     this.slackUserResponseGateway = options.slackUserResponseGateway;
-    this.generateSlackMessage = options.generateSlackMessage;
+    this.generateLunchersMessage = options.generateLunchersMessage;
     this.lunchCycleGateway = options.lunchCycleGateway;
   }
 
@@ -13,7 +13,7 @@ class SendDirectMessageToSlackUser {
     const firstName = slackUser.profile.first_name;
     const slackMessageResponse = await this.slackGateway.sendMessageWithBlocks(
       slackUser,
-      this.generateSlackMessage.execute({ lunchCycle, firstName })
+      this.generateLunchersMessage.execute({ lunchCycle, firstName })
     );
 
     const luncher = await this.slackUserResponseGateway.create({

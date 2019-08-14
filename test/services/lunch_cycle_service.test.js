@@ -67,7 +67,7 @@ describe("LunchCycleService", async function() {
     const expected = { text: "message" };
     const service = new LunchCycleService();
     const spy = { execute: sinon.fake.returns(expected) };
-    sinon.stub(service, "generateSlackMessage").value(spy);
+    sinon.stub(service, "generateLuncherMessage").value(spy);
 
     const message = await service.getPreviewMessage(new LunchCycle());
 

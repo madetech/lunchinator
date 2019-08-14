@@ -7,7 +7,7 @@ const { SlackGateway, InMemorySlackUserResponseGateway } = require("@gateways");
 const {
   SendDirectMessageToSlackUser,
   FetchAllSlackUsers,
-  GenerateSlackMessage,
+  GenerateLunchersMessage,
   IsLunchinatorAdmin
 } = require("@use_cases");
 
@@ -123,7 +123,7 @@ async function WhenTheDirectMessagesAreCreated() {
   const useCase = new SendDirectMessageToSlackUser({
     slackGateway: fakeSlackGateway,
     slackUserResponseGateway: new InMemorySlackUserResponseGateway(),
-    generateSlackMessage: new GenerateSlackMessage(),
+    generateLunchersMessage: new GenerateLunchersMessage(),
     lunchCycleGateway: { getCurrent: sinon.fake.returns(lunchCycle) }
   });
 
