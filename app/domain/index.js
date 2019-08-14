@@ -3,5 +3,6 @@ module.exports = {
   Restaurant: require("./restaurant"),
   Dietary: require("./dietary"),
   DietaryLevel: require("./dietary_level"),
-  Luncher: require("./luncher")
+  Luncher: require("./luncher"),
+  LunchCycleWeek: require("./lunch_cycle_week")
 };

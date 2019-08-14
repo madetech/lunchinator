@@ -14,5 +14,6 @@ module.exports = {
   ExportLunchersToGoogleSheet: require("./export_lunchers_to_google_sheet"),
   FindNonResponderIds: require("./find_non_responder_ids"),
   GenerateReminderMessage: require("./generate_reminder_message"),
-  SendReminderToLateResponder: require("./send_reminder_to_late_responder")
+  SendReminderToLateResponder: require("./send_reminder_to_late_responder"),
+  DrawLunchers: require("./draw_lunchers")
 };
