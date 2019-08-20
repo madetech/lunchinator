@@ -3,16 +3,16 @@ const config = require("@app/config");
 class GetNewLunchCycleRestaurants {
   constructor(options) {
     this.fetchRestaurantsFromGoogleSheet = options.fetchRestaurantsFromGoogleSheet;
-    this.getPreviousLunchCycle = options.getPreviousLunchCycle;
   }
 
   async execute() {
     const prevResponse = await this.getPreviousLunchCycle.execute();
+  async execute({ currentLunchCycle }) {
     const fetchResponse = await this.fetchRestaurantsFromGoogleSheet.execute();
 
     const restaurants = this.findNextRestaurants(
       fetchResponse.restaurants,
-      prevResponse.previousLunchCycle
+      currentLunchCycle,
     );
 
     return { restaurants: restaurants };

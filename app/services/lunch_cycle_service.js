@@ -8,7 +8,6 @@ const {
 
 const {
   GetNewLunchCycleRestaurants,
-  GetPreviousLunchCycle,
   FetchRestaurantsFromGoogleSheet,
   VerifySlackRequest,
   GenerateLunchersMessage,
@@ -29,6 +28,7 @@ class LunchCycleService {
     const lunchCycleGateway = new PostgresLunchCycleGateway();
     const slackUserResponseGateway = new PostgresSlackUserResponseGateway();
     const slackGateway = new SlackGateway();
+    const googleSheetGateway = new GoogleSheetGateway();
 
     this.createNewLunchCycle = new CreateNewLunchCycle({
       lunchCycleGateway: lunchCycleGateway
@@ -36,10 +36,8 @@ class LunchCycleService {
     this.verifySlackRequest = new VerifySlackRequest({ gateway: new CryptoGateway() });
     this.getNewLunchCycleRestaurants = new GetNewLunchCycleRestaurants({
       fetchRestaurantsFromGoogleSheet: new FetchRestaurantsFromGoogleSheet({
-        googleSheetGateway: new GoogleSheetGateway()
+        googleSheetGateway: googleSheetGateway
       }),
-      getPreviousLunchCycle: new GetPreviousLunchCycle({
-        lunchCycleGateway: lunchCycleGateway
       })
     });
     this.fetchAllSlackUsers = new FetchAllSlackUsers({
@@ -63,7 +61,7 @@ class LunchCycleService {
 
     this.exportLunchersToGoogleSheet = new ExportLunchersToGoogleSheet({
       slackUserResponseGateway: slackUserResponseGateway,
-      googleSheetGateway: new GoogleSheetGateway(),
+      googleSheetGateway: googleSheetGateway,
       lunchCycleGateway: lunchCycleGateway
     });
     this.findNonRespondersIds = new FindNonResponderIds({
@@ -100,7 +98,11 @@ class LunchCycleService {
   }
 
   async getLunchCycleRestaurants() {
-    const response = await this.getNewLunchCycleRestaurants.execute();
+    const postgresLunchCycleGateway = new PostgresLunchCycleGateway();
+    const currentLunchCycle = await postgresLunchCycleGateway.getCurrent();
+    const response = await this.getNewLunchCycleRestaurants.execute({
+      currentLunchCycle
+    });
     return response.restaurants;
   }
 

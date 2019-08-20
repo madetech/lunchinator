@@ -18,11 +18,6 @@ class InMemoryLunchCycleGateway {
     return all.filter(lc => lc.id === wantedId)[0];
   }
 
-  async findPrevious() {
-    const all = await this.all();
-    return all.reverse()[0];
-  }
-
   async getCurrent() {
     const all = await this.all();
     return all.reverse()[0];

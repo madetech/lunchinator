@@ -70,16 +70,6 @@ describe("PostgresLunchCycleGateway", function() {
     expect(await postgresLunchCycleGateway.count()).to.eql(3);
   });
 
-  it("can find previous lunch cycle", async function() {
-    const postgresLunchCycleGateway = new PostgresLunchCycleGateway();
-
-    await postgresLunchCycleGateway.create(new LunchCycle());
-    const lc_2 = await postgresLunchCycleGateway.create(new LunchCycle());
-    await postgresLunchCycleGateway.create(new LunchCycle());
-
-    expect(await postgresLunchCycleGateway.findPrevious()).to.eql(lc_2);
-  });
-
   it("can get current lunch cycle", async function() {
     const postgresLunchCycleGateway = new PostgresLunchCycleGateway();
 

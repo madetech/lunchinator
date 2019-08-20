@@ -18,18 +18,10 @@ describe("GetNewLunchCycleRestaurants", function() {
     const fetchRestaurantsFromGoogleSheetStub = {
       execute: sinon.fake.returns({ restaurants })
     };
-    const getPreviousLunchFake = {
-      execute: sinon.fake.returns({
-        previousLunchCycle: {
-          restaurants: restaurants.slice(0, 6)
-        }
-      })
-    };
 
     const response = await new GetNewLunchCycleRestaurants({
       fetchRestaurantsFromGoogleSheet: fetchRestaurantsFromGoogleSheetStub,
-      getPreviousLunchCycle: getPreviousLunchFake
-    }).execute();
+    }).execute({ currentLunchCycle });
 
     expect(response.restaurants).to.eql([
       restaurants[6],
@@ -45,14 +37,12 @@ describe("GetNewLunchCycleRestaurants", function() {
     const fetchRestaurantsFromGoogleSheetStub = {
       execute: sinon.fake.returns({ restaurants })
     };
-    const getPreviousLunchFake = {
-      execute: sinon.fake.returns({ previousLunchCycle: null })
-    };
 
     const response = await new GetNewLunchCycleRestaurants({
       fetchRestaurantsFromGoogleSheet: fetchRestaurantsFromGoogleSheetStub,
-      getPreviousLunchCycle: getPreviousLunchFake
-    }).execute();
+    }).execute({
+      currentLunchCycle: null
+    });
 
     expect(response.restaurants).to.eql([
       restaurants[0],

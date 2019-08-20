@@ -4,7 +4,6 @@ const { InMemoryLunchCycleGateway } = require("@gateways");
 const { LunchCycle } = require("@domain");
 const {
   GetNewLunchCycleRestaurants,
-  GetPreviousLunchCycle,
   FetchRestaurantsFromGoogleSheet
 } = require("@use_cases");
 
@@ -93,12 +92,14 @@ async function WhenWeGetTheLunchCycleRestaurants() {
     fetchRestaurantsFromGoogleSheet: new FetchRestaurantsFromGoogleSheet({
       googleSheetGateway: { fetchRows: sinon.fake.returns(rawGoogleSheetRestaurantList) }
     }),
-    getPreviousLunchCycle: new GetPreviousLunchCycle({
-      lunchCycleGateway: inMemoryLunchCycleGateway
     })
   });
 
-  getNewLunchCycleRestaurantsResponse = await useCase.execute();
+  const currentLunchCycle = await inMemoryLunchCycleGateway.getCurrent();
+
+  getNewLunchCycleRestaurantsResponse = await useCase.execute({
+    currentLunchCycle
+  });
 }
 
 function ThenTheNewLunchCycleRestaurantsWillBe(expected) {
