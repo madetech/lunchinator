@@ -1,6 +1,7 @@
 const { expect, sinon } = require("../test_helper");
 const { RestaurantFactory } = require("../factories");
 const { GetNewLunchCycleRestaurants } = require("@use_cases");
+const config = require("@app/config");
 
 describe("GetNewLunchCycleRestaurants", function() {
   const restaurants = [
@@ -15,12 +16,21 @@ describe("GetNewLunchCycleRestaurants", function() {
   ];
 
   it("uses the previous lunch cycle's restaurants", async function() {
+    sinon.stub(config, "LUNCHERS_PER_WEEK").get(() => 8);
+
     const fetchRestaurantsFromGoogleSheetStub = {
       execute: sinon.fake.returns({ restaurants })
     };
 
+    const currentLunchCycle = { restaurants: restaurants.slice(0, 6) };
+
     const response = await new GetNewLunchCycleRestaurants({
       fetchRestaurantsFromGoogleSheet: fetchRestaurantsFromGoogleSheetStub,
+      fetchAllSlackUsers: {
+        execute: sinon.fake.resolves({
+          slackUsers: Array(48).fill({})
+        })
+      }
     }).execute({ currentLunchCycle });
 
     expect(response.restaurants).to.eql([
@@ -34,12 +44,15 @@ describe("GetNewLunchCycleRestaurants", function() {
   });
 
   it("can handle no previous lunch cycle", async function() {
+    sinon.stub(config, "LUNCHERS_PER_WEEK").get(() => 8);
+
     const fetchRestaurantsFromGoogleSheetStub = {
       execute: sinon.fake.returns({ restaurants })
     };
 
     const response = await new GetNewLunchCycleRestaurants({
       fetchRestaurantsFromGoogleSheet: fetchRestaurantsFromGoogleSheetStub,
+      fetchAllSlackUsers: { execute: sinon.fake.resolves({ slackUsers: Array(48).fill({}) }) }
     }).execute({
       currentLunchCycle: null
     });
@@ -52,5 +65,30 @@ describe("GetNewLunchCycleRestaurants", function() {
       restaurants[4],
       restaurants[5]
     ]);
+  });
+
+  it("can generate the correct number of lunchCyles per restaurant", async function() {
+    sinon.stub(config, "LUNCHERS_PER_WEEK").get(() => 2);
+
+    const response = await new GetNewLunchCycleRestaurants({
+      fetchRestaurantsFromGoogleSheet: {
+        execute: sinon.fake.resolves({ restaurants: restaurants })
+      },
+      fetchAllSlackUsers: {
+        execute: sinon.fake.resolves({
+          slackUsers: [
+            { user1: "" },
+            { user2: "" },
+            { user3: "" },
+            { user4: "" },
+            { user5: "" },
+            { user6: "" }
+          ]
+        })
+      }
+    }).execute({
+      currentLunchCycle: null
+    });
+    expect(response.restaurants.length).to.eql(3);
   });
 });

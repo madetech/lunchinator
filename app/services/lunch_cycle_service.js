@@ -40,6 +40,8 @@ class LunchCycleService {
       fetchRestaurantsFromGoogleSheet: new FetchRestaurantsFromGoogleSheet({
         googleSheetGateway: googleSheetGateway
       }),
+      fetchAllSlackUsers: new FetchAllSlackUsers({
+        slackGateway: slackGateway
       })
     });
     this.fetchAllSlackUsers = new FetchAllSlackUsers({

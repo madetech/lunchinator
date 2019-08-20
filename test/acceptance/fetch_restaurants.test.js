@@ -1,10 +1,14 @@
 const { expect, sinon } = require("../test_helper");
 const { RestaurantFactory, GoogleSheetRowFactory } = require("../factories");
-const { InMemoryLunchCycleGateway } = require("@gateways");
+const { InMemoryLunchCycleGateway, SlackGateway } = require("@gateways");
+const { FakeSlackClient } = require("../fakes");
+const config = require("@app/config");
+
 const { LunchCycle } = require("@domain");
 const {
   GetNewLunchCycleRestaurants,
-  FetchRestaurantsFromGoogleSheet
+  FetchRestaurantsFromGoogleSheet,
+  FetchAllSlackUsers
 } = require("@use_cases");
 
 const restaurantList = [
@@ -32,10 +36,67 @@ const rawGoogleSheetRestaurantList = [
 let fetchRestaurantsFromGoogleSheetResponse;
 let inMemoryLunchCycleGateway;
 let getNewLunchCycleRestaurantsResponse;
+let fakeSlackClient;
+let slackGateway;
 
 describe("Acceptance Test for Fetching Restaurants", function() {
   beforeEach(function() {
     inMemoryLunchCycleGateway = new InMemoryLunchCycleGateway();
+    fakeSlackClient = new FakeSlackClient({ token: "NOT_VALID" });
+    SlackGateway.prototype._slackClient = () => fakeSlackClient;
+    userList = [
+      {
+        id: "USLACKID1",
+        team_id: "TEAM_ID",
+        name: "Test Name",
+        deleted: false,
+        profile: {
+          email: "test2@example.com"
+        },
+        is_bot: false,
+        is_app_user: false,
+        updated: 1520258399
+      },
+      {
+        id: "USLACKID2",
+        team_id: "TEAM_ID",
+        name: "Bob",
+        deleted: false,
+        profile: {
+          email: "test@example.com"
+        },
+        is_bot: false,
+        is_app_user: false,
+        updated: 1550160376
+      },
+      {
+        id: "USLACKID3",
+        team_id: "TEAM_ID",
+        name: "Bob",
+        deleted: false,
+        profile: {
+          email: "test@example.com"
+        },
+        is_bot: false,
+        is_app_user: false,
+        updated: 1550160375
+      },
+      {
+        id: "USLACKID4",
+        team_id: "TEAM_ID",
+        name: "Bob",
+        deleted: false,
+        profile: {
+          email: "test@example.com"
+        },
+        is_bot: false,
+        is_app_user: false,
+        updated: 1550160377
+      }
+    ];
+    fakeSlackClient.stubUserList(userList);
+
+    slackGateway = new SlackGateway();
   });
 
   it("can fetch the restaurants from the google sheet", async function() {
@@ -46,7 +107,7 @@ describe("Acceptance Test for Fetching Restaurants", function() {
   it("can get the restaurants for the new lunch cycle", async function() {
     await WhenWeGetTheLunchCycleRestaurants();
     await GivenANewLunchCycleHasBeenCreated();
-    ThenTheNewLunchCycleRestaurantsWillBe(restaurantList.slice(0, 6));
+    ThenTheNewLunchCycleRestaurantsWillBe(restaurantList.slice(0, 2));
   });
 
   describe("when there is a previous lunch cycle with restaurants", function() {
@@ -55,9 +116,7 @@ describe("Acceptance Test for Fetching Restaurants", function() {
       await WhenWeGetTheLunchCycleRestaurants();
       await GivenANewLunchCycleHasBeenCreated();
 
-      ThenTheNewLunchCycleRestaurantsWillBe(
-        restaurantList.slice(6, 8).concat(restaurantList.slice(0, 4))
-      );
+      ThenTheNewLunchCycleRestaurantsWillBe(restaurantList.slice(6));
     });
   });
 });
@@ -88,10 +147,13 @@ function ThenTheRestaurantListWillBe(expected) {
 }
 
 async function WhenWeGetTheLunchCycleRestaurants() {
+  sinon.stub(config, "LUNCHERS_PER_WEEK").get(() => 2);
   const useCase = new GetNewLunchCycleRestaurants({
     fetchRestaurantsFromGoogleSheet: new FetchRestaurantsFromGoogleSheet({
       googleSheetGateway: { fetchRows: sinon.fake.returns(rawGoogleSheetRestaurantList) }
     }),
+    fetchAllSlackUsers: new FetchAllSlackUsers({
+      slackGateway: slackGateway
     })
   });
 
