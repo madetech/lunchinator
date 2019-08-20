@@ -62,10 +62,15 @@ router.post("/export", async function(req, res) {
   }
 });
 
-router.post("/reminder", async function(req, res) {
-  const lunchCycleService = new LunchCycleService();
-  await lunchCycleService.remindLateResponders();
-  res.send("reminder has been sent to non responders");
+router.post("/draw", async function(req, res) {
+  try {
+    const lunchCycleService = new LunchCycleService();
+    await lunchCycleService.doLunchersDraw();
+  } catch (err) {
+    console.log(err);
+  }
+
+  res.send("draw complete.");
 });
 
 function postSlackResponse(url, text) {

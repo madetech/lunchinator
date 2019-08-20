@@ -20,7 +20,9 @@ const {
   ExportLunchersToGoogleSheet,
   FindNonResponderIds,
   GenerateReminderMessage,
-  SendReminderToLateResponder
+  SendReminderToLateResponder,
+  DrawLunchers,
+  ExportLunchersDrawToGoogleSheet
 } = require("@use_cases");
 
 class LunchCycleService {
@@ -75,6 +77,9 @@ class LunchCycleService {
     this.drawLunchers = new DrawLunchers({
       lunchCycleGateway: lunchCycleGateway,
       slackUserResponseGateway: slackUserResponseGateway
+    });
+    this.exportLunchersDrawToGoogleSheet = new ExportLunchersDrawToGoogleSheet({
+      googleSheetGateway: googleSheetGateway
     });
   }
 
@@ -152,8 +157,10 @@ class LunchCycleService {
   }
 
   async doLunchersDraw() {
-    const lunchCycleWeeks = await this.drawLunchers.execute();
-    await this.exportLunchersDrawToGoogleSheet({ lunchCycleWeeks });
+    const response = await this.drawLunchers.execute();
+    await this.exportLunchersDrawToGoogleSheet.execute({
+      lunchCycleWeeks: response.lunchCycleWeeks
+    });
   }
 
   async exportLunchers() {

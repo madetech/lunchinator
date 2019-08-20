@@ -86,14 +86,7 @@ describe("DoTheDraw", function() {
       name: "restaurant3",
       emoji: ":simple_smile:",
       date: "03/01/2030"
-    }) //,
-    // RestaurantFactory.getRestaurant({
-    //   name: "restaurant4",
-    //   emoji: ":laughing:",
-    //   date: "04/01/2030"
-    // }),
-    // RestaurantFactory.getRestaurant({ name: "restaurant5", emoji: ":blush:", date: "05/01/2030" }),
-    // RestaurantFactory.getRestaurant({ name: "restaurant6", emoji: ":relaxed:", date: "06/01/2030" })
+    })
   ];
 
   it("can put a luncher who has chosen the first week into the first week", async function() {
@@ -297,5 +290,116 @@ describe("DoTheDraw", function() {
     const allTheLunchersWithoutDuplicates = new Set(allTheLunchers);
 
     expect(allTheLunchersWithoutDuplicates.size).to.eql(9);
+  });
+
+  it("can do the draw and set lunchers avalabilities for each week", async function() {
+    sinon.stub(config, "LUNCHERS_PER_WEEK").get(() => 3);
+
+    const lunchCycle = await inMemoryLunchCycleGateway.create(
+      new LunchCycle({
+        restaurants: restaurants
+      })
+    );
+
+    const luncher1 = await inMemorySlackUserResponseGateway.create({
+      slackUser: slackUsers[0],
+      slackMessageResponse: {},
+      lunchCycle
+    });
+    const luncher2 = await inMemorySlackUserResponseGateway.create({
+      slackUser: slackUsers[1],
+      slackMessageResponse: {},
+      lunchCycle
+    });
+    const luncher3 = await inMemorySlackUserResponseGateway.create({
+      slackUser: slackUsers[2],
+      slackMessageResponse: {},
+      lunchCycle
+    });
+    const luncher4 = await inMemorySlackUserResponseGateway.create({
+      slackUser: slackUsers[3],
+      slackMessageResponse: {},
+      lunchCycle
+    });
+    const luncher5 = await inMemorySlackUserResponseGateway.create({
+      slackUser: slackUsers[4],
+      slackMessageResponse: {},
+      lunchCycle
+    });
+    const luncher6 = await inMemorySlackUserResponseGateway.create({
+      slackUser: slackUsers[5],
+      slackMessageResponse: {},
+      lunchCycle
+    });
+    const luncher7 = await inMemorySlackUserResponseGateway.create({
+      slackUser: slackUsers[6],
+      slackMessageResponse: {},
+      lunchCycle
+    });
+    const luncher8 = await inMemorySlackUserResponseGateway.create({
+      slackUser: slackUsers[7],
+      slackMessageResponse: {},
+      lunchCycle
+    });
+    const luncher9 = await inMemorySlackUserResponseGateway.create({
+      slackUser: slackUsers[8],
+      slackMessageResponse: {},
+      lunchCycle
+    });
+    await inMemorySlackUserResponseGateway.saveEmojis({ luncher: luncher1, emojis: [":bowtie:"] });
+    await inMemorySlackUserResponseGateway.saveEmojis({
+      luncher: luncher2,
+      emojis: [":bowtie:", ":smile:"]
+    });
+    await inMemorySlackUserResponseGateway.saveEmojis({ luncher: luncher3, emojis: [":smile:"] });
+    await inMemorySlackUserResponseGateway.saveEmojis({
+      luncher: luncher4,
+      emojis: [":simple_smile:"]
+    });
+    await inMemorySlackUserResponseGateway.saveEmojis({ luncher: luncher5, emojis: [":bowtie:"] });
+    await inMemorySlackUserResponseGateway.saveEmojis({
+      luncher: luncher6,
+      emojis: [":bowtie:", ":smile:", ":simple_smile:"]
+    });
+    await inMemorySlackUserResponseGateway.saveEmojis({
+      luncher: luncher7,
+      emojis: [":simple_smile:", ":smile:"]
+    });
+    await inMemorySlackUserResponseGateway.saveEmojis({
+      luncher: luncher8,
+      emojis: [":bowtie:", ":smile:"]
+    });
+    await inMemorySlackUserResponseGateway.saveEmojis({
+      luncher: luncher9,
+      emojis: [":simple_smile:", ":bowtie:"]
+    });
+
+    const useCase = new DrawLunchers({
+      lunchCycleGateway: inMemoryLunchCycleGateway,
+      slackUserResponseGateway: inMemorySlackUserResponseGateway
+    });
+
+    const response = await useCase.execute();
+    expect(response.lunchCycleWeeks[0].allAvailable).to.be.eql([
+      luncher1,
+      luncher2,
+      luncher5,
+      luncher6,
+      luncher8,
+      luncher9
+    ]);
+    expect(response.lunchCycleWeeks[1].allAvailable).to.be.eql([
+      luncher2,
+      luncher3,
+      luncher6,
+      luncher7,
+      luncher8
+    ]);
+    expect(response.lunchCycleWeeks[2].allAvailable).to.be.eql([
+      luncher4,
+      luncher6,
+      luncher7,
+      luncher9
+    ]);
   });
 });

@@ -15,4 +15,5 @@ module.exports = {
   GenerateReminderMessage: require("./generate_reminder_message"),
   SendReminderToLateResponder: require("./send_reminder_to_late_responder"),
   DrawLunchers: require("./draw_lunchers"),
+  ExportLunchersDrawToGoogleSheet: require("./export_lunchers_draw_to_google_sheet")
 };

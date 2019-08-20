@@ -13,13 +13,17 @@ class DrawLunchers {
     let allLunchers = await this.slackUserResponseGateway.findAllForLunchCycle({ lunchCycle });
 
     const lunchCycleWeeks = [];
-    lunchCycle.restaurants.forEach(restaurant => {
+    const allAvailables = lunchCycle.restaurants.map(r => {
+      return allLunchers.filter(l => l.availableEmojis.includes(r.emoji));
+    });
+    lunchCycle.restaurants.forEach((restaurant, index) => {
       const lunchers = this.getLunchersForRestaurant(restaurant, allLunchers);
 
       lunchCycleWeeks.push(
         new LunchCycleWeek({
           restaurant,
-          lunchers
+          lunchers,
+          allAvailable: allAvailables[index]
         })
       );
 
