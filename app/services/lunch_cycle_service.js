@@ -72,6 +72,10 @@ class LunchCycleService {
       slackGateway: slackGateway,
       generateReminderMessage: new GenerateReminderMessage()
     });
+    this.drawLunchers = new DrawLunchers({
+      lunchCycleGateway: lunchCycleGateway,
+      slackUserResponseGateway: slackUserResponseGateway
+    });
   }
 
   async createLunchCycle({ restaurants }) {
@@ -145,6 +149,11 @@ class LunchCycleService {
       const response = await this.fetchLuncherReactions.execute({ luncher });
       await this.updateLuncherReactions.execute({ luncher, reactions: response.reactions });
     }
+  }
+
+  async doLunchersDraw() {
+    const lunchCycleWeeks = await this.drawLunchers.execute();
+    await this.exportLunchersDrawToGoogleSheet({ lunchCycleWeeks });
   }
 
   async exportLunchers() {

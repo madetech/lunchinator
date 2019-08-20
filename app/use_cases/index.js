@@ -14,5 +14,5 @@ module.exports = {
   FindNonResponderIds: require("./find_non_responder_ids"),
   GenerateReminderMessage: require("./generate_reminder_message"),
   SendReminderToLateResponder: require("./send_reminder_to_late_responder"),
-  DrawLunchers: require("./draw_lunchers")
+  DrawLunchers: require("./draw_lunchers"),
 };

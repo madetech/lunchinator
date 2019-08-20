@@ -1,4 +1,5 @@
-const config = "@app/config";
+const config = require("@app/config");
+
 const { LunchCycleWeek } = require("@domain");
 
 class DrawLunchers {
@@ -9,45 +10,42 @@ class DrawLunchers {
 
   async execute() {
     const lunchCycle = await this.lunchCycleGateway.getCurrent();
-    const allLunchers = await this.slackUserResponseGateway.findAllForLunchCycle({ lunchCycle });
+    let allLunchers = await this.slackUserResponseGateway.findAllForLunchCycle({ lunchCycle });
 
-    const weeks = [];
-
+    const lunchCycleWeeks = [];
     lunchCycle.restaurants.forEach(restaurant => {
       const lunchers = this.getLunchersForRestaurant(restaurant, allLunchers);
 
-      weeks.push(
+      lunchCycleWeeks.push(
         new LunchCycleWeek({
           restaurant,
           lunchers
         })
       );
-    });
 
+      allLunchers = this.removeDrawnLunchers(allLunchers, lunchers, restaurant.emoji);
+    });
     return {
-      weeks
+      lunchCycleWeeks
     };
   }
 
   getLunchersForRestaurant(restaurant, allLunchers) {
-    const availableLunchers = allLunchers
+    const drawnLunchers = allLunchers
       .filter(l => l.availableEmojis.includes(restaurant.emoji))
-      .sort((a, b) => {
-        // sort by how many restaurants luncher has available
-        return a.availableEmojis.length < b.availableEmojis.length ? 1 : 1;
-      })
-      .slice(0, 1);
+      .sort((first, second) => first.availableEmojis.length - second.availableEmojis.length)
+      .slice(0, config.LUNCHERS_PER_WEEK);
 
-    // NEED TO USE THIS IN THE SLICE
-    console.log(config.LUNCHERS_PER_WEEK);
-
-    allLunchers.forEach(
-      l => (l.availableEmojis = l.availableEmojis.filter(e => e !== restaurant.emoji))
-    );
-
-    return availableLunchers.map(l => {
+    return drawnLunchers.map(l => {
       return { firstName: l.firstName, email: l.email, slackUserId: l.slackUserId };
     });
+  }
+
+  removeDrawnLunchers(allLunchers, drawnLunchers, emoji) {
+    const drawnLuncherIds = drawnLunchers.map(l => l.slackUserId);
+    allLunchers = allLunchers.filter(l => !drawnLuncherIds.includes(l.slackUserId));
+    allLunchers.forEach(l => (l.availableEmojis = l.availableEmojis.filter(e => e !== emoji)));
+    return allLunchers;
   }
 }
 
