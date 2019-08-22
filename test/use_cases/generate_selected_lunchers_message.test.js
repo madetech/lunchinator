@@ -2,7 +2,7 @@ const { expect, sinon } = require("../test_helper");
 const { GenerateSelectedLunchersMessage } = require("@use_cases");
 const { LunchCycleWeek, Restaurant, Luncher } = require("../../app/domain");
 
-describe.only("GenerateSelectedLunchersMessage", function() {
+describe("GenerateSelectedLunchersMessage", function() {
   it("can generate a slack message for selected luncher", function() {
     const lunchCycleWeekStub = new LunchCycleWeek({
       restaurant: new Restaurant({
