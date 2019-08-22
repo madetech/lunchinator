@@ -47,7 +47,7 @@ describe("DrawLunchers", function() {
     });
     const response = await useCase.execute();
 
-    expect(response.lunchCycleWeeks[0].lunchers).to.be.eql(expected);
+    expect(response.lunchCycleDraw[0].lunchers).to.be.eql(expected);
   });
 
   it("can put a luncher who has chosen only the second week into the second week", async function() {
@@ -83,7 +83,7 @@ describe("DrawLunchers", function() {
 
     const response = await useCase.execute();
 
-    expect(response.lunchCycleWeeks[1].lunchers).to.be.eql(expected);
+    expect(response.lunchCycleDraw[1].lunchers).to.be.eql(expected);
   });
 
   it("can prioritise a luncher with less availablity, for two lunchers", async function() {
@@ -112,8 +112,8 @@ describe("DrawLunchers", function() {
 
     const response = await useCase.execute();
 
-    expect(response.lunchCycleWeeks[0].lunchers[0].firstName).to.be.eql("baebunny");
-    expect(response.lunchCycleWeeks[1].lunchers[0].firstName).to.be.eql("bugsbunny");
-    expect(response.lunchCycleWeeks[0].lunchers.length).to.be.eql(1);
+    expect(response.lunchCycleDraw[0].lunchers[0].firstName).to.be.eql("baebunny");
+    expect(response.lunchCycleDraw[1].lunchers[0].firstName).to.be.eql("bugsbunny");
+    expect(response.lunchCycleDraw[0].lunchers.length).to.be.eql(1);
   });
 });

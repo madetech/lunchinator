@@ -12,25 +12,26 @@ class DrawLunchers {
     const lunchCycle = await this.lunchCycleGateway.getCurrent();
     let allLunchers = await this.slackUserResponseGateway.findAllForLunchCycle({ lunchCycle });
 
-    const lunchCycleWeeks = [];
+    const lunchCycleDraw = [];
     const allAvailables = lunchCycle.restaurants.map(r => {
       return allLunchers.filter(l => l.availableEmojis.includes(r.emoji));
     });
-    lunchCycle.restaurants.forEach((restaurant, index) => {
+    lunchCycle.restaurants.forEach((restaurant, i) => {
       const lunchers = this.getLunchersForRestaurant(restaurant, allLunchers);
 
-      lunchCycleWeeks.push(
+      lunchCycleDraw.push(
         new LunchCycleWeek({
           restaurant,
           lunchers,
-          allAvailable: allAvailables[index]
+          allAvailable: allAvailables[i]
         })
       );
 
       allLunchers = this.removeDrawnLunchers(allLunchers, lunchers, restaurant.emoji);
     });
+
     return {
-      lunchCycleWeeks
+      lunchCycleDraw: lunchCycleDraw
     };
   }
 

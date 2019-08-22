@@ -115,7 +115,7 @@ describe("DoTheDraw", function() {
       slackUserResponseGateway: inMemorySlackUserResponseGateway
     });
     const response = await useCase.execute();
-    expect(response.lunchCycleWeeks[0].lunchers).to.be.eql(expected);
+    expect(response.lunchCycleDraw[0].lunchers).to.be.eql(expected);
   });
 
   it("can put a luncher who has chosen only the second week into the second week", async function() {
@@ -151,7 +151,7 @@ describe("DoTheDraw", function() {
     });
     const response = await useCase.execute();
 
-    expect(response.lunchCycleWeeks[1].lunchers).to.be.eql(expected);
+    expect(response.lunchCycleDraw[1].lunchers).to.be.eql(expected);
   });
 
   it("can prioritise a luncher with less availablity", async function() {
@@ -185,8 +185,8 @@ describe("DoTheDraw", function() {
 
     const response = await useCase.execute();
 
-    expect(response.lunchCycleWeeks[0].lunchers[0].firstName).to.be.eql("baebunny");
-    expect(response.lunchCycleWeeks[1].lunchers[0].firstName).to.be.eql("bugsbunny");
+    expect(response.lunchCycleDraw[0].lunchers[0].firstName).to.be.eql("baebunny");
+    expect(response.lunchCycleDraw[1].lunchers[0].firstName).to.be.eql("bugsbunny");
   });
 
   it("can do a draw for 9 lunchers over 3 weeks", async function() {
@@ -278,9 +278,9 @@ describe("DoTheDraw", function() {
 
     const response = await useCase.execute();
 
-    const w1 = response.lunchCycleWeeks[0].lunchers;
-    const w2 = response.lunchCycleWeeks[1].lunchers;
-    const w3 = response.lunchCycleWeeks[2].lunchers;
+    const w1 = response.lunchCycleDraw[0].lunchers;
+    const w2 = response.lunchCycleDraw[1].lunchers;
+    const w3 = response.lunchCycleDraw[2].lunchers;
 
     expect(w1.length).to.eql(3);
     expect(w2.length).to.eql(3);
@@ -380,7 +380,7 @@ describe("DoTheDraw", function() {
     });
 
     const response = await useCase.execute();
-    expect(response.lunchCycleWeeks[0].allAvailable).to.be.eql([
+    expect(response.lunchCycleDraw[0].allAvailable).to.be.eql([
       luncher1,
       luncher2,
       luncher5,
@@ -388,14 +388,14 @@ describe("DoTheDraw", function() {
       luncher8,
       luncher9
     ]);
-    expect(response.lunchCycleWeeks[1].allAvailable).to.be.eql([
+    expect(response.lunchCycleDraw[1].allAvailable).to.be.eql([
       luncher2,
       luncher3,
       luncher6,
       luncher7,
       luncher8
     ]);
-    expect(response.lunchCycleWeeks[2].allAvailable).to.be.eql([
+    expect(response.lunchCycleDraw[2].allAvailable).to.be.eql([
       luncher4,
       luncher6,
       luncher7,

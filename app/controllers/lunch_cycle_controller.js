@@ -33,6 +33,14 @@ router.post("/new", async function(req, res) {
 router.post("/send", async function(req, res) {
   const lunchCycleService = new LunchCycleService();
 
+  if (!lunchCycleService.verifyRequest(req.headers, req.body)) {
+    return res.send("error verifying slack request.");
+  }
+
+  if (!lunchCycleService.isAdmin(req.body.user_id)) {
+    return res.send("sorry, you are not authorised to do this.");
+  }
+
   let users = await lunchCycleService.fetchSlackUsers();
 
   // limit the users receiving the message in dev so we dont spam em all!
@@ -45,26 +53,36 @@ router.post("/send", async function(req, res) {
   res.send("message sent to all users.");
 });
 
-router.post("/export", async function(req, res) {
-  res.send({ text: "exporting user responses to google sheet..." });
+// router.post("/export", async function(req, res) {
+//   res.send({ text: "exporting user responses to google sheet..." });
 
-  try {
-    const lunchCycleService = new LunchCycleService();
-    await lunchCycleService.updateLunchers();
-    await lunchCycleService.exportLunchers();
-    postSlackResponse(req.body.response_url, "exported to google sheet!");
-  } catch (err) {
-    console.log(err);
-    postSlackResponse(
-      req.body.response_url,
-      "sorry, there was an error exporting. please try again."
-    );
-  }
-});
+//   try {
+//     const lunchCycleService = new LunchCycleService();
+//     await lunchCycleService.updateLunchers();
+//     await lunchCycleService.exportLunchers();
+//     postSlackResponse(req.body.response_url, "exported to google sheet!");
+//   } catch (err) {
+//     console.log(err);
+//     postSlackResponse(
+//       req.body.response_url,
+//       "sorry, there was an error exporting. please try again."
+//     );
+//   }
+// });
 
 router.post("/draw", async function(req, res) {
   try {
     const lunchCycleService = new LunchCycleService();
+
+    if (!lunchCycleService.verifyRequest(req.headers, req.body)) {
+      return res.send("error verifying slack request.");
+    }
+
+    if (!lunchCycleService.isAdmin(req.body.user_id)) {
+      return res.send("sorry, you are not authorised to do this.");
+    }
+
+    await lunchCycleService.updateLunchers();
     await lunchCycleService.doLunchersDraw();
   } catch (err) {
     console.log(err);
@@ -73,12 +91,22 @@ router.post("/draw", async function(req, res) {
   res.send("draw complete.");
 });
 
-function postSlackResponse(url, text) {
-  request.post({
-    headers: { "content-type": "application/json" },
-    url: url,
-    json: { text }
-  });
-}
+router.get("/currentdraw", async function(req, res) {
+  if (!req.query.token || req.query.token !== config.LUNCH_CYCLE_API_TOKEN) {
+    return res.status(403).send("soz");
+  }
+
+  const lunchCycleService = new LunchCycleService();
+  const lunchCycleDraw = await lunchCycleService.getLatestLunchCycleDraw();
+  res.json(lunchCycleDraw);
+});
+
+// function postSlackResponse(url, text) {
+//   request.post({
+//     headers: { "content-type": "application/json" },
+//     url: url,
+//     json: { text }
+//   });
+// }
 
 module.exports = router;

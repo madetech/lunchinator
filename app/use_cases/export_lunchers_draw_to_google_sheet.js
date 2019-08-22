@@ -4,10 +4,10 @@ class ExportLunchersDrawToGoogleSheet {
   constructor({ googleSheetGateway }) {
     this.googleSheetGateway = googleSheetGateway;
   }
-  async execute({ lunchCycleWeeks }) {
+  async execute({ lunchCycleDraw }) {
     const doc = await this.googleSheetGateway.fetchDoc(config.LUNCH_CYCLE_WEEK_SHEET_ID);
 
-    for (const lunchCycleWeek of lunchCycleWeeks) {
+    for (const lunchCycleWeek of lunchCycleDraw) {
       const workSheetTitle = lunchCycleWeek.restaurant.date;
       const restaurantName = lunchCycleWeek.restaurant.name;
       const worksheet = await this.googleSheetGateway.addWorksheetTo({
