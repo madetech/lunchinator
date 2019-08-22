@@ -44,8 +44,8 @@ class CreateNewLunchCycle {
   }
 
   setRestaurantDates(restaurants, startsAt) {
-    const clone = startsAt.clone();
     restaurants.forEach((r, i) => {
+      const clone = startsAt.clone();
       r.date = clone.add(i * 7, "days").format("DD/MM/YYYY");
     });
   }

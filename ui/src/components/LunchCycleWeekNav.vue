@@ -1,14 +1,28 @@
 <template>
-  <v-card elevation="12" width="256">
-    <v-navigation-drawer floating permanent>
-      <v-list dense rounded>
-        <v-list-item v-for="item in items" :key="item.date" link>
+  <v-card>
+    <v-list
+      :disabled="disabled"
+      :dense="dense"
+      :two-line="twoLine"
+      :three-line="threeLine"
+      :shaped="shaped"
+      :flat="flat"
+      :subheader="subheader"
+      :inactive="inactive"
+      :sub-group="subGroup"
+      :nav="nav"
+      :avatar="avatar"
+      :rounded="rounded"
+    >
+      <v-subheader>LUNCH DATES</v-subheader>
+      <v-list-item-group color="primary">
+        <v-list-item v-for="item in items" :key="item.date" v-on:click="emitDate(item.date)">
           <v-list-item-content>
             <v-list-item-title>{{ item.date }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
+      </v-list-item-group>
+    </v-list>
   </v-card>
 </template>
 
@@ -16,23 +30,41 @@
 export default {
   name: "LunchCycleWeekNav",
   props: {
-    drawdata: {
+    restaurants: {
       type: Array,
       required: true
     }
   },
   watch: {
-    drawdata: {
+    restaurants: {
       deep: true,
       handler() {
-        this.items = this.drawdata;
+        this.items = this.restaurants;
       }
     }
   },
   data() {
     return {
-      items: this.drawdata
+      items: null,
+
+      disabled: false,
+      dense: true,
+      twoLine: true,
+      threeLine: false,
+      shaped: false,
+      flat: false,
+      subheader: false,
+      inactive: false,
+      subGroup: false,
+      nav: true,
+      avatar: true,
+      rounded: false
     };
+  },
+  methods: {
+    emitDate(date) {
+      this.$emit("changeDate", date);
+    }
   }
 };
 </script>

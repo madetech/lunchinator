@@ -139,6 +139,7 @@ class LunchCycleService {
       await this.sendDirectMessageToSlackUser.execute({ slackUser });
     }
   }
+
   async remindLateResponders() {
     const response = await this.findNonRespondersIds.execute();
     for (const nonResponderId of response.nonResponderIds) {
@@ -175,13 +176,14 @@ class LunchCycleService {
   }
 
   async getLatestLunchCycleDraw() {
-    const lunchCycleGateway = new PostgresLunchCycleGateway();
     const lunchCycleDrawGateway = new PostgresLunchCycleDrawGateway();
-
-    const lunchCycle = await lunchCycleGateway.getCurrent();
-    const lunchCycleDraw = await lunchCycleDrawGateway.getByLunchCycleId(lunchCycle.id);
-
+    const lunchCycleDraw = await lunchCycleDrawGateway.getCurrent();
     return lunchCycleDraw;
+  }
+
+  async updateDraw(lunchCycleDraw) {
+    const lunchCycleDrawGateway = new PostgresLunchCycleDrawGateway();
+    await lunchCycleDrawGateway.update(lunchCycleDraw);
   }
 
   // async exportLunchers() {

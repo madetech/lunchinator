@@ -14,17 +14,29 @@ class PostgresLunchCycleDrawGateway {
       .finally(() => client.end());
   }
 
-  async getByLunchCycleId(lunchCycleId) {
+  async getCurrent() {
     const client = await this._client();
-    const result = await client.query({
-      text: "SELECT * FROM lunch_cycle_draws WHERE lunch_cycle_id = $1 ORDER BY id DESC LIMIT 1",
-      values: [lunchCycleId]
-    });
-    client.end();
+    const result = await client
+      .query({
+        text: "SELECT * FROM lunch_cycle_draws ORDER BY id DESC LIMIT 1"
+      })
+      .finally(() => client.end());
 
     if (result.rows[0]) {
       return result.rows[0].draw;
     }
+  }
+
+  async update(lunchCycleDraw) {
+    const client = await this._client();
+    await client
+      .query({
+        text:
+          "UPDATE lunch_cycle_draws set draw = $1, updated_at=(SELECT now()::timestamp with time zone::timestamp) where id = (SELECT max(id) FROM lunch_cycle_draws)",
+        values: [JSON.stringify(lunchCycleDraw)]
+      })
+      .catch(err => console.log(err))
+      .finally(() => client.end());
   }
 
   async _client() {

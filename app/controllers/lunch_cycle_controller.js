@@ -92,13 +92,34 @@ router.post("/draw", async function(req, res) {
 });
 
 router.get("/currentdraw", async function(req, res) {
-  if (!req.query.token || req.query.token !== config.LUNCH_CYCLE_API_TOKEN) {
+  if (!req.query.token || req.query.token !== config.VUE_APP_LUNCH_CYCLE_API_TOKEN) {
     return res.status(403).send("soz");
   }
 
   const lunchCycleService = new LunchCycleService();
   const lunchCycleDraw = await lunchCycleService.getLatestLunchCycleDraw();
   res.json(lunchCycleDraw);
+});
+
+router.get("/alllunchers", async function(req, res) {
+  if (!req.query.token || req.query.token !== config.VUE_APP_LUNCH_CYCLE_API_TOKEN) {
+    return res.status(403).send("soz");
+  }
+
+  const lunchCycleService = new LunchCycleService();
+  const allLunchers = await lunchCycleService.fetchSlackUsers();
+  res.json(allLunchers);
+});
+
+router.post("/update", async function(req, res) {
+  if (!req.query.token || req.query.token !== config.VUE_APP_LUNCH_CYCLE_API_TOKEN) {
+    return res.status(403).send("soz");
+  }
+
+  const lunchCycleService = new LunchCycleService();
+
+  await lunchCycleService.updateDraw(req.body);
+  return res.send(200);
 });
 
 // function postSlackResponse(url, text) {
