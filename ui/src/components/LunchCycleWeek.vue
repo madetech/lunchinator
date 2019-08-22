@@ -23,7 +23,7 @@
         v-on:removeLuncher="removeLuncher"
       ></LuncherList>
       <LuncherList class="pa-1 mr-2" :lunchers="allAvaill" :title="'AVAILABLE LUNCHERS'"></LuncherList>
-      <LuncherList class="pa-1" :lunchers="nons" :title="'NON-RESPONDERS'"></LuncherList>
+      <LuncherList class="pa-1" :lunchers="nons" :title="'NOT GOING ANYWHERE'"></LuncherList>
     </v-container>
   </v-container>
 </template>
