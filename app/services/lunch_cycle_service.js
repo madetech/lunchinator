@@ -3,7 +3,8 @@ const {
   GoogleSheetGateway,
   CryptoGateway,
   SlackGateway,
-  PostgresSlackUserResponseGateway
+  PostgresSlackUserResponseGateway,
+  PostgresLunchCycleDrawGateway
 } = require("@gateways");
 
 const {
@@ -17,12 +18,10 @@ const {
   SendDirectMessageToSlackUser,
   FetchReactionsForLuncher,
   UpdateLuncherReactions,
-  ExportLunchersToGoogleSheet,
   FindNonResponderIds,
   GenerateReminderMessage,
   SendReminderToLateResponder,
   DrawLunchers,
-  ExportLunchersDrawToGoogleSheet,
   GenerateSelectedLunchersMessage,
   SendMessageToSelectedLunchers
 } = require("@use_cases");
@@ -64,12 +63,6 @@ class LunchCycleService {
       slackUserResponseGateway: slackUserResponseGateway,
       lunchCycleGateway: lunchCycleGateway
     });
-
-    this.exportLunchersToGoogleSheet = new ExportLunchersToGoogleSheet({
-      slackUserResponseGateway: slackUserResponseGateway,
-      googleSheetGateway: googleSheetGateway,
-      lunchCycleGateway: lunchCycleGateway
-    });
     this.findNonRespondersIds = new FindNonResponderIds({
       lunchCycleGateway: lunchCycleGateway,
       userResponseGateway: slackUserResponseGateway
@@ -81,9 +74,6 @@ class LunchCycleService {
     this.drawLunchers = new DrawLunchers({
       lunchCycleGateway: lunchCycleGateway,
       slackUserResponseGateway: slackUserResponseGateway
-    });
-    this.exportLunchersDrawToGoogleSheet = new ExportLunchersDrawToGoogleSheet({
-      googleSheetGateway: googleSheetGateway
     });
     this.sendMessageToSelectedLuncher = new SendMessageToSelectedLunchers({
       slackGateway: slackGateway,
@@ -144,6 +134,7 @@ class LunchCycleService {
       await this.sendDirectMessageToSlackUser.execute({ slackUser });
     }
   }
+
   async remindLateResponders() {
     const response = await this.findNonRespondersIds.execute();
     for (const nonResponderId of response.nonResponderIds) {
@@ -165,14 +156,20 @@ class LunchCycleService {
   }
 
   async doLunchersDraw() {
+    const lunchCycleGateway = new PostgresLunchCycleGateway();
+    const lunchCycleDrawGateway = new PostgresLunchCycleDrawGateway();
+
     const response = await this.drawLunchers.execute();
-    await this.exportLunchersDrawToGoogleSheet.execute({
-      lunchCycleWeeks: response.lunchCycleWeeks
-    });
+
+    // this should me moved into drawLunchers
+    const lunchCycle = await lunchCycleGateway.getCurrent();
+    await lunchCycleDrawGateway.create(lunchCycle.id, response.lunchCycleDraw);
   }
 
-  async exportLunchers() {
-    await this.exportLunchersToGoogleSheet.execute();
+  async getLatestLunchCycleDraw() {
+    const lunchCycleDrawGateway = new PostgresLunchCycleDrawGateway();
+    const lunchCycleDraw = await lunchCycleDrawGateway.getCurrent();
+    return lunchCycleDraw;
   }
 
   async sendMessageToSelectedLunchers() {
@@ -181,6 +178,11 @@ class LunchCycleService {
     lunchCycleWeeks.forEach(async lunchCycleWeek => {
       await this.sendMessageToSelectedLuncher.execute({ lunchCycleWeek });
     });
+  }
+
+  async updateDraw(lunchCycleDraw) {
+    const lunchCycleDrawGateway = new PostgresLunchCycleDrawGateway();
+    await lunchCycleDrawGateway.update(lunchCycleDraw);
   }
 }
 

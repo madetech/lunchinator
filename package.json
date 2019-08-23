@@ -1,5 +1,8 @@
 {
   "dependencies": {
+    "axios": "^0.19.0",
+    "body-parser": "^1.19.0",
+    "core-js": "^2.6.5",
     "dotenv": "^8.0.0",
     "express": "^4.17.1",
     "google-spreadsheet": "^2.0.7",
@@ -9,7 +12,9 @@
     "pg": "^7.12.0",
     "qs": "^6.7.0",
     "request": "^2.88.0",
-    "slack": "^11.0.2"
+    "slack": "^11.0.2",
+    "vue": "^2.6.10",
+    "vuetify": "^2.0.0"
   },
   "engines": {
     "node": "12.X"
@@ -19,6 +24,9 @@
   "version": "0.0.1",
   "main": "index.js",
   "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.10.0",
+    "@vue/cli-plugin-eslint": "^3.10.0",
+    "@vue/cli-service": "^3.10.0",
     "babel-eslint": "^10.0.2",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
@@ -26,15 +34,23 @@
     "eslint": "^6.1.0",
     "eslint-plugin-mocha": "^6.0.0",
     "eslint-plugin-prettier": "^3.1.0",
+    "eslint-plugin-vue": "^5.0.0",
     "mocha": "^6.2.0",
     "nock": "^10.0.6",
     "nyc": "^14.1.1",
     "prettier": "^1.18.2",
     "prettier-eslint": "^9.0.0",
+    "sass": "^1.17.4",
+    "sass-loader": "^7.1.0",
     "sinon": "^7.3.2",
-    "sinon-chai": "^3.3.0"
+    "sinon-chai": "^3.3.0",
+    "vue-cli-plugin-vuetify": "^0.6.3",
+    "vue-template-compiler": "^2.6.10",
+    "vuetify-loader": "^1.2.2"
   },
   "scripts": {
+    "serve": "vue-cli-service serve ./ui/src/main.js",
+    "build": "vue-cli-service build ./ui/src/main.js",
     "start": "node index.js",
     "test": "NODE_ENV=test mocha \"test/**/*.test.js\"",
     "testw": "NODE_ENV=test mocha --watch \"test/**/*.test.js\"",
@@ -61,5 +77,9 @@
     "@gateways": "app/gateways",
     "@controllers": "app/controllers",
     "@services": "app/services"
-  }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions"
+  ]
 }

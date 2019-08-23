@@ -6,7 +6,7 @@ const { RestaurantFactory } = require("../factories");
 describe("ExportLunchersDrawToGoogleSheet", function() {
   it("uses the correct Google Sheet ID", async function() {
     const lunchCyclesWeeksStub = {
-      LunchCycleWeeks: [
+      lunchCycleDraw: [
         new LunchCycleWeek({
           restaurant: "",
           lunchers: [],
@@ -27,7 +27,7 @@ describe("ExportLunchersDrawToGoogleSheet", function() {
 
     sinon.stub(config, "LUNCH_CYCLE_WEEK_SHEET_ID").get(() => dummySheetId);
 
-    await useCase.execute({ lunchCycleWeeks: lunchCyclesWeeksStub.LunchCycleWeeks });
+    await useCase.execute({ lunchCycleDraw: lunchCyclesWeeksStub.lunchCycleDraw });
 
     expect(fakeSheetGateway.fetchDoc).to.have.been.calledOnceWith(dummySheetId);
   });
