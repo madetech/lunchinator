@@ -1,16 +1,16 @@
 <template>
   <div id="app">
-    <LunchinatorMain></LunchinatorMain>
+    <Main></Main>
   </div>
 </template>
 
 <script>
-import LunchinatorMain from "./components/LunchinatorMain.vue";
+import Main from "./components/Main.vue";
 
 export default {
   name: "app",
   components: {
-    LunchinatorMain
+    Main
   }
 };
 </script>

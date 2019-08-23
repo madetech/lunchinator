@@ -1,30 +1,20 @@
 <template>
-  <v-app>
-    <v-app-bar
-      src="https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fcdn-image.foodandwine.com%2Fsites%2Fdefault%2Ffiles%2Fstyles%2F4_3_horizontal_-_1200x900%2Fpublic%2F.%2Ffwx-man-eating-fast.jpg%3Fitok%3DSGFUqNUG"
-      app
-    >LUNCHINATOR</v-app-bar>
-    <!-- Sizes your content based upon application components -->
-    <v-content>
-      <!-- Provides the application the proper gutter -->
-      <v-container fluid>
-        <LunchCycleWeekNav
-          class="d-inline-flex pa-2"
-          :restaurants="restaurants"
-          v-on:changeDate="changeDate"
-        ></LunchCycleWeekNav>
-        <LunchCycleWeek
-          class="d-inline-flex pa-2"
-          :selectedDate="selectedDate"
-          :allLunchers="allLunchers"
-          :nonResponders="nonResponders"
-          v-on:removeLuncher="removeLuncher"
-          v-on:addLuncher="addLuncher"
-          v-on:saveLunchers="saveLunchers"
-        ></LunchCycleWeek>
-      </v-container>
-    </v-content>
-  </v-app>
+  <v-container fluid>
+    <LunchCycleWeekNav
+      class="d-inline-flex pa-2"
+      :restaurants="restaurants"
+      v-on:changeDate="changeDate"
+    ></LunchCycleWeekNav>
+    <LunchCycleWeek
+      class="d-inline-flex pa-2"
+      :selectedDate="selectedDate"
+      :allLunchers="allLunchers"
+      :nonResponders="nonResponders"
+      v-on:removeLuncher="removeLuncher"
+      v-on:addLuncher="addLuncher"
+      v-on:saveLunchers="saveLunchers"
+    ></LunchCycleWeek>
+  </v-container>
 </template>
 
 <script>
@@ -33,7 +23,7 @@ import LunchCycleWeek from "./LunchCycleWeek.vue";
 import LunchCycleWeekNav from "./LunchCycleWeekNav.vue";
 
 export default {
-  name: "LunchinatorMain",
+  name: "Draw",
   components: {
     LunchCycleWeek,
     LunchCycleWeekNav
@@ -64,11 +54,12 @@ export default {
       response = await axios.get(
         `${process.env.VUE_APP_LUNCH_CYCLE_API}/alllunchers?token=${process.env.VUE_APP_LUNCH_CYCLE_API_TOKEN}`
       );
-      this.allLunchers = response.data;
 
-      const availableIds = this.drawdata.map(x => x.allAvailable).flat();
-      const luncherIds = this.drawdata.map(x => x.lunchers).flat();
-      const responderIds = availableIds.concat(luncherIds).map(x => x.slackUserId);
+      this.allLunchers = response.data;
+      const responderIds = this.drawdata
+        .map(x => x.lunchers)
+        .flat()
+        .map(x => x.slackUserId);
 
       this.nonResponders = this.allLunchers.filter(l => !responderIds.includes(l.id));
     },
