@@ -49,6 +49,7 @@ export default {
         `${process.env.VUE_APP_LUNCH_CYCLE_API}/alllunchers?token=${process.env.VUE_APP_LUNCH_CYCLE_API_TOKEN}`
       );
 
+      // would be nice to move this into server-side
       this.items = response.data.map(user => {
         const item = {
           name: `${user.profile.first_name} (${user.profile.email})`
