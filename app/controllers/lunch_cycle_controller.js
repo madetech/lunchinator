@@ -29,7 +29,7 @@ router.post("/new", async function(req, res) {
   res.json(message);
 });
 
-router.post("/send", async function(req, res) {
+router.post("/availability", async function(req, res) {
   const lunchCycleService = new LunchCycleService();
 
   if (!lunchCycleService.verifyRequest(req.headers, req.body)) {
@@ -71,6 +71,19 @@ router.post("/draw", async function(req, res) {
   }
 
   res.send("draw complete.");
+});
+
+router.post("/send_confirmation", async function(req, res) {
+  const lunchCycleService = new LunchCycleService();
+  lunchCycleService
+    .sendMessageToSelectedLunchers()
+    .then(() => {
+      console.log("sent message to slectedl lunchers");
+    })
+    .catch(err => {
+      console.log("there was a problem notifying non-responders...");
+      console.log(err);
+    });
 });
 
 router.get("/currentdraw", async function(req, res) {
