@@ -54,13 +54,10 @@ export default {
           const luncher = week.allAvailable.filter(l => l.slackUserId === user.id)[0];
           if (luncher) {
             luncher.availableEmojis.forEach(e => {
-              console.log(e);
               item[e] = "\u2714";
             });
           }
         });
-
-        console.log(item);
 
         return item;
       });
