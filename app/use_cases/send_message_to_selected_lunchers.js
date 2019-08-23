@@ -9,10 +9,11 @@ class SendMessageToSelectedLunchers {
       const lunchers = lunchCycleWeek.lunchers;
       lunchers.forEach(async luncher => {
         const message = this.generateSelectedLunchersMessage.execute({ lunchCycleWeek, luncher });
-        let slackMessageResponse = await this.slackGateway.sendMessageWithText({
-          slackUserId: luncher.slackUserId,
-          message: message
-        });
+
+        let slackMessageResponse = await this.slackGateway.sendMessageWithText(
+          luncher.slackUserId,
+          message
+        );
         slackMessageResponses.push({ slackMessageResponse: slackMessageResponse });
       });
       return slackMessageResponses;

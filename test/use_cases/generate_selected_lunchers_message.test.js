@@ -30,7 +30,7 @@ describe("GenerateSelectedLunchersMessage", function() {
       firstName: "name1"
     });
 
-    const expected = `Congratulations \<\@${"slackUserID1"}\>, you have been selected to join the lunchers on \*30/08/2019\*!.\n You will be going to Camino along with:\n \<\@${"slackUserID2"}\>`;
+    const expected = `Congratulations \<\@${"slackUserID1"}\>, you have been selected to join the lunchers on \*30/08/2019\*.\n You will be going to Camino along with:\n \<\@${"slackUserID2"}\>`;
     const useCase = new GenerateSelectedLunchersMessage();
     const response = useCase.execute({ lunchCycleWeek: lunchCycleWeekStub, luncher: luncherStub });
     expect(response.text).to.be.eql(expected);

@@ -11,7 +11,9 @@ describe("SendMessageToSelectedLunchers", function() {
     }
 
     const slackGatewayFake = new SlackGatewayFake();
+
     sinon.spy(slackGatewayFake, "sendMessageWithText");
+
     const lunchCycleWeekStub = new LunchCycleWeek({
       restaurant: new Restaurant({
         name: "Camino",
@@ -38,55 +40,59 @@ describe("SendMessageToSelectedLunchers", function() {
     });
     const response = await useCase.execute({ lunchCycleWeek: lunchCycleWeekStub });
 
-    expect(slackGatewayFake.sendMessageWithText).to.have.been.calledWith({
-      slackUserId: lunchCycleWeekStub.lunchers[0].slackUserId,
-      message: { text: "message 1" }
-    });
+    expect(slackGatewayFake.sendMessageWithText).to.have.been.calledWith(
+      lunchCycleWeekStub.lunchers[0].slackUserId,
+      { text: "message 1" }
+    );
     expect(response[0].slackMessageResponse).to.eql(true);
   });
 
-  // it("can send messages to multiple selected lunchers", async function() {
-  //   class SlackGatewayFake {
-  //     sendMessageWithText(slackUserId, slackMessage) {
-  //       return true;
-  //     }
-  //   }
+  it("can send messages to multiple selected lunchers", async function() {
+    class SlackGatewayFake {
+      sendMessageWithText(slackUserId, slackMessage) {
+        return true;
+      }
+    }
 
-  //   const slackGatewayFake = new SlackGatewayFake();
-  //   sinon.spy(slackGatewayFake, "sendMessageWithText");
-  //   const lunchCycleWeekStub = new LunchCycleWeek({
-  //     restaurant: new Restaurant({
-  //       name: "Camino",
-  //       direction: "https://goo.gl/maps/TMVtpYXrLxYhKr5DA",
-  //       date: "30/08/2019"
-  //     }),
-  //     lunchers: [
-  //       new Luncher({
-  //         slackUserId: "slackUserID1",
-  //         email: "email1",
-  //         firstName: "name1"
-  //       }),
-  //       new Luncher({
-  //         slackUserId: "slackUserID2",
-  //         email: "email2",
-  //         firstName: "name2"
-  //       })
-  //     ],
-  //     allAvailable: []
-  //   });
+    const slackGatewayFake = new SlackGatewayFake();
 
-  //   const generateSelectedLunchersMessage = new GenerateLunchersMessage();
+    sinon.spy(slackGatewayFake, "sendMessageWithText");
 
-  //   const useCase = new SendMessageToSelectedLunchers({
-  //     slackGateway: slackGatewayFake,
-  //     generateSelectedLunchersMessage: generateSelectedLunchersMessage
-  //   });
-  //   const response = await useCase.execute({ lunchCycleWeek: lunchCycleWeekStub });
+    const lunchCycleWeekStub = new LunchCycleWeek({
+      restaurant: new Restaurant({
+        name: "Camino",
+        direction: "https://goo.gl/maps/TMVtpYXrLxYhKr5DA",
+        date: "30/08/2019"
+      }),
+      lunchers: [
+        new Luncher({
+          slackUserId: "slackUserID1",
+          email: "email1",
+          firstName: "name1"
+        }),
+        new Luncher({
+          slackUserId: "slackUserID2",
+          email: "email2",
+          firstName: "name2"
+        })
+      ],
+      allAvailable: []
+    });
 
-  //   expect(slackGatewayFake.sendMessageWithText).to.have.been.calledWith({
-  //     slackUserId: lunchCycleWeekStub.lunchers[1].slackUserId,
-  //     message: { text: "message 2" }
-  //   });
-  //   expect(response[0].slackMessageResponse).to.eql(true);
-  // });
+    const generateSelectedLunchersMessageFake = {
+      execute: sinon.fake.returns({ text: "message 2" })
+    };
+
+    const useCase = new SendMessageToSelectedLunchers({
+      slackGateway: slackGatewayFake,
+      generateSelectedLunchersMessage: generateSelectedLunchersMessageFake
+    });
+    const response = await useCase.execute({ lunchCycleWeek: lunchCycleWeekStub });
+
+    expect(slackGatewayFake.sendMessageWithText).to.have.been.calledWith(
+      lunchCycleWeekStub.lunchers[1].slackUserId,
+      { text: "message 2" }
+    );
+    expect(response[1].slackMessageResponse).to.eql(true);
+  });
 });
