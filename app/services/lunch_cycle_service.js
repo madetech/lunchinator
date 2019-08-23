@@ -22,7 +22,9 @@ const {
   GenerateReminderMessage,
   SendReminderToLateResponder,
   DrawLunchers,
-  ExportLunchersDrawToGoogleSheet
+  ExportLunchersDrawToGoogleSheet,
+  GenerateSelectedLunchersMessage,
+  SendMessageToSelectedLunchers
 } = require("@use_cases");
 
 class LunchCycleService {
@@ -82,6 +84,10 @@ class LunchCycleService {
     });
     this.exportLunchersDrawToGoogleSheet = new ExportLunchersDrawToGoogleSheet({
       googleSheetGateway: googleSheetGateway
+    });
+    this.sendMessageToSelectedLuncher = new SendMessageToSelectedLunchers({
+      slackGateway: slackGateway,
+      generateSelectedLunchersMessage: new GenerateSelectedLunchersMessage()
     });
   }
 
@@ -167,6 +173,14 @@ class LunchCycleService {
 
   async exportLunchers() {
     await this.exportLunchersToGoogleSheet.execute();
+  }
+
+  async sendMessageToSelectedLunchers() {
+    const response = await this.drawLunchers.execute();
+    const lunchCycleWeeks = response.lunchCycleWeeks;
+    lunchCycleWeeks.forEach(async lunchCycleWeek => {
+      await this.sendMessageToSelectedLuncher.execute({ lunchCycleWeek });
+    });
   }
 }
 
