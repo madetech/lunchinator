@@ -28,17 +28,20 @@ export default {
   methods: {
     async loadData() {
       let response = await axios.get(
-        `${process.env.VUE_APP_LUNCH_CYCLE_API}/currentdraw?token=${process.env.VUE_APP_LUNCH_CYCLE_API_TOKEN}`
+        `${process.env.VUE_APP_LUNCH_CYCLE_API}/currentavailabilities?token=${process.env.VUE_APP_LUNCH_CYCLE_API_TOKEN}`
       );
-      this.drawdata = response.data;
+
+      this.lunchCycle = response.data.lunchCycle;
+      this.availabilities = response.data.availabilities;
+
       this.headers = [
         {
           text: "",
           value: "name"
         }
       ].concat(
-        this.drawdata.map(x => {
-          return { text: `${x.restaurant.name} (${x.restaurant.date})`, value: x.restaurant.emoji };
+        this.lunchCycle.restaurants.map(x => {
+          return { text: `${x.name} (${x.date})`, value: x.emoji };
         })
       );
 
@@ -51,14 +54,12 @@ export default {
           name: `${user.profile.first_name} (${user.profile.email})`
         };
 
-        this.drawdata.forEach(week => {
-          const luncher = week.allAvailable.filter(l => l.slackUserId === user.id)[0];
-          if (luncher) {
-            luncher.availableEmojis.forEach(e => {
-              item[e] = "\u2714";
-            });
-          }
-        });
+        const luncher = this.availabilities.filter(l => l.slackUserId === user.id)[0];
+        if (luncher) {
+          luncher.availableEmojis.forEach(e => {
+            item[e] = "\u2714";
+          });
+        }
 
         return item;
       });

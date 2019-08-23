@@ -86,6 +86,21 @@ router.post("/send_confirmation", async function(req, res) {
     });
 });
 
+router.get("/currentavailabilities", async function(req, res) {
+  if (!req.query.token || req.query.token !== config.VUE_APP_LUNCH_CYCLE_API_TOKEN) {
+    return res.status(403).send("soz");
+  }
+
+  const lunchCycleService = new LunchCycleService();
+  const lunchCycle = await lunchCycleService.getCurrentLunchCycle();
+  const availabilities = await lunchCycleService.updateLunchers();
+
+  res.json({
+    lunchCycle: lunchCycle,
+    availabilities: availabilities
+  });
+});
+
 router.get("/currentdraw", async function(req, res) {
   if (!req.query.token || req.query.token !== config.VUE_APP_LUNCH_CYCLE_API_TOKEN) {
     return res.status(403).send("soz");

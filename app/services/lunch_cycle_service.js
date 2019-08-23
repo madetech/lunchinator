@@ -104,6 +104,12 @@ class LunchCycleService {
     return response.isVerified;
   }
 
+  async getCurrentLunchCycle() {
+    const postgresLunchCycleGateway = new PostgresLunchCycleGateway();
+    const currentLunchCycle = await postgresLunchCycleGateway.getCurrent();
+    return currentLunchCycle;
+  }
+
   async getLunchCycleRestaurants() {
     const postgresLunchCycleGateway = new PostgresLunchCycleGateway();
     const currentLunchCycle = await postgresLunchCycleGateway.getCurrent();
@@ -149,10 +155,18 @@ class LunchCycleService {
     const lunchCycle = await postgresLunchCycleGateway.getCurrent();
     const lunchers = await postgresSlackUserResponseGateway.findAllForLunchCycle({ lunchCycle });
 
+    const updatedLunchers = [];
+
     for (const luncher of lunchers) {
-      const response = await this.fetchLuncherReactions.execute({ luncher });
-      await this.updateLuncherReactions.execute({ luncher, reactions: response.reactions });
+      let response = await this.fetchLuncherReactions.execute({ luncher });
+      let res = await this.updateLuncherReactions.execute({
+        luncher,
+        reactions: response.reactions
+      });
+      updatedLunchers.push(res.updatedLuncher);
     }
+
+    return updatedLunchers;
   }
 
   async doLunchersDraw() {
