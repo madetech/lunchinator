@@ -57,7 +57,7 @@
     "test-coverage": "NODE_ENV=test nyc --reporter=text mocha \"test/**/*.test.js\"",
     "migrate": "node-pg-migrate",
     "migrate-test": "NODE_ENV=test node-pg-migrate",
-    "heroku-postbuild": "node-pg-migrate up"
+    "heroku-postbuild": "node-pg-migrate up && vue-cli-service build ./ui/src/main.js"
   },
   "repository": {
     "type": "git",
