@@ -11,6 +11,7 @@
         :search="search"
         disable-pagination
         hide-default-footer
+        dense
       ></v-data-table>
     </v-card>
   </v-container>
