@@ -27,9 +27,11 @@ export default {
   },
   methods: {
     async loadData() {
-      let response = await axios.get(
-        `${process.env.VUE_APP_LUNCH_CYCLE_API}/currentavailabilities?token=${process.env.VUE_APP_LUNCH_CYCLE_API_TOKEN}`
-      );
+      let response = await axios.get(`${process.env.VUE_APP_API_URL}/currentavailabilities`, {
+        headers: {
+          Authorization: "Basic " + this.$token
+        }
+      });
 
       this.lunchCycle = response.data.lunchCycle;
       this.availabilities = response.data.availabilities;
@@ -45,9 +47,11 @@ export default {
         })
       );
 
-      response = await axios.get(
-        `${process.env.VUE_APP_LUNCH_CYCLE_API}/alllunchers?token=${process.env.VUE_APP_LUNCH_CYCLE_API_TOKEN}`
-      );
+      response = await axios.get(`${process.env.VUE_APP_API_URL}/alllunchers`, {
+        headers: {
+          Authorization: "Basic " + this.$token
+        }
+      });
 
       // would be nice to move this into server-side
       this.items = response.data.map(user => {

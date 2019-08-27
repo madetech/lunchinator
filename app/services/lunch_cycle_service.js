@@ -1,7 +1,6 @@
 const {
   PostgresLunchCycleGateway,
   GoogleSheetGateway,
-  CryptoGateway,
   SlackGateway,
   PostgresSlackUserResponseGateway,
   PostgresLunchCycleDrawGateway
@@ -10,10 +9,8 @@ const {
 const {
   GetNewLunchCycleRestaurants,
   FetchRestaurantsFromGoogleSheet,
-  VerifySlackRequest,
   GenerateLunchersMessage,
   CreateNewLunchCycle,
-  IsLunchinatorAdmin,
   FetchAllSlackUsers,
   SendDirectMessageToSlackUser,
   FetchReactionsForLuncher,
@@ -39,7 +36,6 @@ class LunchCycleService {
     this.createNewLunchCycle = new CreateNewLunchCycle({
       lunchCycleGateway: lunchCycleGateway
     });
-    this.verifySlackRequest = new VerifySlackRequest({ gateway: new CryptoGateway() });
     this.getNewLunchCycleRestaurants = new GetNewLunchCycleRestaurants({
       fetchRestaurantsFromGoogleSheet: new FetchRestaurantsFromGoogleSheet({
         googleSheetGateway: googleSheetGateway
@@ -58,7 +54,6 @@ class LunchCycleService {
       lunchCycleGateway: lunchCycleGateway
     });
     this.generateLuncherMessage = new GenerateLunchersMessage();
-    this.isLunchinatorAdmin = new IsLunchinatorAdmin();
     this.fetchLuncherReactions = new FetchReactionsForLuncher({
       slackGateway: slackGateway
     });
@@ -97,21 +92,6 @@ class LunchCycleService {
     });
 
     return response;
-  }
-
-  isAdmin(userId) {
-    var isLunchinatorAdminResponse = this.isLunchinatorAdmin.execute({ userId: userId });
-    return isLunchinatorAdminResponse.isValid;
-  }
-
-  verifyRequest(headers, body) {
-    const response = this.verifySlackRequest.execute({
-      slackSignature: headers["x-slack-signature"],
-      timestamp: headers["x-slack-request-timestamp"],
-      body: body
-    });
-
-    return response.isVerified;
   }
 
   async getCurrentLunchCycle() {
