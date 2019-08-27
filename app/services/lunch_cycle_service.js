@@ -20,7 +20,10 @@ const {
   SendReminderToLateResponder,
   DrawLunchers,
   GenerateSelectedLunchersMessage,
-  SendMessageToSelectedLunchers
+  SendMessageToSelectedLunchers,
+  GetCurrentLunchCycleWeek,
+  SendAnnouncement,
+  GenerateAnnouncementsMessage
 } = require("@use_cases");
 
 class LunchCycleService {
@@ -73,6 +76,13 @@ class LunchCycleService {
     this.sendMessageToSelectedLuncher = new SendMessageToSelectedLunchers({
       slackGateway: slackGateway,
       generateSelectedLunchersMessage: new GenerateSelectedLunchersMessage()
+    });
+    this.getCurrentLunchCycleWeek = new GetCurrentLunchCycleWeek({
+      lunchCycleDrawGateway: new PostgresLunchCycleDrawGateway()
+    });
+    this.sendAnnouncement = new SendAnnouncement({
+      slackGateway: slackGateway,
+      generateAnnouncementsMessage: new GenerateAnnouncementsMessage()
     });
   }
 
@@ -169,6 +179,7 @@ class LunchCycleService {
   async sendMessageToSelectedLunchers() {
     const lunchCycleDrawGateway = new PostgresLunchCycleDrawGateway();
     const lunchCycleWeeks = await lunchCycleDrawGateway.getCurrent();
+    console.log(lunchCycleWeeks);
     lunchCycleWeeks.forEach(async lunchCycleWeek => {
       await this.sendMessageToSelectedLuncher.execute({ lunchCycleWeek });
     });
@@ -177,6 +188,10 @@ class LunchCycleService {
   async updateDraw(lunchCycleDraw) {
     const lunchCycleDrawGateway = new PostgresLunchCycleDrawGateway();
     await lunchCycleDrawGateway.update(lunchCycleDraw);
+  }
+  async sendToAnnouncement() {
+    const currentLunchCycleWeek = await this.getCurrentLunchCycleWeek.execute();
+    await this.sendAnnouncement.execute(currentLunchCycleWeek);
   }
 }
 

@@ -102,4 +102,27 @@ router.post("/send_confirmation", async function(req, res) {
   }
 });
 
+router.post("/send_announcement", async function(req, res) {
+  const authService = new AuthService();
+
+  if (!authService.verifyRequest(req.headers, req.body)) {
+    return res.send("error verifying slack request.");
+  }
+
+  if (!authService.isAdmin(req.body.user_id)) {
+    return res.send("sorry, you are not authorised to do this.");
+  }
+
+  const lunchCycleService = new LunchCycleService();
+  lunchCycleService
+    .sendToAnnouncement()
+    .then(() => {
+      res.send("sent message to announcements channel");
+    })
+    .catch(err => {
+      res.send("there was a problem sending the announcement...");
+      console.log(err);
+    });
+});
+
 module.exports = router;
