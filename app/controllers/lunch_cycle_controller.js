@@ -1,18 +1,20 @@
 const express = require("express");
 const router = express.Router();
-const { LunchCycleService } = require("@services");
+const { LunchCycleService, AuthService } = require("@services");
 const config = require("@app/config");
 
 router.post("/new", async function(req, res) {
-  const lunchCycleService = new LunchCycleService();
+  const authService = new AuthService();
 
-  if (!lunchCycleService.verifyRequest(req.headers, req.body)) {
+  if (!authService.verifyRequest(req.headers, req.body)) {
     return res.send("error verifying slack request.");
   }
 
-  if (!lunchCycleService.isAdmin(req.body.user_id)) {
+  if (!authService.isAdmin(req.body.user_id)) {
     return res.send("sorry, you are not authorised to do this.");
   }
+
+  const lunchCycleService = new LunchCycleService();
 
   const lunchCycleRestaurants = await lunchCycleService.getLunchCycleRestaurants();
 
@@ -30,15 +32,17 @@ router.post("/new", async function(req, res) {
 });
 
 router.post("/availability", async function(req, res) {
-  const lunchCycleService = new LunchCycleService();
+  const authService = new AuthService();
 
-  if (!lunchCycleService.verifyRequest(req.headers, req.body)) {
+  if (!authService.verifyRequest(req.headers, req.body)) {
     return res.send("error verifying slack request.");
   }
 
-  if (!lunchCycleService.isAdmin(req.body.user_id)) {
+  if (!authService.isAdmin(req.body.user_id)) {
     return res.send("sorry, you are not authorised to do this.");
   }
+
+  const lunchCycleService = new LunchCycleService();
 
   let users = await lunchCycleService.fetchSlackUsers();
 
@@ -53,16 +57,18 @@ router.post("/availability", async function(req, res) {
 });
 
 router.post("/draw", async function(req, res) {
+  const authService = new AuthService();
+
+  if (!authService.verifyRequest(req.headers, req.body)) {
+    return res.send("error verifying slack request.");
+  }
+
+  if (!authService.isAdmin(req.body.user_id)) {
+    return res.send("sorry, you are not authorised to do this.");
+  }
+
   try {
     const lunchCycleService = new LunchCycleService();
-
-    if (!lunchCycleService.verifyRequest(req.headers, req.body)) {
-      return res.send("error verifying slack request.");
-    }
-
-    if (!lunchCycleService.isAdmin(req.body.user_id)) {
-      return res.send("sorry, you are not authorised to do this.");
-    }
 
     await lunchCycleService.updateLunchers();
     await lunchCycleService.doLunchersDraw();
@@ -74,61 +80,26 @@ router.post("/draw", async function(req, res) {
 });
 
 router.post("/send_confirmation", async function(req, res) {
-  const lunchCycleService = new LunchCycleService();
-  lunchCycleService
-    .sendMessageToSelectedLunchers()
-    .then(() => {
-      console.log("sent message to slectedl lunchers");
-    })
-    .catch(err => {
-      console.log("there was a problem notifying non-responders...");
-      console.log(err);
-    });
-});
+  const authService = new AuthService();
 
-router.get("/currentavailabilities", async function(req, res) {
-  if (!req.query.token || req.query.token !== config.VUE_APP_LUNCH_CYCLE_API_TOKEN) {
-    return res.status(403).send("soz");
+  if (!authService.verifyRequest(req.headers, req.body)) {
+    return res.send("error verifying slack request.");
   }
 
-  const lunchCycleService = new LunchCycleService();
-  const lunchCycle = await lunchCycleService.getCurrentLunchCycle();
-  const availabilities = await lunchCycleService.updateLunchers();
-
-  res.json({
-    lunchCycle: lunchCycle,
-    availabilities: availabilities
-  });
-});
-
-router.get("/currentdraw", async function(req, res) {
-  if (!req.query.token || req.query.token !== config.VUE_APP_LUNCH_CYCLE_API_TOKEN) {
-    return res.status(403).send("soz");
+  if (!authService.isAdmin(req.body.user_id)) {
+    return res.send("sorry, you are not authorised to do this.");
   }
 
-  const lunchCycleService = new LunchCycleService();
-  const lunchCycleDraw = await lunchCycleService.getLatestLunchCycleDraw();
-  res.json(lunchCycleDraw);
-});
+  try {
+    const lunchCycleService = new LunchCycleService();
 
-router.get("/alllunchers", async function(req, res) {
-  if (!req.query.token || req.query.token !== config.VUE_APP_LUNCH_CYCLE_API_TOKEN) {
-    return res.status(403).send("soz");
+    await lunchCycleService.sendMessageToSelectedLunchers();
+
+    res.send("confirmation messages sent.");
+  } catch (err) {
+    console.log(err);
+    res.send("error sending confirmation messages.");
   }
-
-  const lunchCycleService = new LunchCycleService();
-  const allLunchers = await lunchCycleService.fetchSlackUsers();
-  res.json(allLunchers);
-});
-
-router.post("/update", async function(req, res) {
-  if (!req.query.token || req.query.token !== config.VUE_APP_LUNCH_CYCLE_API_TOKEN) {
-    return res.status(403).send("soz");
-  }
-
-  const lunchCycleService = new LunchCycleService();
-  await lunchCycleService.updateDraw(req.body);
-  return res.sendStatus(200);
 });
 
 module.exports = router;

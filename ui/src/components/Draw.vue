@@ -41,9 +41,11 @@ export default {
   },
   methods: {
     async loadData() {
-      let response = await axios.get(
-        `${process.env.VUE_APP_LUNCH_CYCLE_API}/currentdraw?token=${process.env.VUE_APP_LUNCH_CYCLE_API_TOKEN}`
-      );
+      let response = await axios.get(`${process.env.VUE_APP_API_URL}/currentdraw`, {
+        headers: {
+          Authorization: "Basic " + this.$token
+        }
+      });
       this.drawdata = response.data;
       this.restaurants = response.data.map(x => x.restaurant);
 
@@ -51,9 +53,11 @@ export default {
         this.selectedDate = response.data[0];
       }
 
-      response = await axios.get(
-        `${process.env.VUE_APP_LUNCH_CYCLE_API}/alllunchers?token=${process.env.VUE_APP_LUNCH_CYCLE_API_TOKEN}`
-      );
+      response = await axios.get(`${process.env.VUE_APP_API_URL}/alllunchers`, {
+        headers: {
+          Authorization: "Basic " + this.$token
+        }
+      });
 
       this.allLunchers = response.data;
       const responderIds = this.drawdata
@@ -78,10 +82,11 @@ export default {
       }
     },
     async saveLunchers() {
-      await axios.post(
-        `${process.env.VUE_APP_LUNCH_CYCLE_API}/update?token=${process.env.VUE_APP_LUNCH_CYCLE_API_TOKEN}`,
-        this.drawdata
-      );
+      await axios.post(`${process.env.VUE_APP_API_URL}/update`, this.drawdata, {
+        headers: {
+          Authorization: "Basic " + this.$token
+        }
+      });
       await this.loadData();
     }
   }
