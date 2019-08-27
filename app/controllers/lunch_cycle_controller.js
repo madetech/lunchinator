@@ -78,10 +78,23 @@ router.post("/send_confirmation", async function(req, res) {
   lunchCycleService
     .sendMessageToSelectedLunchers()
     .then(() => {
-      console.log("sent message to slectedl lunchers");
+      console.log("sent message to selected lunchers");
     })
     .catch(err => {
       console.log("there was a problem notifying non-responders...");
+      console.log(err);
+    });
+});
+
+router.post("/send_announcement", async function(req, res) {
+  const lunchCycleService = new LunchCycleService();
+  lunchCycleService
+    .sendToAnnouncement()
+    .then(() => {
+      console.log("sent message to announcements channel");
+    })
+    .catch(err => {
+      console.log("there was a problem sending the announcement...");
       console.log(err);
     });
 });

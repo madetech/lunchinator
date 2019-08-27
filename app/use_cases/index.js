@@ -17,5 +17,8 @@ module.exports = {
   DrawLunchers: require("./draw_lunchers"),
   ExportLunchersDrawToGoogleSheet: require("./export_lunchers_draw_to_google_sheet"),
   GenerateSelectedLunchersMessage: require("./generate_selected_lunchers_message"),
-  SendMessageToSelectedLunchers: require("./send_message_to_selected_lunchers")
+  SendMessageToSelectedLunchers: require("./send_message_to_selected_lunchers"),
+  GetCurrentLunchCycleWeek: require("./get_current_lunch_cycle_week"),
+  GenerateAnnouncementsMessage: require("./generate_announcements_message"),
+  SendAnnouncement: require("./send_announcement")
 };
