@@ -1,6 +1,9 @@
 <template>
   <v-container fluid>
-    <v-card>
+    <div class="text-center" v-if="loading">
+      <v-progress-circular :size="70" :width="8" color="primary" indeterminate></v-progress-circular>
+    </div>
+    <v-card v-if="!loading">
       <v-card-title>
         <v-text-field v-model="search" label="filter" single-line hide-details></v-text-field>
         <v-switch @change="showNonResponders" label="Show Non-Responders" class="pa-3"></v-switch>
@@ -28,6 +31,7 @@ export default {
   },
   methods: {
     async loadData() {
+      this.loading = true;
       let response = await axios.get(`${process.env.VUE_APP_API_URL}/currentavailabilities`, {
         headers: {
           Authorization: "Basic " + this.$token
@@ -73,6 +77,7 @@ export default {
 
       this.nonResponders = this.allLunchers.filter(x => x.isNonResponder);
       this.items = this.allLunchers;
+      this.loading = false;
     },
     showNonResponders(value) {
       if (value) {
@@ -86,7 +91,8 @@ export default {
     return {
       search: "",
       headers: [],
-      items: []
+      items: [],
+      loading: false
     };
   }
 };
