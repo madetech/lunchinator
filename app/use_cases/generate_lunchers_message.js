@@ -23,7 +23,6 @@ class GenerateLunchersMessage {
     );
 
     lunchCycle.restaurants.forEach(r => {
-      //const spaces = "```" + " ".repeat(30 - r.name.length) + "```";
       blocks.push(
         {
           type: "section",
