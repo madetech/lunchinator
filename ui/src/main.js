@@ -7,7 +7,7 @@ Vue.config.productionTip = false;
 let globals = new Vue({
   data: {
     $isAuthenticated: false,
-    $token: "xxx"
+    $token: ""
   }
 });
 

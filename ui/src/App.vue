@@ -1,7 +1,10 @@
 <template>
   <div id="app">
-    <Login v-if="!$isAuthenticated"></Login>
-    <Main v-if="$isAuthenticated"></Main>
+    <v-app>
+      <v-app-bar src="./assets/spaghetti.jpeg" app>LUNCHINATOR</v-app-bar>
+      <Login v-if="!$isAuthenticated"></Login>
+      <Main v-if="$isAuthenticated"></Main>
+    </v-app>
   </div>
 </template>
 

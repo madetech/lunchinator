@@ -6,13 +6,19 @@
           <v-container>
             <v-row>
               <v-col cols="12">
-                <v-text-field label="Password" v-model="password" type="password" required></v-text-field>
+                <v-text-field
+                  v-model="password"
+                  label="Password"
+                  type="password"
+                  :error-messages="errors"
+                  @keyup.enter="login"
+                ></v-text-field>
               </v-col>
             </v-row>
           </v-container>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="blue darken-2" large block v-on:click="login">LOGIN</v-btn>
+          <v-btn primary dark large block @click="login">LOGIN</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -25,7 +31,8 @@ import axios from "axios";
 export default {
   name: "Login",
   data: () => ({
-    dialog: true
+    dialog: true,
+    errors: ""
   }),
   methods: {
     async login() {
@@ -41,7 +48,7 @@ export default {
           this.$isAuthenticated = true;
         })
         .catch(err => {
-          console.log(err);
+          this.errors = "Password Incorrect.";
         });
     }
   }
