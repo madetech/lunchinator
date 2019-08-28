@@ -41,9 +41,9 @@ To use the app, there are a list of commands which need to be run on the lunchin
 
 - Slack users will have a week to respond to the message. You can send reminders to people who are yet to submit their reactions using the `/lunchinator_send_reminder` command.
 
-- Once reactions have been submitted, run the `/lunchinator_draw` command. This will select lunchers according to their availability.
+- Once you are satisfied with the number responses, run the `/lunchinator_draw` command. This will select lunchers according to their availability.
 
-- The draw can be amended through here: https://mt-lunchinator.herokuapp.com/. The password can be found in 1password.
+- The draw can be amended here: https://mt-lunchinator.herokuapp.com/. The password can be found in 1password.
 
 - Run the `/lunchinator_send_confirmation` command to individually message the selected lunchers. This message will output the restaurant, date and lunchers who will be attending with them.
 
