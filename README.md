@@ -33,7 +33,7 @@ To use the app, there are a list of commands which need to be run on the lunchin
 
 - A LunchCycle should be created a week before the previous LunchCycle ends. To do this, run the command `/lunchinator_new`. This will show you a preview message which will be sent out to all slack users.
 
-- If you would like to alter the selection of restaurants previewed, you can do so [here.]:https://docs.google.com/spreadsheets/d/1uvAn-YIWggsbigWLVQJcukRxyR85rFYd0igJLvrHXes/edit#gid=0
+- If you would like to alter the selection of restaurants previewed. See sheet: https://docs.google.com/spreadsheets/d/1uvAn-YIWggsbigWLVQJcukRxyR85rFYd0igJLvrHXes/edit#gid=0
 
 - Rerun the command to create a new LunchCycle if the retsurant list has been altered.
 
