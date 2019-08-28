@@ -3,6 +3,7 @@
     <v-card>
       <v-card-title>
         <v-text-field v-model="search" label="filter" single-line hide-details></v-text-field>
+        <v-switch @change="showNonResponders" label="Show Non-Responders" class="pa-3"></v-switch>
       </v-card-title>
       <v-data-table
         :headers="headers"
@@ -54,7 +55,7 @@ export default {
       });
 
       // would be nice to move this into server-side
-      this.items = response.data.map(user => {
+      this.allLunchers = response.data.map(user => {
         const item = {
           name: `${user.profile.first_name} (${user.profile.email})`
         };
@@ -64,10 +65,21 @@ export default {
           luncher.availableEmojis.forEach(e => {
             item[e] = "\u2714";
           });
+          item.isNonResponder = luncher.availableEmojis.length === 0;
         }
 
         return item;
       });
+
+      this.nonResponders = this.allLunchers.filter(x => x.isNonResponder);
+      this.items = this.allLunchers;
+    },
+    showNonResponders(value) {
+      if (value) {
+        this.items = this.nonResponders;
+      } else {
+        this.items = this.allLunchers;
+      }
     }
   },
   data() {
