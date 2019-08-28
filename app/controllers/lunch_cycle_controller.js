@@ -56,6 +56,18 @@ router.post("/availability", async function(req, res) {
   res.send("message sent to all users.");
 });
 
+router.post("/send_reminder", async function(req, res) {
+  const lunchCycleService = new LunchCycleService();
+  lunchCycleService
+    .remindLateResponders()
+    .then(() => console.log("sent a reminder to late responders"))
+    .catch(err => {
+      console.log("there is a problem with sending reminders");
+      console.log(err);
+    });
+  ``;
+});
+
 router.post("/draw", async function(req, res) {
   const authService = new AuthService();
 

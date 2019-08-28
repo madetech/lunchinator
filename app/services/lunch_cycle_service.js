@@ -179,7 +179,6 @@ class LunchCycleService {
   async sendMessageToSelectedLunchers() {
     const lunchCycleDrawGateway = new PostgresLunchCycleDrawGateway();
     const lunchCycleWeeks = await lunchCycleDrawGateway.getCurrent();
-    console.log(lunchCycleWeeks);
     lunchCycleWeeks.forEach(async lunchCycleWeek => {
       await this.sendMessageToSelectedLuncher.execute({ lunchCycleWeek });
     });

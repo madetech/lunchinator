@@ -7,7 +7,7 @@ class PostgresSlackUserResponseGateway {
   async findAllForLunchCycle({ lunchCycle }) {
     const client = await this._client();
     const result = await client.query({
-      text: "SELECT * FROM slack_user_responses WHERE lunch_cycle_id = $1 ORDER BY slack_user_id",
+      text: "SELECT * FROM lunchers WHERE lunch_cycle_id = $1 ORDER BY slack_user_id",
       values: [lunchCycle.id]
     });
     client.end();
@@ -31,7 +31,7 @@ class PostgresSlackUserResponseGateway {
       .query({
         text:
           "INSERT INTO " +
-          "slack_user_responses(" +
+          "lunchers(" +
           "slack_user_id, lunch_cycle_id, email, first_name, message_channel, message_id, " +
           "available_emojis) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *",
         values: [
@@ -54,7 +54,7 @@ class PostgresSlackUserResponseGateway {
     const result = await client
       .query({
         text:
-          "UPDATE slack_user_responses SET available_emojis = $1 " +
+          "UPDATE lunchers SET available_emojis = $1 " +
           "WHERE slack_user_id = $2 AND lunch_cycle_id = $3 RETURNING *",
         values: [JSON.stringify(emojis), luncher.slackUserId, luncher.lunchCycleId]
       })
@@ -69,7 +69,7 @@ class PostgresSlackUserResponseGateway {
 
   async count() {
     const client = await this._client();
-    const result = await client.query("SELECT COUNT(*) as count FROM slack_user_responses");
+    const result = await client.query("SELECT COUNT(*) as count FROM lunchers");
     client.end();
 
     return parseInt(result.rows[0].count, 10);
