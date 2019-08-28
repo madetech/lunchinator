@@ -43,7 +43,7 @@ To use the app, there are a list of commands which need to be run on the lunchin
 
 - Once reactions have been submitted, run the `/lunchinator_draw` command. This will select lunchers according to their availability.
 
-- The draw can be amended through a UI.
+- The draw can be amended through here: https://mt-lunchinator.herokuapp.com/.
 
 - Run the `/lunchinator_send_confirmation` command to individually message the selected lunchers. This message will output the restaurant, date and lunchers who will be attending with them.
 
