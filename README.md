@@ -29,7 +29,7 @@ We use `ngrok` to route traffic from the internet to our machine. See guide: htt
 
 To use the app, there are a list of commands which need to be run on the lunchinator app by the admin.
 
-- A `LunchCycle` refers to a cycle of 6 weeks (this may increase or decrease depending on number of MT employees). A LunchCycle has the capacity to allow each staff member to join a friday lunch at least once. Each week of the lunch cycle contains the restaurant selected, the lunchers who have been drawn, and the date.
+- A `LunchCycle` refers to a cycle of approximately 6 weeks (this may increase or decrease depending on number of MT employees). A LunchCycle has the capacity to allow each staff member to join a friday lunch at least once. Each week of the lunch cycle contains the restaurant selected, the lunchers who have been drawn, and the date.
 
 - A LunchCycle should be created a week before the previous LunchCycle ends. To do this, run the command `/lunchinator_new`. This will show you a preview message which will be sent out to all slack users.
 
