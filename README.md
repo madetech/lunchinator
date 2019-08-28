@@ -25,7 +25,7 @@ We are using PostgreSQL to store information. You need to have two databases loc
 
 We use `ngrok` to route traffic from the internet to our machine. See guide: https://api.slack.com/tutorials/tunneling-with-ngrok
 
-### Guide to use the Lunchinator
+### Guide to use the Lunchinator App
 
 To use the app, there are a list of commands which need to be run on the lunchinator app by the admin.
 
