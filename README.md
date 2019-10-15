@@ -46,5 +46,3 @@ To use the app, there are a list of commands which need to be run on the lunchin
 - The draw can be amended here: https://mt-lunchinator.herokuapp.com/. The password can be found in 1password.
 
 - Run the `/lunchinator_send_confirmation` command to individually message the selected lunchers. This message will output the restaurant, date and lunchers who will be attending with them.
-
-- Run the `/lunchinator_send_announcement` command weekly. This will display the lunchers and restaurant for that week on the announcements channel.
