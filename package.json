@@ -46,7 +46,7 @@
     "sinon-chai": "^3.3.0",
     "vue-cli-plugin-vuetify": "^0.6.3",
     "vue-template-compiler": "^2.6.10",
-    "vuetify-loader": "^1.2.2"
+    "vuetify-loader": "^1.4.2"
   },
   "scripts": {
     "serve": "vue-cli-service serve ./ui/src/main.js",
