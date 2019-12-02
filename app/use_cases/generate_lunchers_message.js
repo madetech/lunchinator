@@ -23,6 +23,7 @@ class GenerateLunchersMessage {
     );
 
     lunchCycle.restaurants.forEach(r => {
+      console.log('creating restarunt blocks')
       blocks.push(
         {
           type: "section",
@@ -39,7 +40,7 @@ class GenerateLunchersMessage {
               text: {
                 type: "plain_text",
                 emoji: true,
-                text: "Approve"
+                text: "Interested"
               },
               style: "primary",
               value: "click_me_123"
@@ -49,7 +50,7 @@ class GenerateLunchersMessage {
               text: {
                 type: "plain_text",
                 emoji: true,
-                text: "Deny"
+                text: "Not Interested"
               },
               style: "danger",
               value: "click_me_123"

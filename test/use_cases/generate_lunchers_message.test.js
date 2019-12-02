@@ -16,6 +16,50 @@ const restaurantList = [
   RestaurantFactory.getRestaurant({ name: "restaurant6", emoji: ":relaxed:", date: "16/04/2020" })
 ];
 
+function expectedRestaurantBlocks(restaurant){
+  expectedBlocks = []
+  restaurant.forEach(r => {
+    expectedBlocks.push(
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `${r.emoji} ${r.date}   \<${r.direction}\|${r.name}\>    vegan${r.dietaries.vegan}  vegetarian ${r.dietaries.vegetarian}  meat${r.dietaries.meat}  halal${r.dietaries.halal}`
+        }
+      },
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              emoji: true,
+              text: "Interested"
+            },
+            style: "primary",
+            value: "click_me_123"
+          },
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              emoji: true,
+              text: "Not Interested"
+            },
+            style: "danger",
+            value: "click_me_123"
+          }
+        ]
+      },
+      {
+        type: "divider"
+      }
+    );
+  });
+  return expectedBlocks
+}
+
 describe("GenerateLunchersMessage", function() {
   const lunchCycle = new LunchCycle({
     restaurants: restaurantList,
@@ -27,7 +71,7 @@ describe("GenerateLunchersMessage", function() {
     const useCase = new GenerateLunchersMessage();
     const response = useCase.execute({ lunchCycle: lunchCycle, firstName: slackFirstName });
 
-    const expected = [
+    let expected = [
       {
         type: "section",
         text: {
@@ -39,21 +83,8 @@ describe("GenerateLunchersMessage", function() {
         type: "divider"
       }
     ];
-
-    restaurantList.forEach(r => {
-      expected.push(
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: `${r.emoji} ${r.date}   \<${r.direction}\|${r.name}\>    vegan${r.dietaries.vegan}  vegetarian ${r.dietaries.vegetarian}  meat${r.dietaries.meat}  halal${r.dietaries.halal}`
-          }
-        },
-        {
-          type: "divider"
-        }
-      );
-    });
+    
+    expected = expected.concat(expectedRestaurantBlocks(restaurantList))
 
     expected.push({
       type: "section",
@@ -73,7 +104,7 @@ describe("GenerateLunchersMessage", function() {
     const useCase = new GenerateLunchersMessage();
     const response = useCase.execute({ lunchCycle: lunchCycle, firstName: noFirstName });
 
-    const expected = [
+    let expected = [
       {
         type: "section",
         text: {
@@ -85,21 +116,8 @@ describe("GenerateLunchersMessage", function() {
         type: "divider"
       }
     ];
-
-    restaurantList.forEach(r => {
-      expected.push(
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: `${r.emoji} ${r.date}   \<${r.direction}\|${r.name}\>    vegan${r.dietaries.vegan}  vegetarian ${r.dietaries.vegetarian}  meat${r.dietaries.meat}  halal${r.dietaries.halal}`
-          }
-        },
-        {
-          type: "divider"
-        }
-      );
-    });
+    
+    expected = expected.concat(expectedRestaurantBlocks(restaurantList))
 
     expected.push({
       type: "section",
