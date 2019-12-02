@@ -154,9 +154,7 @@ function ThenDirectMessagesAreSent() {
             type: "mrkdwn",
             text:
               `*Hey* ${userList[i].profile.first_name}! It’s time to enter the draw for the next ` +
-              "cycle of company lunches. Let us know which dates " +
-              "you’ll be available on by reacting with the matching " +
-              "emoji.\n\n"
+              "cycle of company lunches.\n\n"
           }
         },
         { type: "divider" },

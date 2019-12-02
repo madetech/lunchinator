@@ -59,7 +59,7 @@ function ThenANewLunchCyclePreviewMessageIsCreated() {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `${preview}\*Hey\* ${firstName}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n`
+        text: `${preview}\*Hey\* ${firstName}! It’s time to enter the draw for the next cycle of company lunches.\n\n`
       }
     },
     {

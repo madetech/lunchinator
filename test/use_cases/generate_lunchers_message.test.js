@@ -75,7 +75,7 @@ describe("GenerateLunchersMessage", function() {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `\*Hey\* ${slackFirstName}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n`
+          text: `\*Hey\* ${slackFirstName}! It’s time to enter the draw for the next cycle of company lunches.\n\n`
         }
       },
       {
@@ -108,7 +108,7 @@ describe("GenerateLunchersMessage", function() {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `${preview}\*Hey\* {first name}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n`
+          text: `${preview}\*Hey\* {first name}! It’s time to enter the draw for the next cycle of company lunches.\n\n`
         }
       },
       {
