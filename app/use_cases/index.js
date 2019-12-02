@@ -20,5 +20,6 @@ module.exports = {
   SendMessageToSelectedLunchers: require("./send_message_to_selected_lunchers"),
   GetCurrentLunchCycleWeek: require("./get_current_lunch_cycle_week"),
   GenerateAnnouncementsMessage: require("./generate_announcements_message"),
-  SendAnnouncement: require("./send_announcement")
+  SendAnnouncement: require("./send_announcement"),
+  ProcessLuncherResponse: require("./process_luncher_response")
 };
