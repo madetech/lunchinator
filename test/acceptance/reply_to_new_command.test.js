@@ -77,6 +77,30 @@ function ThenANewLunchCyclePreviewMessageIsCreated() {
         }
       },
       {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              emoji: false,
+              text: "Available"
+            },
+            value: r.name
+          },
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              emoji: false,
+              text: "Not Available"
+            },
+            style: "danger",
+            value: r.name
+          }
+        ]
+      },
+      {
         type: "divider"
       }
     );

@@ -170,16 +170,40 @@ function ThenDirectMessagesAreSent() {
               "halal:question:"
           }
         },
-        { type: "divider" },
         {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text:
-              ":green_heart: = Great          :orange_heart: = Some      " +
-              "    :broken_heart: = None          :question: = Unknown"
+          type: "actions",
+          elements: [
+              {
+                type: "button",
+                text: {
+                  type: "plain_text",
+                  emoji: false,
+                  text: "Available"
+                },
+                value: "restaurant1"
+              },
+              {
+                type: "button",
+                text: {
+                  type: "plain_text",
+                  emoji: false,
+                  text: "Not Available"
+                },
+                style: "danger",
+                value: "restaurant1"
+              }
+            ]
+          },
+          { type: "divider" },
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text:
+                ":green_heart: = Great          :orange_heart: = Some      " +
+                "    :broken_heart: = None          :question: = Unknown"
+            }
           }
-        }
       ]
     });
   });
