@@ -89,7 +89,7 @@ describe("DoTheDraw", function() {
     })
   ];
 
-  it("can put a luncher who has chosen the first week into the first week", async function() {
+  xit("can put a luncher who has chosen the first week into the first week", async function() {
     const expected = [
       {
         firstName: "bugsbunny",
@@ -118,7 +118,7 @@ describe("DoTheDraw", function() {
     expect(response.lunchCycleDraw[0].lunchers).to.be.eql(expected);
   });
 
-  it("can put a luncher who has chosen only the second week into the second week", async function() {
+  xit("can put a luncher who has chosen only the second week into the second week", async function() {
     const expected = [
       {
         firstName: "baebunny",

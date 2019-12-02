@@ -29,8 +29,34 @@ class GenerateLunchersMessage {
           text: {
             type: "mrkdwn",
             text: `${r.emoji} ${r.date}   \<${r.direction}\|${r.name}\>    vegan${r.dietaries.vegan}  vegetarian ${r.dietaries.vegetarian}  meat${r.dietaries.meat}  halal${r.dietaries.halal}`
-          }
+          },
         },
+        {
+          type: "actions",
+          elements: [
+            {
+              type: "button",
+              text: {
+                type: "plain_text",
+                emoji: true,
+                text: "Approve"
+              },
+              style: "primary",
+              value: "click_me_123"
+            },
+            {
+              type: "button",
+              text: {
+                type: "plain_text",
+                emoji: true,
+                text: "Deny"
+              },
+              style: "danger",
+              value: "click_me_123"
+            }
+          ]
+        },
+        
         {
           type: "divider"
         }

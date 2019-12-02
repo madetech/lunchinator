@@ -31,6 +31,33 @@ router.post("/new", async function(req, res) {
   res.json(message);
 });
 
+router.post("/interaction", async function(req, res) {
+  const authService = new AuthService();
+
+  if (!authService.verifyRequest(req.headers, req.body)) {
+    return res.send("error verifying slack request.");
+  }
+
+  if (!authService.isAdmin(req.body.user_id)) {
+    return res.send("sorry, you are not authorised to do this.");
+  }
+
+  const lunchCycleService = new LunchCycleService();
+
+  let users = await lunchCycleService.fetchSlackUsers();
+
+  // limit the users receiving the message in dev so we dont spam em all!
+  if (config.DEV_MESSAGE_RECEIVERS.length) {
+    users = users.filter(u => config.DEV_MESSAGE_RECEIVERS.indexOf(u.profile.email) > -1);
+  }
+
+  await lunchCycleService.sendMessagesToSlackUsers(users);
+
+  res.send("message sent to all users.");
+});
+
+
+
 router.post("/availability", async function(req, res) {
   const authService = new AuthService();
 
