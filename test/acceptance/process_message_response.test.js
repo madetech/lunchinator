@@ -1,3 +1,7 @@
+const { RestaurantFactory } = require("../factories");
+const { LunchCycle, Luncher } = require("@domain");
+
+
 describe("When a user presses an interactive button", function() {
 
   describe("to signal they are available", function() {
@@ -39,10 +43,10 @@ describe("When a user presses an interactive button", function() {
     //to create user with current emojis 
   }
   function WhenSentAButtonResponseOf(restaurant) {
-     // todo generate resonse with factory
-     // todo call process message responcs use case
+     // todo generate response with factory
+     // todo call process message responses use case
   }
   function ThenALuncherIsAvailableFor(restaurant_array) { 
-    // todo check user availabilibty
+    // todo check user availability
   }
 })
