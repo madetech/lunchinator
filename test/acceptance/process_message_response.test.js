@@ -10,16 +10,16 @@ describe("When a user presses an interactive button", async function() {
 
   const availabiltyGateway = new PostgresLuncherAvailabilityGateway(config.db);
   const restaurant1 = RestaurantFactory.getRestaurant({
-    name: "Restaurant-1",
+    name: "Restaurant-1"
   });
   const restaurant2 = RestaurantFactory.getRestaurant({
-    name: "Restaurant-2",
+    name: "Restaurant-2"
   });
   const restaurant3 = RestaurantFactory.getRestaurant({
-    name: "Restaurant-3",
+    name: "Restaurant-3"
   });
   const restaurant4 = RestaurantFactory.getRestaurant({
-    name: "Restaurant-4",
+    name: "Restaurant-4"
   });
 
   const restaurantsArray = [restaurant1, restaurant2, restaurant3, restaurant4];
@@ -34,12 +34,12 @@ describe("When a user presses an interactive button", async function() {
 
   describe("to signal they are available", function() {
     it("no user response", async function() {
-      // when no responce set
+      // when no response set
       await ThenALuncherIsAvailableFor([]);
     });
 
     it("saves the user response", async function() {
-      // when no responce set
+      // when no response set
       await WhenSentAButtonResponseOf(restaurant1);
       await ThenALuncherIsAvailableFor([restaurant1]);
     });
@@ -67,7 +67,6 @@ describe("When a user presses an interactive button", async function() {
       lunchCycleDrawGateway: new PostgresLunchCycleGateway()
     });
     const request = slackButtonPayloadFactory("DJWDYWUD124", restaurant.name, createdLunchCycle.id)
-    console.log("the request:", request)
     await usecase.execute({
       payload: request
     });

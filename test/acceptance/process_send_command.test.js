@@ -178,18 +178,8 @@ function ThenDirectMessagesAreSent() {
                   emoji: false,
                   text: "Available"
                 },
-                value: "restaurant1"
+                value: "5-restaurant1" //lunch cycle id + restaurant name
               },
-              {
-                type: "button",
-                text: {
-                  type: "plain_text",
-                  emoji: false,
-                  text: "Not Available"
-                },
-                style: "danger",
-                value: "restaurant1"
-              }
             ]
           },
           { type: "divider" },

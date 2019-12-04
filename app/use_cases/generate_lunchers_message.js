@@ -41,17 +41,7 @@ class GenerateLunchersMessage {
                 emoji: false,
                 text: "Available"
               },
-              value: r.name
-            },
-            {
-              type: "button",
-              text: {
-                type: "plain_text",
-                emoji: false,
-                text: "Not Available"
-              },
-              style: "danger",
-              value: r.name
+              value: lunchCycle.id + "-" + r.name
             }
           ]
         },

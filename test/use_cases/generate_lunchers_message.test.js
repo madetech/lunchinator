@@ -16,7 +16,7 @@ const restaurantList = [
   RestaurantFactory.getRestaurant({ name: "restaurant6", emoji: ":relaxed:", date: "16/04/2020" })
 ];
 
-function expectedRestaurantBlocks(restaurant){
+function expectedRestaurantBlocks(restaurant, lunchCycle){
   expectedBlocks = []
   restaurant.forEach(r => {
     expectedBlocks.push(
@@ -37,17 +37,7 @@ function expectedRestaurantBlocks(restaurant){
               emoji: false,
               text: "Available"
             },
-            value: r.name
-          },
-          {
-            type: "button",
-            text: {
-              type: "plain_text",
-              emoji: false,
-              text: "Not Available"
-            },
-            style: "danger",
-            value: r.name
+            value: lunchCycle.id + "-" + r.name
           }
         ]
       },
@@ -61,6 +51,7 @@ function expectedRestaurantBlocks(restaurant){
 
 describe("GenerateLunchersMessage", function() {
   const lunchCycle = new LunchCycle({
+    id: 10,
     restaurants: restaurantList,
     starts_at: new Date("2020-03-12T00:00:00")
   });
@@ -83,7 +74,7 @@ describe("GenerateLunchersMessage", function() {
       }
     ];
     
-    expected = expected.concat(expectedRestaurantBlocks(restaurantList))
+    expected = expected.concat(expectedRestaurantBlocks(restaurantList, lunchCycle))
 
     expected.push({
       type: "section",
@@ -116,7 +107,7 @@ describe("GenerateLunchersMessage", function() {
       }
     ];
     
-    expected = expected.concat(expectedRestaurantBlocks(restaurantList))
+    expected = expected.concat(expectedRestaurantBlocks(restaurantList, lunchCycle))
 
     expected.push({
       type: "section",
