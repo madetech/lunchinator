@@ -58,6 +58,7 @@ describe("When a user presses an interactive button", async function() {
       await WhenSentAButtonResponseOf(restaurant1);
 
       await ThenALuncherIsAvailableFor([restaurant1, restaurant2]);
+
     });
   });
 
@@ -79,6 +80,6 @@ describe("When a user presses an interactive button", async function() {
     expect(allUsersAvailable.length).to.eql(expectedRestauntNames.length);
 
     const actualRestaurantNames = allUsersAvailable.map((availability) => availability.restaurant_name)
-    expect(actualRestaurantNames).to.eql(expectedRestauntNames);
+    expect(actualRestaurantNames).to.have.members(expectedRestauntNames);
   }
 });
