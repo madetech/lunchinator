@@ -4,12 +4,17 @@ class ProcessLuncherResponse {
     this.luncherAvailabilityGateway = options.luncherAvailabilityGateway
   }
 
-  async execute({payload}) {
+  async execute(payload) {
     const parsedValues = this._parseValue(payload.actions[0].value)
+    const slack_user_id = payload.user.id
+    const restaurant_name = parsedValues.restaurant_name
+    const lunch_cycle_id = parsedValues.lunch_cycle_id
+
+    console.log('addAvailability for: ', restaurant_name, 'by user: ', slack_user_id, '(lunch id: ', lunch_cycle_id, ')')
     await this.luncherAvailabilityGateway.addAvailability({
-      lunch_cycle_id: parsedValues.lunch_cycle_id,
-      slack_user_id: payload.user.id,
-      restaurant_name: parsedValues.restaurant_name
+      lunch_cycle_id: lunch_cycle_id,
+      slack_user_id: slack_user_id,
+      restaurant_name: restaurant_name
     })
   }
                                                           

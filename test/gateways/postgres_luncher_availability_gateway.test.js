@@ -5,6 +5,15 @@ const config = require("@app/config");
 const { RestaurantFactory } = require("../factories");
 
 describe("LuncherAvailabilityGateway", function() {
+           
+  const restaurant1 = RestaurantFactory.getRestaurant({
+    name: "Restaurant-foo",
+  });
+  const restaurant2 = RestaurantFactory.getRestaurant({
+    name: "Restaurant-bar",
+  });
+  const restaurant_array = [restaurant1, restaurant2]
+
   beforeEach(async function() {
     await clearPostgres();
   });
@@ -28,18 +37,17 @@ describe("LuncherAvailabilityGateway", function() {
     let luncherAvailabilty = new PostgresLuncherAvailabilityGateway(config.db)
 
     const lunchCycle = await setupLunchCycle()
-
+    const userid = 'DJWDYWUD124'
     await luncherAvailabilty.addAvailability({
-      slack_user_id: 'DJWDYWUD124', 
+      slack_user_id: userid, 
       lunch_cycle_id: lunchCycle.id,
-      restaurant_name: lunchCycle.restaurants[0].name
+      restaurant_name: restaurant1.name
    })
-    
    await luncherAvailabilty.addAvailability({
-    slack_user_id: 'FT65739934DGRT', 
+    slack_user_id: userid, 
     lunch_cycle_id: lunchCycle.id,
-    restaurant_name: lunchCycle.restaurants[0].name
- })
+    restaurant_name: restaurant2.name
+  })
    const availabilities = await luncherAvailabilty.getAvailabilities({lunch_cycle_id: lunchCycle.id})
    expect(availabilities.length).to.eql(2);
   })
@@ -61,13 +69,9 @@ describe("LuncherAvailabilityGateway", function() {
   })
   
   async function setupLunchCycle() {
-    const restaurant = RestaurantFactory.getRestaurant({
-      name: "Restaurant-foo",
-    });
-
     const postgresLunchCycleGateway = new PostgresLunchCycleGateway();
     const newlunchCycle = new LunchCycle({
-      restaurants: [restaurant]
+      restaurants: restaurant_array
     });
     const createdLunchCycle = await postgresLunchCycleGateway.create(newlunchCycle);
     return createdLunchCycle

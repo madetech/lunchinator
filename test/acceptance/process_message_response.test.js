@@ -67,9 +67,7 @@ describe("When a user presses an interactive button", async function() {
       lunchCycleDrawGateway: new PostgresLunchCycleGateway()
     });
     const request = slackButtonPayloadFactory("DJWDYWUD124", restaurant.name, createdLunchCycle.id)
-    await usecase.execute({
-      payload: request
-    });
+    await usecase.execute(request);
   }
 
   async function ThenALuncherIsAvailableFor(restaurant_array) {

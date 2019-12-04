@@ -3,7 +3,8 @@ const {
   GoogleSheetGateway,
   SlackGateway,
   PostgresSlackUserResponseGateway,
-  PostgresLunchCycleDrawGateway
+  PostgresLunchCycleDrawGateway,
+  PostgresLuncherAvailabilityGateway
 } = require("@gateways");
 
 const {
@@ -23,8 +24,11 @@ const {
   SendMessageToSelectedLunchers,
   GetCurrentLunchCycleWeek,
   SendAnnouncement,
-  GenerateAnnouncementsMessage
+  GenerateAnnouncementsMessage,
+  ProcessLuncherResponse
 } = require("@use_cases");
+
+const config = require("@app/config");
 
 class LunchCycleService {
   constructor() {
@@ -84,6 +88,9 @@ class LunchCycleService {
       slackGateway: slackGateway,
       generateAnnouncementsMessage: new GenerateAnnouncementsMessage()
     });
+    this.processLuncherResponse = new ProcessLuncherResponse({
+      luncherAvailabilityGateway : new PostgresLuncherAvailabilityGateway(config.db)
+    })
   }
 
   async createLunchCycle({ restaurants }) {
@@ -191,6 +198,9 @@ class LunchCycleService {
   async sendToAnnouncement() {
     const currentLunchCycleWeek = await this.getCurrentLunchCycleWeek.execute();
     await this.sendAnnouncement.execute(currentLunchCycleWeek);
+  }
+  async recordAttendance(payload) {
+    await this.processLuncherResponse.execute(payload)
   }
 }
 

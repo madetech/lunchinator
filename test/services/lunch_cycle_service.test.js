@@ -71,12 +71,15 @@ describe("LunchCycleService", async function() {
 
     expect(spy.execute).to.have.been.callCount(slackUsers.length);
   });
+  
+  it("can record attendance", async function() {
+    const service = new LunchCycleService();
 
-  it("can fetch luncher reactions", function() {
-    // todo
-  });
+    const spy = { execute: sinon.spy() };
+    sinon.stub(service, "processLuncherResponse").value(spy);
 
-  it("can export the lunchers", function() {
-    // todo
+    await service.recordAttendance({});
+
+    expect(spy.execute).to.have.been.called;
   });
 });

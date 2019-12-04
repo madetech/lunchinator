@@ -299,4 +299,17 @@ router.post("/testsend_announcement", async function(req, res) {
     });
 });
 
+router.post("/interactive_element", async function(req, res) {
+  const authService = new AuthService();
+
+  if (!authService.verifyRequest(req.headers, req.body)) {
+    return res.send("error verifying slack request.");
+  }
+  payload = JSON.parse(req.body.payload)
+  new LunchCycleService().recordAttendance(payload)
+
+  res.sendStatus(200)
+});
+
+
 module.exports = router;

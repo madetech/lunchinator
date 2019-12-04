@@ -9,7 +9,7 @@ describe("ProcessLuncherResponse", function() {
         addAvailability: addAvailability
       }                                   
     });
-		await usecase.execute({lunch_cycle_id: 2, payload: JSON.parse(testPayload)})
+		await usecase.execute(JSON.parse(testPayload))
     expect(addAvailability).to.have.been.calledWith({
 			slack_user_id: 'U0CA5', 
 			lunch_cycle_id: 678000, 
