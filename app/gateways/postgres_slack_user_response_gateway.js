@@ -75,6 +75,7 @@ class PostgresSlackUserResponseGateway {
     return parseInt(result.rows[0].count, 10);
   }
 
+
   async _client() {
     const client = new Client(config.db);
     await client.connect();

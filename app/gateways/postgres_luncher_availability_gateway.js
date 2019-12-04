@@ -1,14 +1,14 @@
 const { Client } = require("pg");
 
 class PostgresLuncherAvailabilityGateway {
-  constructor({dbconfig}) {
+  constructor(dbconfig) {
     this.dbconfig = dbconfig
   }
   
   async addAvailability({lunch_cycle_id, slack_user_id, restaurant_name}) {
     const client = await this._client()
     const result = await client.query({
-      text: "INSERT INTO availability(lunch_cycle_id, slack_user_id, available, restaurant_name) VALUES($1, $2, $3, $4)",
+      text: "INSERT INTO availability(lunch_cycle_id, slack_user_id, available, restaurant_name) VALUES($1, $2, $3, $4) ON CONFLICT DO NOTHING",
       values: [
         lunch_cycle_id,
         slack_user_id,

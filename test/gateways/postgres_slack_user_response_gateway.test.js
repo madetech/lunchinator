@@ -2,7 +2,7 @@ const { expect, clearPostgres } = require("../test_helper");
 const { LunchCycle, Luncher } = require("@domain");
 const { PostgresLunchCycleGateway, PostgresSlackUserResponseGateway } = require("@gateways");
 
-xdescribe("PostgresSlackUserResponseGateway", function() {
+describe("PostgresSlackUserResponseGateway", function() {
   let lunchCycle;
 
   const slackUser = {

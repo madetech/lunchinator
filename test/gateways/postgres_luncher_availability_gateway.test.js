@@ -10,7 +10,7 @@ describe("LuncherAvailabilityGateway", function() {
   });
   
   it("can add user availability", async function() {
-    let luncherAvailabilty = new PostgresLuncherAvailabilityGateway({dbconfig: config.db})
+    let luncherAvailabilty = new PostgresLuncherAvailabilityGateway(config.db)
 
     const lunchCycle = await setupLunchCycle()
 
@@ -25,7 +25,7 @@ describe("LuncherAvailabilityGateway", function() {
   })
   
   it("can add many users availabilities", async function() {
-    let luncherAvailabilty = new PostgresLuncherAvailabilityGateway({dbconfig: config.db})
+    let luncherAvailabilty = new PostgresLuncherAvailabilityGateway(config.db)
 
     const lunchCycle = await setupLunchCycle()
 
@@ -44,26 +44,20 @@ describe("LuncherAvailabilityGateway", function() {
    expect(availabilities.length).to.eql(2);
   })
   
-  it("cannot add same user availability twice", async function() {
-    let luncherAvailabilty = new PostgresLuncherAvailabilityGateway({dbconfig: config.db})
-
+  it("adding same user availability twice does not create a duplicate", async function() {
+    let luncherAvailabilty = new PostgresLuncherAvailabilityGateway(config.db)
     const lunchCycle = await setupLunchCycle()
 
-    await luncherAvailabilty.addAvailability({
+    args = {
       slack_user_id: 'DJWDYWUD124', 
       lunch_cycle_id: lunchCycle.id,
       restaurant_name: lunchCycle.restaurants[0].name
-   })
+    }
+    await luncherAvailabilty.addAvailability(args)
+    await luncherAvailabilty.addAvailability(args)
     
-   return luncherAvailabilty.addAvailability(
-  {
-    slack_user_id: 'DJWDYWUD124', 
-    lunch_cycle_id: lunchCycle.id,
-    restaurant_name: lunchCycle.restaurants[0].name
-  }).catch(function(e){
-    expect(e.message).to.eql('duplicate key value violates unique constraint "availability_lunch_cycle_id_slack_user_id_unique_index"')
-  })
-
+    const availabilities = await luncherAvailabilty.getAvailabilities({lunch_cycle_id: lunchCycle.id})
+    expect(availabilities.length).to.eql(1);
   })
   
   async function setupLunchCycle() {

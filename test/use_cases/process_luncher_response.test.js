@@ -4,22 +4,17 @@ const { ProcessLuncherResponse } = require("@use_cases");
 describe("ProcessLuncherResponse", function() {
   it("calls the updateLuncherReactions UseCase", async function() {
 		const addAvailability = sinon.stub();
-		const getCurrent = sinon.stub().resolves( {lunch_cycle_id: 2} )
     const usecase = new ProcessLuncherResponse({
 			luncherAvailabilityGateway: {
         addAvailability: addAvailability
-      },  
-			lunchCycleDrawGateway: {
-				getCurrent: getCurrent
-			}                                       
+      }                                   
     });
-		await usecase.execute(JSON.parse(testPayload))
-		expect(getCurrent).to.have.been.calledOnce
+		await usecase.execute({lunch_cycle_id: 2, payload: JSON.parse(testPayload)})
     expect(addAvailability).to.have.been.calledWith({
-			 userid: 'U0CA5', 
-			 lunchCycleId: 2, 
-			 restaurantName: 'TheRestrauntName'
-			});
+			slack_user_id: 'U0CA5', 
+			lunch_cycle_id: 678000, 
+			restaurant_name: 'TheRestrauntName'
+		});
   })
 });
 
@@ -53,7 +48,7 @@ const testPayload = `{
 				"text": "Approve",
 				"emoji": true
 			},
-			"value": "TheRestrauntName",
+			"value": "678000-TheRestrauntName",
 			"style": "primary",
 			"action_ts": "1575295464.505259"
 		}

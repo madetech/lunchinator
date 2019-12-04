@@ -30,7 +30,7 @@ exports.up = (pgm) => {
   
   pgm.createIndex("availability", "lunch_cycle_id");
   pgm.createIndex("availability", "slack_user_id");
-  pgm.createIndex("availability", ["lunch_cycle_id", "slack_user_id"], { unique: true });
+  pgm.createIndex("availability", ["lunch_cycle_id", "slack_user_id", "restaurant_name"], { unique: true });
 
 };
 
