@@ -20,7 +20,7 @@ router.get("/currentavailabilities", async function(req, res) {
 
   const lunchCycleService = new LunchCycleService();
   const lunchCycle = await lunchCycleService.getCurrentLunchCycle();
-  const availabilities = await lunchCycleService.updateLunchers();
+  const availabilities = await lunchCycleService.getAvailabilities({lunch_cycle_id: lunchCycle.id})
 
   res.json({
     lunchCycle: lunchCycle,

@@ -10,7 +10,6 @@ class ProcessLuncherResponse {
     const restaurant_name = parsedValues.restaurant_name
     const lunch_cycle_id = parsedValues.lunch_cycle_id
 
-    console.log('addAvailability for: ', restaurant_name, 'by user: ', slack_user_id, '(lunch id: ', lunch_cycle_id, ')')
     await this.luncherAvailabilityGateway.addAvailability({
       lunch_cycle_id: lunch_cycle_id,
       slack_user_id: slack_user_id,

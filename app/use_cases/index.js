@@ -9,7 +9,6 @@ module.exports = {
   VerifySlackRequest: require("./verify_slack_request"),
   GenerateLunchersMessage: require("./generate_lunchers_message"),
   FetchReactionsForLuncher: require("./fetch_reactions_for_luncher"),
-  UpdateLuncherReactions: require("./update_luncher_reactions"),
   ExportLunchersToGoogleSheet: require("./export_lunchers_to_google_sheet"),
   FindNonResponderIds: require("./find_non_responder_ids"),
   GenerateReminderMessage: require("./generate_reminder_message"),

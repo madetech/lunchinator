@@ -15,7 +15,6 @@ const {
   FetchAllSlackUsers,
   SendDirectMessageToSlackUser,
   FetchReactionsForLuncher,
-  UpdateLuncherReactions,
   FindNonResponderIds,
   GenerateReminderMessage,
   SendReminderToLateResponder,
@@ -60,10 +59,6 @@ class LunchCycleService {
     this.generateLuncherMessage = new GenerateLunchersMessage();
     this.fetchLuncherReactions = new FetchReactionsForLuncher({
       slackGateway: slackGateway
-    });
-    this.updateLuncherReactions = new UpdateLuncherReactions({
-      slackUserResponseGateway: slackUserResponseGateway,
-      lunchCycleGateway: lunchCycleGateway
     });
     this.findNonRespondersIds = new FindNonResponderIds({
       lunchCycleGateway: lunchCycleGateway,
@@ -143,27 +138,6 @@ class LunchCycleService {
     for (const nonResponderId of response.nonResponderIds) {
       await this.sendReminderToLateResponder.execute({ nonResponderId });
     }
-  }
-
-  async updateLunchers() {
-    const postgresLunchCycleGateway = new PostgresLunchCycleGateway();
-    const postgresSlackUserResponseGateway = new PostgresSlackUserResponseGateway();
-
-    const lunchCycle = await postgresLunchCycleGateway.getCurrent();
-    const lunchers = await postgresSlackUserResponseGateway.findAllForLunchCycle({ lunchCycle });
-
-    const updatedLunchers = [];
-
-    for (const luncher of lunchers) {
-      let response = await this.fetchLuncherReactions.execute({ luncher });
-      let res = await this.updateLuncherReactions.execute({
-        luncher,
-        reactions: response.reactions
-      });
-      updatedLunchers.push(res.updatedLuncher);
-    }
-
-    return updatedLunchers;
   }
 
   async doLunchersDraw() {
