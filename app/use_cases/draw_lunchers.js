@@ -3,54 +3,77 @@ const config = require("@app/config");
 const { LunchCycleWeek } = require("@domain");
 
 class DrawLunchers {
-  constructor({ lunchCycleGateway, slackUserResponseGateway }) {
+  constructor({ lunchCycleGateway, postgresLuncherAvailabilityGateway }) {
     this.lunchCycleGateway = lunchCycleGateway;
-    this.slackUserResponseGateway = slackUserResponseGateway;
+    this.postgresLuncherAvailabilityGateway = postgresLuncherAvailabilityGateway;
   }
 
   async execute() {
     const lunchCycle = await this.lunchCycleGateway.getCurrent();
-    let allLunchers = await this.slackUserResponseGateway.findAllForLunchCycle({ lunchCycle });
+    let allRespondedUsers = await this.postgresLuncherAvailabilityGateway.getAvailableUsers({ lunchCycle });
+    console.log("********************** AllRespondedUsers:", allRespondedUsers)
+    
+    const totalAvailabilitiesHash = this.getTotalAvailabilitiesHash(allRespondedUsers)
 
     const lunchCycleDraw = [];
-    const allAvailables = lunchCycle.restaurants.map(r => {
-      return allLunchers.filter(l => l.availableEmojis.includes(r.emoji));
-    });
     lunchCycle.restaurants.forEach((restaurant, i) => {
-      const lunchers = this.getLunchersForRestaurant(restaurant, allLunchers);
+    const lunchers = this.getLunchersForRestaurant(restaurant, allRespondedUsers, totalAvailabilitiesHash);
 
       lunchCycleDraw.push(
         new LunchCycleWeek({
           restaurant,
           lunchers,
-          allAvailable: allAvailables[i]
+          allAvailable: allRespondedUsers[i]
         })
       );
 
-      allLunchers = this.removeDrawnLunchers(allLunchers, lunchers, restaurant.emoji);
+      allRespondedUsers = this.removeDrawnLunchers(allRespondedUsers, lunchers, restaurant.name);
+      // allRespondedUsers = this.reducetotalAvailabilities(allRespondedUsers)
     });
-
+      // console.log("^^^^^^^^^^LCD: ",lunchCycleDraw)
     return {
       lunchCycleDraw: lunchCycleDraw
     };
   }
+  
 
-  getLunchersForRestaurant(restaurant, allLunchers) {
-    const drawnLunchers = allLunchers
-      .filter(l => l.availableEmojis.includes(restaurant.emoji))
-      .sort((first, second) => first.availableEmojis.length - second.availableEmojis.length)
+
+  getTotalAvailabilitiesHash(allRespondedUsers) {  // Method just for scoring interest score
+    let totalAvailabilitiesHash = {}
+    allRespondedUsers.forEach((user) => {
+      if (totalAvailabilitiesHash.hasOwnProperty(user.slackUserId)) {
+        totalAvailabilitiesHash[user.slackUserId] += 1         
+      } else {
+        totalAvailabilitiesHash[user.slackUserId] = 1;                                        
+      }
+    });
+  
+    return totalAvailabilitiesHash
+  }
+
+  getLunchersForRestaurant(restaurant, allRespondedUsers, totalAvailabilitiesHash) { // This represents the 8 Lunchers for that cycle??
+        const drawnLunchers = allRespondedUsers
+      .filter(a => a.restaurant_name == restaurant.name)
+      .sort((first, second) => totalAvailabilitiesHash[first.slackUserId] - totalAvailabilitiesHash[second.slackUserId])
       .slice(0, config.LUNCHERS_PER_WEEK);
-
     return drawnLunchers.map(l => {
-      return { firstName: l.firstName, email: l.email, slackUserId: l.slackUserId };
+      return { first_name: l.first_name, email: l.email, slack_user_id: l.slack_user_id };
     });
   }
 
-  removeDrawnLunchers(allLunchers, drawnLunchers, emoji) {
-    const drawnLuncherIds = drawnLunchers.map(l => l.slackUserId);
-    allLunchers = allLunchers.filter(l => !drawnLuncherIds.includes(l.slackUserId));
-    allLunchers.forEach(l => (l.availableEmojis = l.availableEmojis.filter(e => e !== emoji)));
-    return allLunchers;
+  removeDrawnLunchers(allRespondedUsers, drawnLunchers, restaurant_name) { 
+    const drawnLuncherIds = drawnLunchers.map(l => l.slack_user_id);
+    allRespondedUsers = allRespondedUsers.filter(l => !drawnLuncherIds.includes(l.slack_user_id));
+    // lower totalAvailabilities for non chosen users
+     // i.e totalAvailabilities[user.id]--
+    return allRespondedUsers;
+  }
+  
+  reducetotalAvailabilities(allRespondedUsers) { //Why reduce points if they are being removed from available list?
+    Object.keys(allRespondedUsers).map(function(key, index) {
+      allRespondedUsers[key] -= 1;
+    });
+    return allRespondedUsers
   }
 }
 

@@ -11,7 +11,6 @@ class PostgresSlackUserResponseGateway {
       values: [lunchCycle.id]
     });
     client.end();
-    console.log("-!!!!!!!!!! ", result.rows.map(r => Luncher.newFromDb(r)))
     return result.rows.map(r => Luncher.newFromDb(r));
   }
 

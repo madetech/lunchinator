@@ -79,8 +79,8 @@ describe("LuncherAvailabilityGateway", function() {
       restaurant_name: lunchCycle.restaurants[0].name
    })
    
-   const availabilities = await luncherAvailabilty.getAvailabilities({lunch_cycle_id: lunchCycle.id}) // This returns what is expected!
-   const availableUsers = await luncherAvailabilty.getAvailableUsers({lunch_cycle_id: lunchCycle.id}) // Returning slack id and first name and lunch cycle ID
+   
+   const availableUsers = await luncherAvailabilty.getAvailableUsers({lunch_cycle_id: lunchCycle.id}) // Returning slack id,first name,lunch cycle ID and restaurant name.
    expect(availableUsers[0].slack_user_id).to.eql('DJWDYWUD124');
    expect(availableUsers[0].lunch_cycle_id).to.eql(lunchCycle.id);
    expect(availableUsers[0].restaurant_name).to.eql(restaurant1.name);
