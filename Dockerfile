@@ -2,16 +2,20 @@ FROM node:12-alpine3.10
 
 RUN apk add build-base bash
 
-#ARG UID=1001
+RUN apk --no-cache add shadow
 
-#RUN addgroup -g ${UID} -S appgroup && \
-#  adduser -u ${UID} -S appuser -G appgroup
+ARG UID=1001
+
+# move node user out of the way
+RUN groupmod -g ${UID} node \
+  && usermod -u ${UID} -g ${UID} node
 
 WORKDIR /app
-#RUN chown appuser:appgroup /app
 
-#COPY --chown=appuser:appgroup . .
+RUN chown node:node /app
 
-COPY . .
+COPY --chown=node:node . .
+
+USER node
 
 RUN yarn install
