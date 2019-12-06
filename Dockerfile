@@ -4,7 +4,7 @@ RUN apk add build-base bash
 
 RUN apk --no-cache add shadow
 
-ARG UID=1001
+ARG UID=1000
 
 # move node user out of the way
 RUN groupmod -g ${UID} node \
