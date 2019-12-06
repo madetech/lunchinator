@@ -1,6 +1,14 @@
 UID ?= $(shell id -u)
 DOCKER_COMPOSE = env UID=$(UID) docker-compose -f docker-compose.yml -f docker-compose.development.yml
 
+.PHONY: setup
+setup:
+	$(DOCKER_COMPOSE) build
+
+.PHONY: build
+build: setup
+
+
 .PHONY: shell
 shell:
 	$(DOCKER_COMPOSE) run app bash

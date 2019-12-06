@@ -14,8 +14,12 @@ WORKDIR /app
 
 RUN chown node:node /app
 
-COPY --chown=node:node . .
-
 USER node
 
+COPY --chown=node:node package.json package-lock.json ./
+
 RUN yarn install
+
+COPY --chown=node:node . .
+
+RUN touch testfile
