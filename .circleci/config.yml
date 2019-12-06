@@ -24,6 +24,7 @@ jobs:
 
     steps:
       - checkout
+      - setup_remote_docke
       - run: docker-compose run app bash -c 'yarn run migrate-test up && yarn test'
 
   deploy:
