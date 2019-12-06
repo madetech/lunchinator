@@ -1,0 +1,41 @@
+version: '3.4'
+
+services:
+  db:
+    image: postgres:10.9
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ''
+      POSTGRES_USER: postgres
+      POSTGRES_DB: lunchinator_test
+  app:
+    build:
+      context: .
+      args:
+        UID: "${UID:-1000}"
+    environment:
+      NODE_ENV: test
+      PGHOST: 'db'
+      PGPASSWORD: ''
+      PGPORT: 5432
+      PGUSER: postgres
+      PGDATABASE: lunchinator_test
+      GOOGLE_SERVICE_ACCOUNT_EMAIL: 'user@example.com'
+      GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY: fake
+      VALID_SLACK_USER_IDS: TEST_U2147483697
+      DEV_MESSAGE_RECEIVERS: fake@fake.com
+      RESTAURANTS_LIST_SHEET_ID: ''
+      LUNCH_CYCLE_RESPONSES_SHEET_ID: ''
+      SLACK_BOT_TOKEN: ''
+      SLACK_CLIENT_ID: ''
+      SLACK_CLIENT_SECRET: ''
+      SLACK_SIGNING_SECRET: ''
+      WEEKS_BEFORE_CYCLE_STARTS: ''
+      LUNCHERS_PER_WEEK: ''
+      LUNCH_CYCLE_WEEK_SHEET_ID: ''
+      ANNOUNCEMENTS_CHANNEL: ''
+      VUE_APP_PASSWORD: ''
+      VUE_APP_API_URL: ''
+    depends_on:
+      - db
+
