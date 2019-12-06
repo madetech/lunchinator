@@ -12,7 +12,7 @@ services:
     build:
       context: .
       args:
-        UID: "${UID}"
+        UID: "${UID:-1000}"
     environment:
       NODE_ENV: test
       PGHOST: 'db'
@@ -38,3 +38,4 @@ services:
       VUE_APP_API_URL: ''
     depends_on:
       - db
+
