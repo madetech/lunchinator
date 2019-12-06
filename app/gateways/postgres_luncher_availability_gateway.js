@@ -7,7 +7,7 @@ class PostgresLuncherAvailabilityGateway {
   
   async addAvailability({lunch_cycle_id, slack_user_id, restaurant_name}) { // Is adding what we want
     const client = await this._client()
-    const result = await client.query({
+    await client.query({
       text: "INSERT INTO availability(lunch_cycle_id, slack_user_id, available, restaurant_name) VALUES($1, $2, $3, $4) ON CONFLICT DO NOTHING",
       values: [
         lunch_cycle_id,
@@ -17,7 +17,6 @@ class PostgresLuncherAvailabilityGateway {
       ]
     })
     .finally(() => client.end());
-    // return result
   }
   
   async getAvailabilities({lunch_cycle_id}) {  // Is returning what we want
@@ -34,7 +33,7 @@ class PostgresLuncherAvailabilityGateway {
     const client = await this._client()
     const result = await client.query({
       text: 
-      "SELECT availability.slack_user_id, availability.lunch_cycle_id, lunchers.first_name, availability.available, lunchers.email " + 
+      "SELECT availability.slack_user_id, availability.lunch_cycle_id, lunchers.first_name, availability.restaurant_name, availability.available, lunchers.email " + 
       "FROM availability " +
       "LEFT JOIN lunchers " +
       "ON availability.slack_user_id = lunchers.slack_user_id " +

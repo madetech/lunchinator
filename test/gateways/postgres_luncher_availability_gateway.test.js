@@ -68,7 +68,7 @@ describe("LuncherAvailabilityGateway", function() {
     expect(availabilities.length).to.eql(1);
   })
   
-  it("can get user availability with name", async function() {
+  it("can get user availability with user_id, lunch cycle id & restaurant name", async function() {
     let luncherAvailabilty = new PostgresLuncherAvailabilityGateway(config.db)
 
     const lunchCycle = await setupLunchCycle()
@@ -78,15 +78,12 @@ describe("LuncherAvailabilityGateway", function() {
       slack_user_id: 'DJWDYWUD124',
       restaurant_name: lunchCycle.restaurants[0].name
    })
-   await luncherAvailabilty.addAvailability({ 
-    lunch_cycle_id: lunchCycle.id,
-    slack_user_id: 'DJWDYWUD124',
-    restaurant_name: lunchCycle.restaurants[1].name
- })
+   
    const availabilities = await luncherAvailabilty.getAvailabilities({lunch_cycle_id: lunchCycle.id}) // This returns what is expected!
-   const availableUsers = await luncherAvailabilty.getAvailableUsers({lunch_cycle_id: lunchCycle.id}) // Returning slack id and first name amnd lunch cycle ID
+   const availableUsers = await luncherAvailabilty.getAvailableUsers({lunch_cycle_id: lunchCycle.id}) // Returning slack id and first name and lunch cycle ID
    expect(availableUsers[0].slack_user_id).to.eql('DJWDYWUD124');
    expect(availableUsers[0].lunch_cycle_id).to.eql(lunchCycle.id);
+   expect(availableUsers[0].restaurant_name).to.eql(restaurant1.name);
   })
 
   

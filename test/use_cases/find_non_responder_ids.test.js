@@ -48,4 +48,21 @@ describe("FindNonResponderIds", function() {
     const response = await useCase.execute();
     expect(response.nonResponderIds).to.eql([]);
   });
+  
+  xit("can find non responders when no one has marked they're available", async function() {
+    const users = [
+      { slackUserId: "user1", available: false },
+      { slackUserId: "user2", available: false }
+    ];
+
+    const expectedUserIds = ["user1", "user2"];
+
+    const useCase = new FindNonResponderIds({
+      userResponseGateway: { findAllForLunchCycle: sinon.fake.returns(users) },
+      lunchCycleGateway: { getCurrent: sinon.stub().returns({ id: "1" }) }
+    });
+
+    const response = await useCase.executeTWO();
+    expect(response.nonResponderIds).to.eql(expectedUserIds);
+  });
 });

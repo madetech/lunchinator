@@ -7,7 +7,7 @@ class FindNonResponderIds {
   async execute() {
     const lunchCycle = await this.lunchCycleGateway.getCurrent();
     const lunchers = await this.userResponseGateway.findAllForLunchCycle({ lunchCycle });
-
+    console.log("----------Lunchers equals: ", lunchers)
     const nonResponderIds = lunchers
       .filter(user => user.availableEmojis.length === 0)
       .map(user => user.slackUserId);
@@ -16,6 +16,19 @@ class FindNonResponderIds {
       nonResponderIds
     };
   }
+  
+  // async executeTWO() {
+  //   const lunchCycle = await this.lunchCycleGateway.getCurrent();
+  //   const lunchers = await this.userResponseGateway.findAllForLunchCycle({ lunchCycle });
+  //   console.log("----------Lunchers equals: ", lunchers)
+  //   const nonResponderIds = lunchers
+  //     .filter(user => user.availableEmojis.length === 0)
+  //     .map(user => user.slackUserId);
+
+  //   return {
+  //     nonResponderIds
+  //   };
+  // }
 }
 
 module.exports = FindNonResponderIds;
