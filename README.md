@@ -23,7 +23,7 @@ We are using PostgreSQL to store information. You need to have two databases loc
 
 ### Using Slack App in Development
 
-We use `ngrok` to route traffic from the internet to our machine. See guide: yarn test
+We use `ngrok` to route traffic from the internet to our machine. See guide: https://api.slack.com/tutorials/tunneling-with-ngrok
 
 ### Guide to use the Lunchinator App
 
