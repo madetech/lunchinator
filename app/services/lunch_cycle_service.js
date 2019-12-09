@@ -59,7 +59,7 @@ class LunchCycleService {
     this.generateLuncherMessage = new GenerateLunchersMessage();
     this.findNonRespondersIds = new FindNonResponderIds({
       lunchCycleGateway: lunchCycleGateway,
-      userResponseGateway: slackUserResponseGateway
+      luncherAvailabilityGateway: postgresLuncherAvailabilityGateway
     });
     this.sendReminderToLateResponder = new SendReminderToLateResponder({
       slackGateway: slackGateway,
