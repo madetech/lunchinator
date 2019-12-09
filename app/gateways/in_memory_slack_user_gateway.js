@@ -5,10 +5,6 @@ class InMemorySlackUserResponseGateway {
     this.lunchers = [];
   }
 
-  async findAllForLunchCycle({ lunchCycle }) {
-    return this.lunchers.filter(sur => sur.lunchCycleId === lunchCycle.id);
-  }
-
   async create({ slackUser, slackMessageResponse, lunchCycle }) {
     const luncher = new Luncher({
       slackUserId: slackUser.id,
@@ -23,19 +19,6 @@ class InMemorySlackUserResponseGateway {
     this.lunchers.push(luncher);
 
     return luncher;
-  }
-
-  async saveEmojis({ luncher, emojis }) {
-    const foundLuncher = this.lunchers.find(l => {
-      return l.slackUserId === luncher.slackUserId && l.lunchCycleId === luncher.lunchCycleId;
-    });
-
-    if (foundLuncher) {
-      foundLuncher.availableEmojis = emojis;
-      return foundLuncher;
-    }
-
-    return null;
   }
 
   async count() {

@@ -75,45 +75,6 @@ class GoogleSheetGateway {
 
     return rows;
   }
-
-  async addWorksheetTo({ doc, title, headers }) {
-    const addWorksheetPromise = promisify((options, cb) =>
-      doc.addWorksheet(options, (err, newSheet) => cb(err, newSheet))
-    );
-    const newSheet = await addWorksheetPromise({ title, headers }).catch(err => {
-      console.log(err);
-      return null;
-    });
-
-    if (newSheet === null) {
-      throw new GoogleSheetGatewayError("Cannot add worksheet to Google Sheets doc.");
-    }
-
-    return newSheet;
-  }
-
-  async addRow({ sheet, row }) {
-    const newRow = await promisify(sheet.addRow)(row).catch(err => {
-      console.log(err);
-      return null;
-    });
-
-    if (newRow === null) {
-      throw new GoogleSheetGatewayError("Cannot add new row to Google Sheets sheet.");
-    }
-
-    return newRow;
-  }
-
-  async saveRow({ row }) {
-    const newRow = await promisify(row.save)().catch(() => null);
-
-    if (newRow === null) {
-      throw new GoogleSheetGatewayError("Cannot save row to Google Sheets sheet.");
-    }
-
-    return newRow;
-  }
 }
 
 module.exports = {
