@@ -14,7 +14,6 @@ const {
   CreateNewLunchCycle,
   FetchAllSlackUsers,
   SendDirectMessageToSlackUser,
-  FetchReactionsForLuncher,
   FindNonResponderIds,
   GenerateReminderMessage,
   SendReminderToLateResponder,
@@ -35,6 +34,7 @@ class LunchCycleService {
     const slackUserResponseGateway = new PostgresSlackUserResponseGateway();
     const slackGateway = new SlackGateway();
     const googleSheetGateway = new GoogleSheetGateway();
+    const postgresLuncherAvailabilityGateway = new PostgresLuncherAvailabilityGateway(config.db)
 
     this.createNewLunchCycle = new CreateNewLunchCycle({
       lunchCycleGateway: lunchCycleGateway
@@ -57,9 +57,6 @@ class LunchCycleService {
       lunchCycleGateway: lunchCycleGateway
     });
     this.generateLuncherMessage = new GenerateLunchersMessage();
-    this.fetchLuncherReactions = new FetchReactionsForLuncher({
-      slackGateway: slackGateway
-    });
     this.findNonRespondersIds = new FindNonResponderIds({
       lunchCycleGateway: lunchCycleGateway,
       userResponseGateway: slackUserResponseGateway
@@ -70,7 +67,7 @@ class LunchCycleService {
     });
     this.drawLunchers = new DrawLunchers({
       lunchCycleGateway: lunchCycleGateway,
-      slackUserResponseGateway: slackUserResponseGateway
+      postgresLuncherAvailabilityGateway: postgresLuncherAvailabilityGateway
     });
     this.sendMessageToSelectedLuncher = new SendMessageToSelectedLunchers({
       slackGateway: slackGateway,
@@ -84,7 +81,7 @@ class LunchCycleService {
       generateAnnouncementsMessage: new GenerateAnnouncementsMessage()
     });
     this.processLuncherResponse = new ProcessLuncherResponse({
-      luncherAvailabilityGateway : new PostgresLuncherAvailabilityGateway(config.db)
+      luncherAvailabilityGateway: postgresLuncherAvailabilityGateway
     })
   }
 

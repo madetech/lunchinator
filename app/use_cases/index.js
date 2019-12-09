@@ -8,7 +8,6 @@ module.exports = {
   FetchAllSlackUsers: require("./fetch_all_slack_users"),
   VerifySlackRequest: require("./verify_slack_request"),
   GenerateLunchersMessage: require("./generate_lunchers_message"),
-  FetchReactionsForLuncher: require("./fetch_reactions_for_luncher"),
   FindNonResponderIds: require("./find_non_responder_ids"),
   GenerateReminderMessage: require("./generate_reminder_message"),
   SendReminderToLateResponder: require("./send_reminder_to_late_responder"),
