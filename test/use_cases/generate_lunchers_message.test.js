@@ -16,8 +16,42 @@ const restaurantList = [
   RestaurantFactory.getRestaurant({ name: "restaurant6", emoji: ":relaxed:", date: "16/04/2020" })
 ];
 
+function expectedRestaurantBlocks(restaurant, lunchCycle){
+  expectedBlocks = []
+  restaurant.forEach(r => {
+    expectedBlocks.push(
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `${r.emoji} ${r.date}   \<${r.direction}\|${r.name}\>    vegan${r.dietaries.vegan}  vegetarian ${r.dietaries.vegetarian}  meat${r.dietaries.meat}  halal${r.dietaries.halal}`
+        }
+      },
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              emoji: false,
+              text: "Available"
+            },
+            value: lunchCycle.id + "-" + r.name
+          }
+        ]
+      },
+      {
+        type: "divider"
+      }
+    );
+  });
+  return expectedBlocks
+}
+
 describe("GenerateLunchersMessage", function() {
   const lunchCycle = new LunchCycle({
+    id: 10,
     restaurants: restaurantList,
     starts_at: new Date("2020-03-12T00:00:00")
   });
@@ -27,33 +61,20 @@ describe("GenerateLunchersMessage", function() {
     const useCase = new GenerateLunchersMessage();
     const response = useCase.execute({ lunchCycle: lunchCycle, firstName: slackFirstName });
 
-    const expected = [
+    let expected = [
       {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `\*Hey\* ${slackFirstName}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n`
+          text: `\*Hey\* ${slackFirstName}! It’s time to enter the draw for the next cycle of company lunches.\n\n`
         }
       },
       {
         type: "divider"
       }
     ];
-
-    restaurantList.forEach(r => {
-      expected.push(
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: `${r.emoji} ${r.date}   \<${r.direction}\|${r.name}\>    vegan${r.dietaries.vegan}  vegetarian ${r.dietaries.vegetarian}  meat${r.dietaries.meat}  halal${r.dietaries.halal}`
-          }
-        },
-        {
-          type: "divider"
-        }
-      );
-    });
+    
+    expected = expected.concat(expectedRestaurantBlocks(restaurantList, lunchCycle))
 
     expected.push({
       type: "section",
@@ -73,33 +94,20 @@ describe("GenerateLunchersMessage", function() {
     const useCase = new GenerateLunchersMessage();
     const response = useCase.execute({ lunchCycle: lunchCycle, firstName: noFirstName });
 
-    const expected = [
+    let expected = [
       {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `${preview}\*Hey\* {first name}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n`
+          text: `${preview}\*Hey\* {first name}! It’s time to enter the draw for the next cycle of company lunches.\n\n`
         }
       },
       {
         type: "divider"
       }
     ];
-
-    restaurantList.forEach(r => {
-      expected.push(
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: `${r.emoji} ${r.date}   \<${r.direction}\|${r.name}\>    vegan${r.dietaries.vegan}  vegetarian ${r.dietaries.vegetarian}  meat${r.dietaries.meat}  halal${r.dietaries.halal}`
-          }
-        },
-        {
-          type: "divider"
-        }
-      );
-    });
+    
+    expected = expected.concat(expectedRestaurantBlocks(restaurantList, lunchCycle))
 
     expected.push({
       type: "section",

@@ -1,12 +1,13 @@
-const { expect, config, sinon } = require("../test_helper");
+const { expect, config, sinon, clearPostgres } = require("../test_helper");
 const { DrawLunchers } = require("@use_cases");
-const { InMemoryLunchCycleGateway, InMemorySlackUserResponseGateway } = require("@gateways");
+const { PostgresLunchCycleGateway, PostgresLuncherAvailabilityGateway, PostgresSlackUserResponseGateway } = require("@gateways");
 const { LunchCycle } = require("@domain");
 const { RestaurantFactory } = require("../factories");
 
 describe("DoTheDraw", function() {
-  let inMemoryLunchCycleGateway;
-  let inMemorySlackUserResponseGateway;
+  let postgresLunchCycleGateway;
+  let postgresLuncherAvailabilityGateway;
+  let postgresSlackUserResponseGateway;
 
   const slackUsers = [
     {
@@ -74,19 +75,17 @@ describe("DoTheDraw", function() {
     }
   ];
 
-  beforeEach(function() {
-    inMemoryLunchCycleGateway = new InMemoryLunchCycleGateway();
-    inMemorySlackUserResponseGateway = new InMemorySlackUserResponseGateway();
+  beforeEach(async function() {
+    postgresLunchCycleGateway = new PostgresLunchCycleGateway();
+    postgresLuncherAvailabilityGateway = new PostgresLuncherAvailabilityGateway(config.db);
+    postgresSlackUserResponseGateway = new PostgresSlackUserResponseGateway()
+    await clearPostgres();
   });
 
   const restaurants = [
     RestaurantFactory.getRestaurant({ name: "restaurant1", emoji: ":bowtie:", date: "01/01/2030" }),
     RestaurantFactory.getRestaurant({ name: "restaurant2", emoji: ":smile:", date: "02/01/2030" }),
-    RestaurantFactory.getRestaurant({
-      name: "restaurant3",
-      emoji: ":simple_smile:",
-      date: "03/01/2030"
-    })
+    RestaurantFactory.getRestaurant({ name: "restaurant3", emoji: ":simple_smile:", date: "03/01/2030"})
   ];
 
   it("can put a luncher who has chosen the first week into the first week", async function() {
@@ -98,21 +97,29 @@ describe("DoTheDraw", function() {
       }
     ];
 
-    const lunchCycle = await inMemoryLunchCycleGateway.create(
+    const lunchCycle = await postgresLunchCycleGateway.create(
       new LunchCycle({
         restaurants: restaurants
       })
     );
-    const luncher = await inMemorySlackUserResponseGateway.create({
+    await postgresSlackUserResponseGateway.create({
       slackUser: slackUsers[0],
       slackMessageResponse: {},
       lunchCycle
     });
-    await inMemorySlackUserResponseGateway.saveEmojis({ luncher, emojis: [":bowtie:"] });
+   
+    await postgresLuncherAvailabilityGateway.addAvailability(
+      {
+        lunch_cycle_id: lunchCycle.id,
+        slack_user_id: slackUsers[0].id,
+        restaurant_name: restaurants[0].name
+      }
+    );
+    
 
     const useCase = new DrawLunchers({
-      lunchCycleGateway: inMemoryLunchCycleGateway,
-      slackUserResponseGateway: inMemorySlackUserResponseGateway
+      lunchCycleGateway: postgresLunchCycleGateway,
+      postgresLuncherAvailabilityGateway: postgresLuncherAvailabilityGateway
     });
     const response = await useCase.execute();
     expect(response.lunchCycleDraw[0].lunchers).to.be.eql(expected);
@@ -127,279 +134,162 @@ describe("DoTheDraw", function() {
       }
     ];
 
-    const lunchCycle = await inMemoryLunchCycleGateway.create(
+    const lunchCycle = await postgresLunchCycleGateway.create(
       new LunchCycle({
         restaurants: restaurants
       })
     );
-    const luncher1 = await inMemorySlackUserResponseGateway.create({
+    await postgresSlackUserResponseGateway.create({
       slackUser: slackUsers[0],
       slackMessageResponse: {},
       lunchCycle
     });
-    await inMemorySlackUserResponseGateway.saveEmojis({ luncher: luncher1, emojis: [":bowtie:"] });
-    const luncher2 = await inMemorySlackUserResponseGateway.create({
+    await postgresSlackUserResponseGateway.create({
       slackUser: slackUsers[1],
       slackMessageResponse: {},
       lunchCycle
     });
-    await inMemorySlackUserResponseGateway.saveEmojis({ luncher: luncher2, emojis: [":smile:"] });
-
+    await postgresLuncherAvailabilityGateway.addAvailability({
+        lunch_cycle_id: lunchCycle.id,
+        slack_user_id: slackUsers[0].id,
+        restaurant_name: restaurants[0].name
+    });
+    await postgresLuncherAvailabilityGateway.addAvailability({
+        lunch_cycle_id: lunchCycle.id,
+        slack_user_id: slackUsers[1].id,
+        restaurant_name: restaurants[1].name
+    });
     const useCase = new DrawLunchers({
-      lunchCycleGateway: inMemoryLunchCycleGateway,
-      slackUserResponseGateway: inMemorySlackUserResponseGateway
+      lunchCycleGateway: postgresLunchCycleGateway,
+      postgresLuncherAvailabilityGateway: postgresLuncherAvailabilityGateway
     });
     const response = await useCase.execute();
-
     expect(response.lunchCycleDraw[1].lunchers).to.be.eql(expected);
   });
 
   it("can prioritise a luncher with less availablity", async function() {
     sinon.stub(config, "LUNCHERS_PER_WEEK").get(() => 1);
 
-    const lunchCycle = await inMemoryLunchCycleGateway.create(
+    const lunchCycle = await postgresLunchCycleGateway.create(
       new LunchCycle({
         restaurants: restaurants
       })
     );
-    const luncher1 = await inMemorySlackUserResponseGateway.create({
+    const luncher1 = await postgresSlackUserResponseGateway.create({
       slackUser: slackUsers[0],
       slackMessageResponse: {},
       lunchCycle
     });
-    await inMemorySlackUserResponseGateway.saveEmojis({
-      luncher: luncher1,
-      emojis: [":bowtie:", ":smile:"]
-    });
-    const luncher2 = await inMemorySlackUserResponseGateway.create({
+    const luncher2  = await postgresSlackUserResponseGateway.create({
       slackUser: slackUsers[1],
       slackMessageResponse: {},
       lunchCycle
     });
-    await inMemorySlackUserResponseGateway.saveEmojis({ luncher: luncher2, emojis: [":bowtie:"] });
-
-    const useCase = new DrawLunchers({
-      lunchCycleGateway: inMemoryLunchCycleGateway,
-      slackUserResponseGateway: inMemorySlackUserResponseGateway
+    await postgresLuncherAvailabilityGateway.addAvailability({
+        lunch_cycle_id: lunchCycle.id,
+        slack_user_id: slackUsers[0].id,
+        restaurant_name: restaurants[0].name
     });
-
-    const response = await useCase.execute();
-
-    expect(response.lunchCycleDraw[0].lunchers[0].firstName).to.be.eql("baebunny");
-    expect(response.lunchCycleDraw[1].lunchers[0].firstName).to.be.eql("bugsbunny");
+    await postgresLuncherAvailabilityGateway.addAvailability({
+      lunch_cycle_id: lunchCycle.id,
+      slack_user_id: slackUsers[0].id,
+      restaurant_name: restaurants[1].name
   });
-
-  it("can do a draw for 9 lunchers over 3 weeks", async function() {
-    sinon.stub(config, "LUNCHERS_PER_WEEK").get(() => 3);
-
-    const lunchCycle = await inMemoryLunchCycleGateway.create(
-      new LunchCycle({
-        restaurants: restaurants
-      })
-    );
-
-    const luncher1 = await inMemorySlackUserResponseGateway.create({
-      slackUser: slackUsers[0],
-      slackMessageResponse: {},
-      lunchCycle
+    await postgresLuncherAvailabilityGateway.addAvailability({
+        lunch_cycle_id: lunchCycle.id,
+        slack_user_id: slackUsers[1].id,
+        restaurant_name: restaurants[1].name
     });
-    const luncher2 = await inMemorySlackUserResponseGateway.create({
-      slackUser: slackUsers[1],
-      slackMessageResponse: {},
-      lunchCycle
-    });
-    const luncher3 = await inMemorySlackUserResponseGateway.create({
-      slackUser: slackUsers[2],
-      slackMessageResponse: {},
-      lunchCycle
-    });
-    const luncher4 = await inMemorySlackUserResponseGateway.create({
-      slackUser: slackUsers[3],
-      slackMessageResponse: {},
-      lunchCycle
-    });
-    const luncher5 = await inMemorySlackUserResponseGateway.create({
-      slackUser: slackUsers[4],
-      slackMessageResponse: {},
-      lunchCycle
-    });
-    const luncher6 = await inMemorySlackUserResponseGateway.create({
-      slackUser: slackUsers[5],
-      slackMessageResponse: {},
-      lunchCycle
-    });
-    const luncher7 = await inMemorySlackUserResponseGateway.create({
-      slackUser: slackUsers[6],
-      slackMessageResponse: {},
-      lunchCycle
-    });
-    const luncher8 = await inMemorySlackUserResponseGateway.create({
-      slackUser: slackUsers[7],
-      slackMessageResponse: {},
-      lunchCycle
-    });
-    const luncher9 = await inMemorySlackUserResponseGateway.create({
-      slackUser: slackUsers[8],
-      slackMessageResponse: {},
-      lunchCycle
-    });
-    await inMemorySlackUserResponseGateway.saveEmojis({ luncher: luncher1, emojis: [":bowtie:"] });
-    await inMemorySlackUserResponseGateway.saveEmojis({
-      luncher: luncher2,
-      emojis: [":bowtie:", ":smile:"]
-    });
-    await inMemorySlackUserResponseGateway.saveEmojis({ luncher: luncher3, emojis: [":smile:"] });
-    await inMemorySlackUserResponseGateway.saveEmojis({
-      luncher: luncher4,
-      emojis: [":simple_smile:"]
-    });
-    await inMemorySlackUserResponseGateway.saveEmojis({ luncher: luncher5, emojis: [":bowtie:"] });
-    await inMemorySlackUserResponseGateway.saveEmojis({
-      luncher: luncher6,
-      emojis: [":bowtie:", ":smile:", ":simple_smile:"]
-    });
-    await inMemorySlackUserResponseGateway.saveEmojis({
-      luncher: luncher7,
-      emojis: [":simple_smile:", ":smile:"]
-    });
-    await inMemorySlackUserResponseGateway.saveEmojis({
-      luncher: luncher8,
-      emojis: [":bowtie:", ":smile:"]
-    });
-    await inMemorySlackUserResponseGateway.saveEmojis({
-      luncher: luncher9,
-      emojis: [":simple_smile:", ":bowtie:"]
-    });
-
     const useCase = new DrawLunchers({
-      lunchCycleGateway: inMemoryLunchCycleGateway,
-      slackUserResponseGateway: inMemorySlackUserResponseGateway
+      lunchCycleGateway: postgresLunchCycleGateway,
+      postgresLuncherAvailabilityGateway: postgresLuncherAvailabilityGateway
     });
-
     const response = await useCase.execute();
 
-    const w1 = response.lunchCycleDraw[0].lunchers;
-    const w2 = response.lunchCycleDraw[1].lunchers;
-    const w3 = response.lunchCycleDraw[2].lunchers;
-
-    expect(w1.length).to.eql(3);
-    expect(w2.length).to.eql(3);
-    expect(w3.length).to.eql(3);
-
-    const allTheLunchers = w1.concat(w2, w3).map(l => l.firstName);
-    const allTheLunchersWithoutDuplicates = new Set(allTheLunchers);
-
-    expect(allTheLunchersWithoutDuplicates.size).to.eql(9);
+    expect(response.lunchCycleDraw[0].lunchers[0]).to.be.eql(userObject(luncher1));
+    expect(response.lunchCycleDraw[1].lunchers[0]).to.be.eql(userObject(luncher2));
   });
 
   it("can do the draw and set lunchers avalabilities for each week", async function() {
     sinon.stub(config, "LUNCHERS_PER_WEEK").get(() => 3);
 
-    const lunchCycle = await inMemoryLunchCycleGateway.create(
+     const lunchCycle = await postgresLunchCycleGateway.create(
       new LunchCycle({
-        restaurants: restaurants
+        restaurants :restaurants
       })
     );
+     
+    const [luncher1,luncher2,luncher3,luncher4,luncher5,luncher6,luncher7,luncher8,luncher9] = await createUsers(lunchCycle, slackUsers)
 
-    const luncher1 = await inMemorySlackUserResponseGateway.create({
-      slackUser: slackUsers[0],
-      slackMessageResponse: {},
-      lunchCycle
-    });
-    const luncher2 = await inMemorySlackUserResponseGateway.create({
-      slackUser: slackUsers[1],
-      slackMessageResponse: {},
-      lunchCycle
-    });
-    const luncher3 = await inMemorySlackUserResponseGateway.create({
-      slackUser: slackUsers[2],
-      slackMessageResponse: {},
-      lunchCycle
-    });
-    const luncher4 = await inMemorySlackUserResponseGateway.create({
-      slackUser: slackUsers[3],
-      slackMessageResponse: {},
-      lunchCycle
-    });
-    const luncher5 = await inMemorySlackUserResponseGateway.create({
-      slackUser: slackUsers[4],
-      slackMessageResponse: {},
-      lunchCycle
-    });
-    const luncher6 = await inMemorySlackUserResponseGateway.create({
-      slackUser: slackUsers[5],
-      slackMessageResponse: {},
-      lunchCycle
-    });
-    const luncher7 = await inMemorySlackUserResponseGateway.create({
-      slackUser: slackUsers[6],
-      slackMessageResponse: {},
-      lunchCycle
-    });
-    const luncher8 = await inMemorySlackUserResponseGateway.create({
-      slackUser: slackUsers[7],
-      slackMessageResponse: {},
-      lunchCycle
-    });
-    const luncher9 = await inMemorySlackUserResponseGateway.create({
-      slackUser: slackUsers[8],
-      slackMessageResponse: {},
-      lunchCycle
-    });
-    await inMemorySlackUserResponseGateway.saveEmojis({ luncher: luncher1, emojis: [":bowtie:"] });
-    await inMemorySlackUserResponseGateway.saveEmojis({
-      luncher: luncher2,
-      emojis: [":bowtie:", ":smile:"]
-    });
-    await inMemorySlackUserResponseGateway.saveEmojis({ luncher: luncher3, emojis: [":smile:"] });
-    await inMemorySlackUserResponseGateway.saveEmojis({
-      luncher: luncher4,
-      emojis: [":simple_smile:"]
-    });
-    await inMemorySlackUserResponseGateway.saveEmojis({ luncher: luncher5, emojis: [":bowtie:"] });
-    await inMemorySlackUserResponseGateway.saveEmojis({
-      luncher: luncher6,
-      emojis: [":bowtie:", ":smile:", ":simple_smile:"]
-    });
-    await inMemorySlackUserResponseGateway.saveEmojis({
-      luncher: luncher7,
-      emojis: [":simple_smile:", ":smile:"]
-    });
-    await inMemorySlackUserResponseGateway.saveEmojis({
-      luncher: luncher8,
-      emojis: [":bowtie:", ":smile:"]
-    });
-    await inMemorySlackUserResponseGateway.saveEmojis({
-      luncher: luncher9,
-      emojis: [":simple_smile:", ":bowtie:"]
-    });
+    await postgresLuncherAvailabilityGateway.addAvailability({lunch_cycle_id: lunchCycle.id, slack_user_id: luncher1.slackUserId, restaurant_name: restaurants[0].name})
+
+    await postgresLuncherAvailabilityGateway.addAvailability({lunch_cycle_id: lunchCycle.id, slack_user_id: luncher2.slackUserId, restaurant_name: restaurants[0].name})
+
+    await postgresLuncherAvailabilityGateway.addAvailability({lunch_cycle_id: lunchCycle.id, slack_user_id: luncher3.slackUserId, restaurant_name: restaurants[0].name})
+    await postgresLuncherAvailabilityGateway.addAvailability({lunch_cycle_id: lunchCycle.id, slack_user_id: luncher3.slackUserId, restaurant_name: restaurants[1].name})
+
+    await postgresLuncherAvailabilityGateway.addAvailability({lunch_cycle_id: lunchCycle.id, slack_user_id: luncher4.slackUserId, restaurant_name: restaurants[1].name})
+
+    await postgresLuncherAvailabilityGateway.addAvailability({lunch_cycle_id: lunchCycle.id, slack_user_id: luncher5.slackUserId, restaurant_name: restaurants[1].name})
+
+    await postgresLuncherAvailabilityGateway.addAvailability({lunch_cycle_id: lunchCycle.id, slack_user_id: luncher6.slackUserId, restaurant_name: restaurants[1].name})
+
+    await postgresLuncherAvailabilityGateway.addAvailability({lunch_cycle_id: lunchCycle.id, slack_user_id: luncher7.slackUserId, restaurant_name: restaurants[1].name})
+    await postgresLuncherAvailabilityGateway.addAvailability({lunch_cycle_id: lunchCycle.id, slack_user_id: luncher7.slackUserId, restaurant_name: restaurants[2].name})
+
+    await postgresLuncherAvailabilityGateway.addAvailability({lunch_cycle_id: lunchCycle.id, slack_user_id: luncher8.slackUserId, restaurant_name: restaurants[0].name})
+    await postgresLuncherAvailabilityGateway.addAvailability({lunch_cycle_id: lunchCycle.id, slack_user_id: luncher8.slackUserId, restaurant_name: restaurants[1].name})
+    await postgresLuncherAvailabilityGateway.addAvailability({lunch_cycle_id: lunchCycle.id, slack_user_id: luncher8.slackUserId, restaurant_name: restaurants[2].name})
+
+    await postgresLuncherAvailabilityGateway.addAvailability({lunch_cycle_id: lunchCycle.id, slack_user_id: luncher9.slackUserId, restaurant_name: restaurants[0].name})
+    await postgresLuncherAvailabilityGateway.addAvailability({lunch_cycle_id: lunchCycle.id, slack_user_id: luncher9.slackUserId, restaurant_name: restaurants[1].name})
+    await postgresLuncherAvailabilityGateway.addAvailability({lunch_cycle_id: lunchCycle.id, slack_user_id: luncher9.slackUserId, restaurant_name: restaurants[2].name})
 
     const useCase = new DrawLunchers({
-      lunchCycleGateway: inMemoryLunchCycleGateway,
-      slackUserResponseGateway: inMemorySlackUserResponseGateway
+      lunchCycleGateway: postgresLunchCycleGateway,
+      postgresLuncherAvailabilityGateway: postgresLuncherAvailabilityGateway
     });
 
     const response = await useCase.execute();
-    expect(response.lunchCycleDraw[0].allAvailable).to.be.eql([
-      luncher1,
-      luncher2,
-      luncher5,
-      luncher6,
-      luncher8,
-      luncher9
+    expect(response.lunchCycleDraw[0].lunchers).to.eql([
+      userObject(luncher1),
+      userObject(luncher2),
+      userObject(luncher3),
     ]);
-    expect(response.lunchCycleDraw[1].allAvailable).to.be.eql([
-      luncher2,
-      luncher3,
-      luncher6,
-      luncher7,
-      luncher8
-    ]);
-    expect(response.lunchCycleDraw[2].allAvailable).to.be.eql([
-      luncher4,
-      luncher6,
-      luncher7,
-      luncher9
-    ]);
+    expect(response.lunchCycleDraw[1].lunchers).to.eql([
+      userObject(luncher4),
+      userObject(luncher5),
+      userObject(luncher6),
+    ]); 
+    expect(response.lunchCycleDraw[2].lunchers).to.eql([
+      userObject(luncher7),
+      userObject(luncher8),
+      userObject(luncher9),
+    ]); 
   });
+  
+  async function createUsers(lunchCycle, users_array) {
+    created_users_array = []
+  
+    for (user of users_array) {
+      const new_user = await postgresSlackUserResponseGateway.create({
+        slackUser: user,
+        slackMessageResponse: {},
+        lunchCycle
+      })
+      created_users_array.push(new_user);
+    }
+    
+    return created_users_array
+  }
 });
+
+function userObject(luncher) {
+  return {
+    firstName: luncher.firstName,
+    email: luncher.email,
+    slackUserId: luncher.slackUserId
+  }
+}
+
+
