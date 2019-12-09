@@ -1,4 +1,5 @@
 const { Client } = require("pg");
+const { Luncher } = require("@domain")
 
 class PostgresLuncherAvailabilityGateway {
   constructor(dbconfig) {
@@ -42,7 +43,9 @@ class PostgresLuncherAvailabilityGateway {
       values: [lunch_cycle_id]
     })
     client.end()
-    return result.rows
+    return result.rows.map((luncher) => {
+      return Luncher.newFromDb(luncher)
+    })
   }
   
   async _client() {

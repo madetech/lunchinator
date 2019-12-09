@@ -8,7 +8,7 @@ class Luncher {
       messageChannel: dbObject.message_channel,
       messageId: dbObject.message_id,
       availableEmojis: dbObject.available_emojis,
-      available: false
+      restaurantName: dbObject.restaurant_name,
     });
   }
 
@@ -20,7 +20,7 @@ class Luncher {
     this.messageChannel = options.messageChannel;
     this.messageId = options.messageId;
     this.availableEmojis = options.availableEmojis || [];
-    this.available = options.available;
+    this.restaurantName = options.restaurantName;
   }
 }
 

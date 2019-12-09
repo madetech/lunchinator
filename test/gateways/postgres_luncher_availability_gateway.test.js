@@ -1,6 +1,6 @@
 const { expect, clearPostgres } = require("../test_helper");
 const { LunchCycle } = require("@domain");
-const { PostgresLuncherAvailabilityGateway, PostgresLunchCycleGateway } = require("@gateways");
+const { PostgresLuncherAvailabilityGateway, PostgresLunchCycleGateway, PostgresSlackUserResponseGateway } = require("@gateways");
 const config = require("@app/config");
 const { RestaurantFactory } = require("../factories");
 
@@ -81,9 +81,11 @@ describe("LuncherAvailabilityGateway", function() {
    
    
    const availableUsers = await luncherAvailabilty.getAvailableUsers({lunch_cycle_id: lunchCycle.id}) // Returning slack id,first name,lunch cycle ID and restaurant name.
-   expect(availableUsers[0].slack_user_id).to.eql('DJWDYWUD124');
-   expect(availableUsers[0].lunch_cycle_id).to.eql(lunchCycle.id);
-   expect(availableUsers[0].restaurant_name).to.eql(restaurant1.name);
+   expect(availableUsers[0].slackUserId).to.eql('DJWDYWUD124');
+   expect(availableUsers[0].lunchCycleId).to.eql(lunchCycle.id);
+   expect(availableUsers[0].restaurantName).to.eql(restaurant1.name);
+   expect(availableUsers[0].email).to.eql("bob@madetech.com");
+   expect(availableUsers[0].firstName).to.eql("bob");
   })
 
   
@@ -93,6 +95,20 @@ describe("LuncherAvailabilityGateway", function() {
       restaurants: restaurant_array
     });
     const createdLunchCycle = await postgresLunchCycleGateway.create(newlunchCycle);
+
+    const postgresSlackUserResponseGateway = new PostgresSlackUserResponseGateway()
+    await postgresSlackUserResponseGateway.create({
+      slackUser: {
+        id: "DJWDYWUD124",
+        profile: {
+          email: "bob@madetech.com",
+          first_name: "bob"
+        }
+      },
+      slackMessageResponse: {},
+      lunchCycle: createdLunchCycle
+    });
+    
     return createdLunchCycle
   }
   

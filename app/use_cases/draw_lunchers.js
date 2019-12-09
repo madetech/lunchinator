@@ -10,34 +10,31 @@ class DrawLunchers {
 
   async execute() {
     const lunchCycle = await this.lunchCycleGateway.getCurrent();
-    let allRespondedUsers = await this.postgresLuncherAvailabilityGateway.getAvailableUsers({ lunchCycle });
-    console.log("********************** AllRespondedUsers:", allRespondedUsers)
-    
-    const totalAvailabilitiesHash = this.getTotalAvailabilitiesHash(allRespondedUsers)
+    let allRespondedUsers = await this.postgresLuncherAvailabilityGateway.getAvailableUsers({ lunch_cycle_id: lunchCycle.id });
+    let totalAvailabilitiesHash = this.getTotalAvailabilitiesHash(allRespondedUsers)
 
     const lunchCycleDraw = [];
-    lunchCycle.restaurants.forEach((restaurant, i) => {
-    const lunchers = this.getLunchersForRestaurant(restaurant, allRespondedUsers, totalAvailabilitiesHash);
+    lunchCycle.restaurants.forEach((restaurant) => {
+    const availableThisWeek = allRespondedUsers.filter(a => a.restaurantName == restaurant.name)
+    const lunchers = this.getLunchersForRestaurant(availableThisWeek, totalAvailabilitiesHash);
 
       lunchCycleDraw.push(
         new LunchCycleWeek({
           restaurant,
-          lunchers,
-          allAvailable: allRespondedUsers[i]
+          lunchers, // array of luncher id 
+          allAvailable: availableThisWeek
         })
       );
 
       allRespondedUsers = this.removeDrawnLunchers(allRespondedUsers, lunchers, restaurant.name);
-      // allRespondedUsers = this.reducetotalAvailabilities(allRespondedUsers)
+      totalAvailabilitiesHash = this.reducetotalAvailabilities(availableThisWeek, totalAvailabilitiesHash)
     });
-      // console.log("^^^^^^^^^^LCD: ",lunchCycleDraw)
+    //save current draw in gateway using create function
     return {
       lunchCycleDraw: lunchCycleDraw
     };
   }
   
-
-
   getTotalAvailabilitiesHash(allRespondedUsers) {  // Method just for scoring interest score
     let totalAvailabilitiesHash = {}
     allRespondedUsers.forEach((user) => {
@@ -51,29 +48,29 @@ class DrawLunchers {
     return totalAvailabilitiesHash
   }
 
-  getLunchersForRestaurant(restaurant, allRespondedUsers, totalAvailabilitiesHash) { // This represents the 8 Lunchers for that cycle??
-        const drawnLunchers = allRespondedUsers
-      .filter(a => a.restaurant_name == restaurant.name)
-      .sort((first, second) => totalAvailabilitiesHash[first.slackUserId] - totalAvailabilitiesHash[second.slackUserId])
-      .slice(0, config.LUNCHERS_PER_WEEK);
+  getLunchersForRestaurant(availableThisWeek, totalAvailabilitiesHash) { // This represents the 8 Lunchers for that cycle??
+    const drawnLunchers = availableThisWeek
+    .sort((first, second) => totalAvailabilitiesHash[first.slackUserId] - totalAvailabilitiesHash[second.slackUserId])
+    .slice(0, config.LUNCHERS_PER_WEEK);
+    
     return drawnLunchers.map(l => {
-      return { first_name: l.first_name, email: l.email, slack_user_id: l.slack_user_id };
+      return { firstName: l.firstName, email: l.email, slackUserId: l.slackUserId };
     });
   }
 
-  removeDrawnLunchers(allRespondedUsers, drawnLunchers, restaurant_name) { 
-    const drawnLuncherIds = drawnLunchers.map(l => l.slack_user_id);
-    allRespondedUsers = allRespondedUsers.filter(l => !drawnLuncherIds.includes(l.slack_user_id));
+  removeDrawnLunchers(allRespondedUsers, drawnLunchers, restaurantName) { 
+    const drawnLuncherIds = drawnLunchers.map(l => l.slackUserId);
+    allRespondedUsers = allRespondedUsers.filter(l => !drawnLuncherIds.includes(l.slackUserId));
     // lower totalAvailabilities for non chosen users
      // i.e totalAvailabilities[user.id]--
     return allRespondedUsers;
   }
   
-  reducetotalAvailabilities(allRespondedUsers) { //Why reduce points if they are being removed from available list?
-    Object.keys(allRespondedUsers).map(function(key, index) {
-      allRespondedUsers[key] -= 1;
-    });
-    return allRespondedUsers
+  reducetotalAvailabilities(availableThisWeek, totalAvailabilitiesHash) {
+    availableThisWeek.forEach((user) => {
+      totalAvailabilitiesHash[user.slackUserId] -= 1;
+    })
+    return totalAvailabilitiesHash
   }
 }
 

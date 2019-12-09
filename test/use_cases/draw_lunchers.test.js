@@ -13,7 +13,7 @@ describe("DrawLunchers", function() {
     RestaurantFactory.getRestaurant({ name: "restaurant6", emoji: ":relaxed:", date: "06/01/2030" })
   ];
 
-  xit("can put a luncher who has chosen only the second week into the second week", async function() {
+  it("can put a luncher who has chosen only the second week into the second week", async function() {
     const expected = [
       {
         firstName: "baebunny",
@@ -26,20 +26,22 @@ describe("DrawLunchers", function() {
       lunchCycleGateway: {
         getCurrent: sinon.fake.resolves(new LunchCycle({ restaurants: restaurants }))
       },
-      slackUserResponseGateway: {
-        findAllForLunchCycle: sinon.fake.resolves([
-          new Luncher({
+      postgresLuncherAvailabilityGateway: {
+        getAvailableUsers: sinon.fake.resolves([
+          {
             slackUserId: "bb01",
+            lunchCycleId: 1,
             firstName: "bugsbunny",
-            email: "bugs@madetech.com",
-            availableEmojis: [":bowtie:"]
-          }),
-          new Luncher({
+            restaurantName: "restaurant1",
+            email: 'bugs@madetech.com'
+          },
+          {
             slackUserId: "bb02",
+            lunchCycleId: 1,
             firstName: "baebunny",
-            email: "bae@madetech.com",
-            availableEmojis: [":smile:"]
-          })
+            restaurantName: "restaurant2",
+            email: "bae@madetech.com"
+          }
         ])
       }
     });
@@ -49,26 +51,35 @@ describe("DrawLunchers", function() {
     expect(response.lunchCycleDraw[1].lunchers).to.be.eql(expected);
   });
 
-  xit("can prioritise a luncher with less availablity, for two lunchers", async function() {
+  it("can prioritise a luncher with less availablity, for two lunchers", async function() {
     sinon.stub(config, "LUNCHERS_PER_WEEK").get(() => 1);
     const useCase = new DrawLunchers({
       lunchCycleGateway: {
         getCurrent: sinon.fake.resolves(new LunchCycle({ restaurants: restaurants }))
       },
-      slackUserResponseGateway: {
-        findAllForLunchCycle: sinon.fake.resolves([
-          new Luncher({
+      postgresLuncherAvailabilityGateway: {
+        getAvailableUsers: sinon.fake.resolves([
+            {
             slackUserId: "bb01",
+            lunchCycleId: 1,
             firstName: "bugsbunny",
-            email: "bugs@madetech.com",
-            availableEmojis: [":bowtie:", ":smile:"]
-          }),
-          new Luncher({
+            restaurantName: "restaurant1",
+            email: 'bugs@madetech.com',
+          },
+          {
+            slackUserId: "bb01",
+            lunchCycleId: 1,
+            firstName: "bugsbunny",
+            restaurantName: "restaurant2",
+            email: 'bugs@madetech.com',
+          },
+          {
             slackUserId: "bb02",
+            lunchCycleId: 1,
             firstName: "baebunny",
+            restaurantName: "restaurant1",
             email: "bae@madetech.com",
-            availableEmojis: [":bowtie:"]
-          })
+          }
         ])
       }
     });
@@ -83,9 +94,9 @@ describe("DrawLunchers", function() {
   it("can put a luncher who has chosen the first week into the first week", async function() {
     const expected = [
       {
-        first_name: "bugsbunny",
+        firstName: "bugsbunny",
         email: "bugs@madetech.com",
-        slack_user_id: "bb01"
+        slackUserId: "bb01"
       },
     ];
 
@@ -96,20 +107,11 @@ describe("DrawLunchers", function() {
       postgresLuncherAvailabilityGateway: {
         getAvailableUsers: sinon.fake.resolves([
           {
-            slack_user_id: "bb01",
-            lunch_cycle_id: 1,
-            first_name: "bugsbunny",
-            restaurant_name: "restaurant1",
-            email: 'bugs@madetech.com',
-            available: true
-          },
-          {
-            slack_user_id: "bb03",
-            lunch_cycle_id: 1,
-            first_name: "bugsbunny",
-            email: "bugs2@madetech.com",
-            restaurant_name: "restaurant2",
-            available: true
+            slackUserId: "bb01",
+            lunchCycleId: 1,
+            firstName: "bugsbunny",
+            restaurantName: "restaurant1",
+            email: 'bugs@madetech.com'
           }
         ])
       }
@@ -122,9 +124,9 @@ describe("DrawLunchers", function() {
   it("can check luncher is available for two different restaurants in the one lunch cycle", async function() {
     const expected = [
       {
-        first_name: "bugsbunny",
+        firstName: "bugsbunny",
         email: "bugs@madetech.com",
-        slack_user_id: "bb01"
+        slackUserId: "bb01"
       },
     ];
 
@@ -135,20 +137,18 @@ describe("DrawLunchers", function() {
       postgresLuncherAvailabilityGateway: {
         getAvailableUsers: sinon.fake.resolves([
           {
-            slack_user_id: "bb01",
-            lunch_cycle_id: 1,
-            first_name: "bugsbunny",
-            restaurant_name: "restaurant1",
-            email: 'bugs@madetech.com',
-            available: true
+            slackUserId: "bb01",
+            lunchCycleId: 1,
+            firstName: "bugsbunny",
+            restaurantName: "restaurant1",
+            email: 'bugs@madetech.com'
           },
           {
-            slack_user_id: "bb01",
-            lunch_cycle_id: 1,
-            first_name: "bugsbunny",
-            restaurant_name: "restaurant2",
-            email: 'bugs@madetech.com',
-            available: true
+            slackUserId: "bb01",
+            lunchCycleId: 1,
+            firstName: "bugsbunny",
+            restaurantName: "restaurant2",
+            email: 'bugs@madetech.com'
           },
         ])
       }
