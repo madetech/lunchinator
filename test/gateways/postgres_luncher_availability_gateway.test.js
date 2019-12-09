@@ -87,6 +87,17 @@ describe("LuncherAvailabilityGateway", function() {
    expect(availableUsers[0].email).to.eql("bob@madetech.com");
    expect(availableUsers[0].firstName).to.eql("bob");
   })
+  
+  it("get id of users that do not have availability", async function() {
+    let luncherAvailabilty = new PostgresLuncherAvailabilityGateway(config.db)
+
+    const lunchCycle = await setupLunchCycle()
+    
+    const usersWithoutResponce = await luncherAvailabilty.getUsersWithoutResponce({lunch_cycle_id: lunchCycle.id})
+
+    expect(usersWithoutResponce.length).to.eql(1);
+    expect(usersWithoutResponce).to.eql(['DJWDYWUD124']);
+  })
 
   
   async function setupLunchCycle() {

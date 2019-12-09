@@ -48,6 +48,22 @@ class PostgresLuncherAvailabilityGateway {
     })
   }
   
+  async getUsersWithoutResponce({lunch_cycle_id}) {
+    const client = await this._client()
+    const result = await client.query({
+      text: 
+      "SELECT slack_user_id " + 
+      "FROM lunchers WHERE lunchers.lunch_cycle_id = $1 AND slack_user_id NOT IN (" +
+        "SELECT slack_user_id FROM availability WHERE lunch_cycle_id = $1" +
+      ");",
+      values: [lunch_cycle_id]
+    })
+    client.end()
+    return result.rows.map((luncher) => {
+      return luncher.slack_user_id
+    })
+  }
+  
   async _client() {
     const client = new Client(this.dbconfig);
     await client.connect();
