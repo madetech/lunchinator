@@ -93,7 +93,7 @@ describe("LuncherAvailabilityGateway", function() {
 
     const lunchCycle = await setupLunchCycle()
     
-    const usersWithoutResponce = await luncherAvailabilty.getUsersWithoutResponce({lunch_cycle_id: lunchCycle.id})
+    const usersWithoutResponce = await luncherAvailabilty.getUsersWithoutResponse({lunch_cycle_id: lunchCycle.id})
 
     expect(usersWithoutResponce.length).to.eql(1);
     expect(usersWithoutResponce).to.eql(['DJWDYWUD124']);

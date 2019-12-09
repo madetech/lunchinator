@@ -48,7 +48,7 @@ class PostgresLuncherAvailabilityGateway {
     })
   }
   
-  async getUsersWithoutResponce({lunch_cycle_id}) {
+  async getUsersWithoutResponse({lunch_cycle_id}) {
     const client = await this._client()
     const result = await client.query({
       text: 
