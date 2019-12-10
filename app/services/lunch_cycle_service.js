@@ -23,7 +23,8 @@ const {
   GetCurrentLunchCycleWeek,
   SendAnnouncement,
   GenerateAnnouncementsMessage,
-  ProcessLuncherResponse
+  ProcessLuncherResponse,
+  GetCurrentUserAvailabilities
 } = require("@use_cases");
 
 const config = require("@app/config");
@@ -34,8 +35,12 @@ class LunchCycleService {
     const slackUserResponseGateway = new PostgresSlackUserResponseGateway();
     const slackGateway = new SlackGateway();
     const googleSheetGateway = new GoogleSheetGateway();
-    const postgresLuncherAvailabilityGateway = new PostgresLuncherAvailabilityGateway(config.db)
+    const postgresLuncherAvailabilityGateway = new PostgresLuncherAvailabilityGateway(config.db);
 
+    this.getCurrentUserAvailabilities = new GetCurrentUserAvailabilities({
+      luncherAvailabilityGateway: postgresLuncherAvailabilityGateway,
+      lunchCycleGateway: lunchCycleGateway
+    });
     this.createNewLunchCycle = new CreateNewLunchCycle({
       lunchCycleGateway: lunchCycleGateway
     });
@@ -93,10 +98,13 @@ class LunchCycleService {
     return response;
   }
 
-  async getCurrentLunchCycle() {
-    const postgresLunchCycleGateway = new PostgresLunchCycleGateway();
-    const currentLunchCycle = await postgresLunchCycleGateway.getCurrent();
-    return currentLunchCycle;
+  async currentAvailabilities() {
+    const { lunchCycle, availableUsers } = await this.getCurrentUserAvailabilities.execute();
+
+    return {
+      lunchCycle: lunchCycle,
+      availabilities: availableUsers
+    }
   }
 
   async getLunchCycleRestaurants() {

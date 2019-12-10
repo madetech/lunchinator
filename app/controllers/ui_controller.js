@@ -19,13 +19,9 @@ router.get("/currentavailabilities", async function(req, res) {
   }
 
   const lunchCycleService = new LunchCycleService();
-  const lunchCycle = await lunchCycleService.getCurrentLunchCycle();
-  const availabilities = await lunchCycleService.getAvailabilities({lunch_cycle_id: lunchCycle.id})
+  const response = await lunchCycleService.currentAvailabilities();
 
-  res.json({
-    lunchCycle: lunchCycle,
-    availabilities: availabilities
-  });
+  res.json(response);
 });
 
 router.get("/currentdraw", async function(req, res) {

@@ -98,5 +98,19 @@ describe("LunchCycleService", async function() {
     expect(sendReminderToLateResponder.execute).to.have.been.calledWith({nonResponderId: 1});
     expect(sendReminderToLateResponder.execute).to.have.been.calledWith({nonResponderId: 2});
   });
+
+
+  it("can get current availabilities", async function() {
+    const service = new LunchCycleService();
+
+    const lunchCycleGateway = { execute: sinon.fake.returns({ lunchCycle: 1, availableUsers: 2 }) };
+    sinon.stub(service, "getCurrentUserAvailabilities").value(lunchCycleGateway);
+
+    const responce = await service.currentAvailabilities();
+
+    expect(lunchCycleGateway.execute).to.have.been.called;
+    expect(responce.lunchCycle).to.eql(1);
+    expect(responce.availabilities).to.eql(2)
+  });
   
 });
