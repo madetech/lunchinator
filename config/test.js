@@ -1,6 +1,6 @@
 module.exports = {
   db: {
-    database: process.env.PGDATABASE,
+    database: 'lunchinator_test',
     user: process.env.PGUSER,
     host: process.env.PGHOST,
     password: process.env.PGPASSWORD,
