@@ -7,21 +7,7 @@ jobs:
   build:
     docker:
       - image: circleci/node:12.6
-        environment:
-          NODE_ENV: test
-          PGHOST: 127.0.0.1
-          PGPASSWORD: ""
-          PGUSER: root
-          PGPORT: 5432
-          PGTZ: UTC
-      - image: circleci/postgres:11.4-alpine
-        environment:
-          POSTGRES_USER: root
-          POSTGRES_DB: lunchinator_test
-          POSTGRES_PASSWORD: ""
-
     working_directory: ~/repo
-
     steps:
       - checkout
       - setup_remote_docker
