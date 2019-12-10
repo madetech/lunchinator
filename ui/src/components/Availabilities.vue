@@ -48,7 +48,7 @@ export default {
         }
       ].concat(
         this.lunchCycle.restaurants.map(x => {
-          return { text: `${x.name} (${x.date})`, value: x.emoji };
+          return { text: `${x.name} (${x.date})`, value: x.name };
         })
       );
 
@@ -64,13 +64,12 @@ export default {
           name: `${user.profile.first_name} (${user.profile.email})`
         };
 
-        const luncher = this.availabilities.filter(l => l.slackUserId === user.id)[0];
-        if (luncher) {
-          luncher.availableEmojis.forEach(e => {
-            item[e] = "\u2714";
-          });
-          item.isNonResponder = luncher.availableEmojis.length === 0;
-        }
+        const luncherAvailability = this.availabilities.filter(l => l.slackUserId === user.id);
+        luncherAvailability.forEach(response => {
+          //todo check here to look at what the response was and use a x
+          item[response.restaurantName] = "\u2714";
+        })
+        item.isNonResponder = luncherAvailability.length === 0;
 
         return item;
       });
