@@ -13,7 +13,7 @@ class SlackGateway {
     }
 
     return response.members.filter(
-      user => user.profile.email && !user.deleted && !user.is_bot && !user.is_ultra_restricted
+      user => user.profile.email && !(user.deleted || user.is_bot || user.is_ultra_restricted || user.is_restricted)
     );
   }
 
