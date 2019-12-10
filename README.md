@@ -5,21 +5,22 @@
 An app to select people to go for lunch.
 
 ### Installation for Development
+You will need `docker` and `docker-compose` installed. 
 
-- You need to have Yarn installed (`brew install yarn`)
-- Move into the `lunchinator` directory
-- Run `yarn`
-- Need to populate a `.env` file; please look at the sample for for an example.
+### Development
 
-### Setup Test/Dev Databases
-
-We are using PostgreSQL to store information. You need to have two databases locally.
-
-- Ensure PostgreSQL is installed and running (`brew install postgresql` and `brew services start postgresql`).
-- Using `psql postgres` to connect to the database, do the following:
-- `CREATE DATABASE lunchinator_dev; CREATE DATABASE lunchinator_test;`
-- Grant permission for your user: `GRANT ALL PRIVILEGES ON DATABASE lunchinator_dev TO $USER` and `GRANT ALL PRIVILEGES ON DATABASE lunchinator_test TO $USER;` (replacing `$USER` with your username from `whoami`)
-- Then run `yarn run migrate up` for development and `yarn run migrate-test up` for test
+To setup the project make shure you have `docker` and `docker-compose` installed. Then run:
+```bash
+make setup
+```
+To get a shell where you can run the app and or tests you can call:
+```bash
+make shell
+```
+To only run the tests you can run
+```bash
+make spec
+```
 
 ### Using Slack App in Development
 
