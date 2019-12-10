@@ -22,4 +22,3 @@ RUN yarn install
 
 COPY --chown=node:node . .
 
-RUN touch testfile
