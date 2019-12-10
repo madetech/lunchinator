@@ -102,8 +102,6 @@ describe("When a user presses an interactive button", function() {
       buttonName
     );
 
-    console.log("---Request", request);
-
     expect(request.actions[0].text.text).to.eq(buttonName);
   }
 
