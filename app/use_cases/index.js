@@ -17,5 +17,6 @@ module.exports = {
   GetCurrentLunchCycleWeek: require("./get_current_lunch_cycle_week"),
   GenerateAnnouncementsMessage: require("./generate_announcements_message"),
   SendAnnouncement: require("./send_announcement"),
-  ProcessLuncherResponse: require("./process_luncher_response")
+  ProcessLuncherResponse: require("./process_luncher_response"),
+  GetCurrentUserAvailabilities: require("./get_current_user_availabilities")
 };
