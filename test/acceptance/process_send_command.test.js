@@ -171,27 +171,37 @@ function ThenDirectMessagesAreSent() {
         {
           type: "actions",
           elements: [
-              {
-                type: "button",
-                text: {
-                  type: "plain_text",
-                  emoji: false,
-                  text: "Available"
-                },
-                value: "5-restaurant1" //lunch cycle id + restaurant name
+            {
+              type: "button",
+              text: {
+                type: "plain_text",
+                emoji: false,
+                text: "Available"
               },
-            ]
-          },
-          { type: "divider" },
-          {
-            type: "section",
-            text: {
-              type: "mrkdwn",
-              text:
-                ":green_heart: = Great          :orange_heart: = Some      " +
-                "    :broken_heart: = None          :question: = Unknown"
+              value: "5-restaurant1"
+            },
+            {
+              type: "button",
+              text: {
+                type: "plain_text",
+                emoji: false,
+                text: "Unavailable"
+              },
+              style: "danger",
+              value: "5-restaurant1"
             }
+          ]
+        },
+        { type: "divider" },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text:
+              ":green_heart: = Great          :orange_heart: = Some      " +
+              "    :broken_heart: = None          :question: = Unknown"
           }
+        }
       ]
     });
   });

@@ -87,7 +87,7 @@ class LunchCycleService {
     });
     this.processLuncherResponse = new ProcessLuncherResponse({
       luncherAvailabilityGateway: postgresLuncherAvailabilityGateway
-    })
+    });
   }
 
   async createLunchCycle({ restaurants }) {
@@ -179,7 +179,7 @@ class LunchCycleService {
     await this.sendAnnouncement.execute(currentLunchCycleWeek);
   }
   async recordAttendance(payload) {
-    await this.processLuncherResponse.execute(payload)
+    await this.processLuncherResponse.execute(payload);
   }
 }
 

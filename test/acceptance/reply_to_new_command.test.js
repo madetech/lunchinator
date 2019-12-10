@@ -87,6 +87,16 @@ function ThenANewLunchCyclePreviewMessageIsCreated() {
               text: "Available"
             },
             value: lunchCycle.id + "-" + r.name
+          },
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              emoji: false,
+              text: "Unavailable"
+            },
+            style: "danger",
+            value: lunchCycle.id + "-" + r.name
           }
         ]
       },
