@@ -114,43 +114,4 @@ describe("GoogleSheetGateway", function() {
       "Cannot get rows for Google Sheets sheet."
     );
   });
-
-  it("can handle errors from doc.addWorksheetTo API", async function() {
-    const gateway = new GoogleSheetGateway();
-
-    const doc = {
-      addWorksheet: sinon.fake.throws(new Error("Can't addWorksheet"))
-    };
-
-    await expect(gateway.addWorksheetTo({ doc, title: "test", headers: [] })).to.be.rejectedWith(
-      GoogleSheetGatewayError,
-      "Cannot add worksheet to Google Sheets doc"
-    );
-  });
-
-  it("can handle errors from sheet.addRow API", async function() {
-    const gateway = new GoogleSheetGateway();
-
-    const fakeSheet = {
-      addRow: sinon.fake.throws(new Error("Can't addRow"))
-    };
-
-    await expect(gateway.addRow({ sheet: fakeSheet, row: {} })).to.be.rejectedWith(
-      GoogleSheetGatewayError,
-      "Cannot add new row to Google Sheets sheet"
-    );
-  });
-
-  it("can handle errors from row.save API", async function() {
-    const gateway = new GoogleSheetGateway();
-
-    const fakeRow = {
-      save: sinon.fake.throws(new Error("Can't save row"))
-    };
-
-    await expect(gateway.saveRow({ row: fakeRow })).to.be.rejectedWith(
-      GoogleSheetGatewayError,
-      "Cannot save row to Google Sheets sheet"
-    );
-  });
 });

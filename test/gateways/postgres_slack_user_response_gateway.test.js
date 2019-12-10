@@ -47,7 +47,7 @@ describe("PostgresSlackUserResponseGateway", function() {
         messageChannel: "DM_CHANNEL_ID",
         messageId: "1564484225.000400",
         lunchCycleId: lunchCycle.id,
-        availableEmojis: []
+        available: false
       })
     );
   });
@@ -64,54 +64,5 @@ describe("PostgresSlackUserResponseGateway", function() {
     });
 
     expect(await postgresSlackUserResponseGateway.count()).to.eql(1);
-  });
-
-  it("can save the correct record", async function() {
-    const postgresSlackUserResponseGateway = new PostgresSlackUserResponseGateway();
-
-    const luncher = await postgresSlackUserResponseGateway.create({
-      slackUser,
-      slackMessageResponse,
-      lunchCycle
-    });
-    await postgresSlackUserResponseGateway.create({
-      slackUser: { ...slackUser, id: "U123" },
-      slackMessageResponse,
-      lunchCycle
-    });
-
-    const updatedLuncher = await postgresSlackUserResponseGateway.saveEmojis({
-      luncher,
-      emojis: [":pizza", ":sushi:"]
-    });
-
-    expect(updatedLuncher.slackUserId).to.eql(slackUser.id);
-    expect(updatedLuncher.availableEmojis).to.eql([":pizza", ":sushi:"]);
-  });
-
-  it("can retrive all Slack User Responses for a given lunchCycle", async function() {
-    const postgresSlackUserResponseGateway = new PostgresSlackUserResponseGateway();
-
-    await postgresSlackUserResponseGateway.create({
-      slackUser,
-      slackMessageResponse,
-      lunchCycle
-    });
-    const firstLuncher = await postgresSlackUserResponseGateway.create({
-      slackUser: { ...slackUser, id: "U123" },
-      slackMessageResponse,
-      lunchCycle
-    });
-
-    const emptyList = await postgresSlackUserResponseGateway.findAllForLunchCycle({
-      lunchCycle: { id: lunchCycle.id + 99 }
-    });
-    expect(emptyList.length).to.eql(0);
-
-    const listWithResults = await postgresSlackUserResponseGateway.findAllForLunchCycle({
-      lunchCycle
-    });
-    expect(listWithResults.length).to.eql(2);
-    expect(listWithResults[0]).to.eql(firstLuncher);
   });
 });

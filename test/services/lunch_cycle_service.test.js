@@ -71,12 +71,32 @@ describe("LunchCycleService", async function() {
 
     expect(spy.execute).to.have.been.callCount(slackUsers.length);
   });
+  
+  it("can record attendance", async function() {
+    const service = new LunchCycleService();
 
-  it("can fetch luncher reactions", function() {
-    // todo
-  });
+    const spy = { execute: sinon.spy() };
+    sinon.stub(service, "processLuncherResponse").value(spy);
 
-  it("can export the lunchers", function() {
-    // todo
+    await service.recordAttendance({});
+
+    expect(spy.execute).to.have.been.called;
   });
+  
+  it("can messge non responders", async function() {
+    const service = new LunchCycleService();
+
+    const findNonRespondersIds = { execute: sinon.fake.returns({nonResponderIds: [1, 2] }) };
+    sinon.stub(service, "findNonRespondersIds").value(findNonRespondersIds);
+
+    const sendReminderToLateResponder = { execute: sinon.spy() };
+    sinon.stub(service, "sendReminderToLateResponder").value(sendReminderToLateResponder);
+
+    await service.remindLateResponders();
+
+    expect(findNonRespondersIds.execute).to.have.been.called;
+    expect(sendReminderToLateResponder.execute).to.have.been.calledWith({nonResponderId: 1});
+    expect(sendReminderToLateResponder.execute).to.have.been.calledWith({nonResponderId: 2});
+  });
+  
 });

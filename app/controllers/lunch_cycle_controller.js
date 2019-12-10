@@ -82,7 +82,6 @@ router.post("/draw", async function(req, res) {
   try {
     const lunchCycleService = new LunchCycleService();
 
-    await lunchCycleService.updateLunchers();
     await lunchCycleService.doLunchersDraw();
   } catch (err) {
     console.log(err);
@@ -136,5 +135,18 @@ router.post("/send_announcement", async function(req, res) {
       console.log(err);
     });
 });
+
+router.post("/interactive_element", async function(req, res) {
+  const authService = new AuthService();
+
+  if (!authService.verifyRequest(req.headers, req.body)) {
+    return res.send("error verifying slack request.");
+  }
+  payload = JSON.parse(req.body.payload)
+  new LunchCycleService().recordAttendance(payload)
+
+  res.sendStatus(200)
+});
+
 
 module.exports = router;

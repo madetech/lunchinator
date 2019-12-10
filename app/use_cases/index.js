@@ -8,17 +8,14 @@ module.exports = {
   FetchAllSlackUsers: require("./fetch_all_slack_users"),
   VerifySlackRequest: require("./verify_slack_request"),
   GenerateLunchersMessage: require("./generate_lunchers_message"),
-  FetchReactionsForLuncher: require("./fetch_reactions_for_luncher"),
-  UpdateLuncherReactions: require("./update_luncher_reactions"),
-  ExportLunchersToGoogleSheet: require("./export_lunchers_to_google_sheet"),
   FindNonResponderIds: require("./find_non_responder_ids"),
   GenerateReminderMessage: require("./generate_reminder_message"),
   SendReminderToLateResponder: require("./send_reminder_to_late_responder"),
   DrawLunchers: require("./draw_lunchers"),
-  ExportLunchersDrawToGoogleSheet: require("./export_lunchers_draw_to_google_sheet"),
   GenerateSelectedLunchersMessage: require("./generate_selected_lunchers_message"),
   SendMessageToSelectedLunchers: require("./send_message_to_selected_lunchers"),
   GetCurrentLunchCycleWeek: require("./get_current_lunch_cycle_week"),
   GenerateAnnouncementsMessage: require("./generate_announcements_message"),
-  SendAnnouncement: require("./send_announcement")
+  SendAnnouncement: require("./send_announcement"),
+  ProcessLuncherResponse: require("./process_luncher_response")
 };

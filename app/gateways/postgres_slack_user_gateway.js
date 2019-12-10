@@ -4,17 +4,6 @@ const { Luncher } = require("@domain");
 const config = require("@app/config");
 
 class PostgresSlackUserResponseGateway {
-  async findAllForLunchCycle({ lunchCycle }) {
-    const client = await this._client();
-    const result = await client.query({
-      text: "SELECT * FROM lunchers WHERE lunch_cycle_id = $1 ORDER BY slack_user_id",
-      values: [lunchCycle.id]
-    });
-    client.end();
-
-    return result.rows.map(r => Luncher.newFromDb(r));
-  }
-
   async create({ slackUser, slackMessageResponse, lunchCycle }) {
     const luncher = {
       slack_user_id: slackUser.id,
@@ -49,24 +38,6 @@ class PostgresSlackUserResponseGateway {
     return Luncher.newFromDb(result.rows[0]);
   }
 
-  async saveEmojis({ luncher, emojis }) {
-    const client = await this._client();
-    const result = await client
-      .query({
-        text:
-          "UPDATE lunchers SET available_emojis = $1 " +
-          "WHERE slack_user_id = $2 AND lunch_cycle_id = $3 RETURNING *",
-        values: [JSON.stringify(emojis), luncher.slackUserId, luncher.lunchCycleId]
-      })
-      .finally(() => client.end());
-
-    if (result.rows[0]) {
-      return Luncher.newFromDb(result.rows[0]);
-    }
-
-    return null;
-  }
-
   async count() {
     const client = await this._client();
     const result = await client.query("SELECT COUNT(*) as count FROM lunchers");
@@ -74,6 +45,7 @@ class PostgresSlackUserResponseGateway {
 
     return parseInt(result.rows[0].count, 10);
   }
+
 
   async _client() {
     const client = new Client(config.db);

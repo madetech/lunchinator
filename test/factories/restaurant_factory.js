@@ -12,7 +12,7 @@ class RestaurantFactory {
         meat: DietaryLevel.Great
       }),
       notes: "",
-      emoji: ":bowtie:",
+      emoji: ":bowtie:", //restaurant identifier for google sheet
       direction: "googlemaps"
     };
 

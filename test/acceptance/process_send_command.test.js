@@ -154,9 +154,7 @@ function ThenDirectMessagesAreSent() {
             type: "mrkdwn",
             text:
               `*Hey* ${userList[i].profile.first_name}! It’s time to enter the draw for the next ` +
-              "cycle of company lunches. Let us know which dates " +
-              "you’ll be available on by reacting with the matching " +
-              "emoji.\n\n"
+              "cycle of company lunches.\n\n"
           }
         },
         { type: "divider" },
@@ -170,16 +168,30 @@ function ThenDirectMessagesAreSent() {
               "halal:question:"
           }
         },
-        { type: "divider" },
         {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text:
-              ":green_heart: = Great          :orange_heart: = Some      " +
-              "    :broken_heart: = None          :question: = Unknown"
+          type: "actions",
+          elements: [
+              {
+                type: "button",
+                text: {
+                  type: "plain_text",
+                  emoji: false,
+                  text: "Available"
+                },
+                value: "5-restaurant1" //lunch cycle id + restaurant name
+              },
+            ]
+          },
+          { type: "divider" },
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text:
+                ":green_heart: = Great          :orange_heart: = Some      " +
+                "    :broken_heart: = None          :question: = Unknown"
+            }
           }
-        }
       ]
     });
   });

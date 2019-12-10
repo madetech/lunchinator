@@ -3,54 +3,74 @@ const config = require("@app/config");
 const { LunchCycleWeek } = require("@domain");
 
 class DrawLunchers {
-  constructor({ lunchCycleGateway, slackUserResponseGateway }) {
+  constructor({ lunchCycleGateway, postgresLuncherAvailabilityGateway }) {
     this.lunchCycleGateway = lunchCycleGateway;
-    this.slackUserResponseGateway = slackUserResponseGateway;
+    this.postgresLuncherAvailabilityGateway = postgresLuncherAvailabilityGateway;
   }
 
   async execute() {
     const lunchCycle = await this.lunchCycleGateway.getCurrent();
-    let allLunchers = await this.slackUserResponseGateway.findAllForLunchCycle({ lunchCycle });
+    let allRespondedUsers = await this.postgresLuncherAvailabilityGateway.getAvailableUsers({ lunch_cycle_id: lunchCycle.id });
+    let totalAvailabilitiesHash = this.getTotalAvailabilitiesHash(allRespondedUsers)
 
     const lunchCycleDraw = [];
-    const allAvailables = lunchCycle.restaurants.map(r => {
-      return allLunchers.filter(l => l.availableEmojis.includes(r.emoji));
-    });
-    lunchCycle.restaurants.forEach((restaurant, i) => {
-      const lunchers = this.getLunchersForRestaurant(restaurant, allLunchers);
+    lunchCycle.restaurants.forEach((restaurant) => {
+    const availableThisWeek = allRespondedUsers.filter(a => a.restaurantName == restaurant.name)
+    const lunchers = this.getLunchersForRestaurant(availableThisWeek, totalAvailabilitiesHash);
 
       lunchCycleDraw.push(
         new LunchCycleWeek({
           restaurant,
-          lunchers,
-          allAvailable: allAvailables[i]
+          lunchers, // array of luncher id 
+          allAvailable: availableThisWeek
         })
       );
 
-      allLunchers = this.removeDrawnLunchers(allLunchers, lunchers, restaurant.emoji);
+      allRespondedUsers = this.removeDrawnLunchers(allRespondedUsers, lunchers, restaurant.name);
+      totalAvailabilitiesHash = this.reducetotalAvailabilities(availableThisWeek, totalAvailabilitiesHash)
     });
-
+    //save current draw in gateway using create function
     return {
       lunchCycleDraw: lunchCycleDraw
     };
   }
+  
+  getTotalAvailabilitiesHash(allRespondedUsers) {  // Method just for scoring interest score
+    let totalAvailabilitiesHash = {}
+    allRespondedUsers.forEach((user) => {
+      if (totalAvailabilitiesHash.hasOwnProperty(user.slackUserId)) {
+        totalAvailabilitiesHash[user.slackUserId] += 1         
+      } else {
+        totalAvailabilitiesHash[user.slackUserId] = 1;                                        
+      }
+    });
+  
+    return totalAvailabilitiesHash
+  }
 
-  getLunchersForRestaurant(restaurant, allLunchers) {
-    const drawnLunchers = allLunchers
-      .filter(l => l.availableEmojis.includes(restaurant.emoji))
-      .sort((first, second) => first.availableEmojis.length - second.availableEmojis.length)
-      .slice(0, config.LUNCHERS_PER_WEEK);
-
+  getLunchersForRestaurant(availableThisWeek, totalAvailabilitiesHash) { // This represents the 8 Lunchers for that cycle??
+    const drawnLunchers = availableThisWeek
+    .sort((first, second) => totalAvailabilitiesHash[first.slackUserId] - totalAvailabilitiesHash[second.slackUserId])
+    .slice(0, config.LUNCHERS_PER_WEEK);
+    
     return drawnLunchers.map(l => {
       return { firstName: l.firstName, email: l.email, slackUserId: l.slackUserId };
     });
   }
 
-  removeDrawnLunchers(allLunchers, drawnLunchers, emoji) {
+  removeDrawnLunchers(allRespondedUsers, drawnLunchers, restaurantName) { 
     const drawnLuncherIds = drawnLunchers.map(l => l.slackUserId);
-    allLunchers = allLunchers.filter(l => !drawnLuncherIds.includes(l.slackUserId));
-    allLunchers.forEach(l => (l.availableEmojis = l.availableEmojis.filter(e => e !== emoji)));
-    return allLunchers;
+    allRespondedUsers = allRespondedUsers.filter(l => !drawnLuncherIds.includes(l.slackUserId));
+    // lower totalAvailabilities for non chosen users
+     // i.e totalAvailabilities[user.id]--
+    return allRespondedUsers;
+  }
+  
+  reducetotalAvailabilities(availableThisWeek, totalAvailabilitiesHash) {
+    availableThisWeek.forEach((user) => {
+      totalAvailabilitiesHash[user.slackUserId] -= 1;
+    })
+    return totalAvailabilitiesHash
   }
 }
 

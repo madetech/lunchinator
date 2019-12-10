@@ -59,7 +59,7 @@ function ThenANewLunchCyclePreviewMessageIsCreated() {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `${preview}\*Hey\* ${firstName}! It’s time to enter the draw for the next cycle of company lunches. Let us know which dates you’ll be available on by reacting with the matching emoji.\n\n`
+        text: `${preview}\*Hey\* ${firstName}! It’s time to enter the draw for the next cycle of company lunches.\n\n`
       }
     },
     {
@@ -75,6 +75,20 @@ function ThenANewLunchCyclePreviewMessageIsCreated() {
           type: "mrkdwn",
           text: `${r.emoji} ${r.date}   \<${r.direction}\|${r.name}\>    vegan${r.dietaries.vegan}  vegetarian ${r.dietaries.vegetarian}  meat${r.dietaries.meat}  halal${r.dietaries.halal}`
         }
+      },
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              emoji: false,
+              text: "Available"
+            },
+            value: lunchCycle.id + "-" + r.name
+          }
+        ]
       },
       {
         type: "divider"
