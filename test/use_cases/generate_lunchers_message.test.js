@@ -63,16 +63,16 @@ describe("GenerateLunchersMessage", function() {
   });
 
   it("can generate a lunch cycle message with a first name", function() {
-    const slackFirstName = "Barry";
+    const slackRealName = "Barry Smith";
     const useCase = new GenerateLunchersMessage();
-    const response = useCase.execute({ lunchCycle: lunchCycle, firstName: slackFirstName });
+    const response = useCase.execute({ lunchCycle: lunchCycle, realName: slackRealName });
 
     let expected = [
       {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `\*Hey\* ${slackFirstName}! It’s time to enter the draw for the next cycle of company lunches.\n\n`
+          text: `\*Hey\* ${slackRealName}! It’s time to enter the draw for the next cycle of company lunches.\n\n`
         }
       },
       {
@@ -105,7 +105,7 @@ describe("GenerateLunchersMessage", function() {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `${preview}\*Hey\* {first name}! It’s time to enter the draw for the next cycle of company lunches.\n\n`
+          text: `${preview}\*Hey\* {full name}! It’s time to enter the draw for the next cycle of company lunches.\n\n`
         }
       },
       {

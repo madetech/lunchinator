@@ -9,7 +9,7 @@ class PostgresSlackUserResponseGateway {
       slack_user_id: slackUser.id,
       lunch_cycle_id: lunchCycle.id,
       email: slackUser.profile.email,
-      first_name: slackUser.profile.first_name,
+      real_name: slackUser.profile.real_name,
       message_channel: slackMessageResponse.channel,
       message_id: slackMessageResponse.ts,
       available_emojis: []
@@ -21,13 +21,13 @@ class PostgresSlackUserResponseGateway {
         text:
           "INSERT INTO " +
           "lunchers(" +
-          "slack_user_id, lunch_cycle_id, email, first_name, message_channel, message_id, " +
+          "slack_user_id, lunch_cycle_id, email, real_name, message_channel, message_id, " +
           "available_emojis) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *",
         values: [
           luncher.slack_user_id,
           luncher.lunch_cycle_id,
           luncher.email,
-          luncher.first_name,
+          luncher.real_name,
           luncher.message_channel,
           luncher.message_id,
           JSON.stringify(lunchCycle.available_emojis)

@@ -45,7 +45,7 @@ describe("LunchCycleService", async function() {
   it("can fetch all the slack users", async function() {
     const service = new LunchCycleService();
     const expected = [
-      { id: "U2147483697", profile: { email: "test1@example.com", first_name: "Test1" } }
+      { id: "U2147483697", profile: { email: "test1@example.com", real_name: "Test1" } }
     ];
     const spy = { execute: sinon.fake.returns({ slackUsers: expected }) };
     sinon.stub(service, "fetchAllSlackUsers").value(spy);
@@ -59,8 +59,8 @@ describe("LunchCycleService", async function() {
   it("can send DM's to slack users", async function() {
     const service = new LunchCycleService();
     const slackUsers = [
-      { id: "U2147483697", profile: { email: "test1@example.com", first_name: "Test1" } },
-      { id: "U2147483397", profile: { email: "test2@example.com", first_name: "Test2" } }
+      { id: "U2147483697", profile: { email: "test1@example.com", real_name: "Test1" } },
+      { id: "U2147483397", profile: { email: "test2@example.com", real_name: "Test2" } }
     ];
     const spy = {
       execute: sinon.fake.returns({ slackMessageResponse: {}, slackUserResponse: {} })

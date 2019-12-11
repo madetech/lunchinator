@@ -49,7 +49,7 @@ function GivenALunchCycleWithRestaurantsExists(restaurants) {
 
 function ThenANewLunchCyclePreviewMessageIsCreated() {
   let preview = "THIS IS A PREVIEW \n";
-  let firstName = "{first name}";
+  let firstName = "{full name}";
   var useCase = new GenerateLunchersMessage();
   const response = useCase.execute({ lunchCycle, firstName: null });
   message = response.blocks;

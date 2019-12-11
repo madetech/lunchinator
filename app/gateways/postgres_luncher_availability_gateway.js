@@ -40,7 +40,7 @@ class PostgresLuncherAvailabilityGateway {
     const client = await this._client();
     const result = await client.query({
       text:
-        "SELECT availability.slack_user_id, availability.lunch_cycle_id, lunchers.first_name, availability.restaurant_name, availability.available, lunchers.email " +
+        "SELECT availability.slack_user_id, availability.lunch_cycle_id, lunchers.real_name,  availability.restaurant_name, availability.available, lunchers.email " +
         "FROM availability " +
         "LEFT JOIN lunchers " +
         "ON availability.slack_user_id = lunchers.slack_user_id " +

@@ -72,7 +72,7 @@ export default {
       handler() {
         this.nons = this.nonResponders.map(l => {
           return {
-            firstName: l.profile.first_name,
+            firstName: l.profile.real_name,
             email: l.profile.email,
             slackUserId: l.id
           };

@@ -18,63 +18,63 @@ describe("DoTheDraw", function() {
       id: "bb01",
       profile: {
         email: "bugs@madetech.com",
-        first_name: "bugsbunny"
+        real_name: "bugsbunny"
       }
     },
     {
       id: "bb02",
       profile: {
         email: "bae@madetech.com",
-        first_name: "baebunny"
+        real_name: "baebunny"
       }
     },
     {
       id: "bb03",
       profile: {
         email: "b3@madetech.com",
-        first_name: "b3"
+        real_name: "b3"
       }
     },
     {
       id: "bb04",
       profile: {
         email: "b4@madetech.com",
-        first_name: "b4"
+        real_name: "b4"
       }
     },
     {
       id: "bb05",
       profile: {
         email: "b5@madetech.com",
-        first_name: "b5"
+        real_name: "b5"
       }
     },
     {
       id: "bb06",
       profile: {
         email: "b6@madetech.com",
-        first_name: "b6"
+        real_name: "b6"
       }
     },
     {
       id: "bb07",
       profile: {
         email: "b7@madetech.com",
-        first_name: "b7"
+        real_name: "b7"
       }
     },
     {
       id: "bb08",
       profile: {
         email: "b8@madetech.com",
-        first_name: "b8"
+        real_name: "b8"
       }
     },
     {
       id: "bb09",
       profile: {
         email: "b9@madetech.com",
-        first_name: "b9"
+        real_name: "b9"
       }
     }
   ];
@@ -99,7 +99,7 @@ describe("DoTheDraw", function() {
   it("can put a luncher who has chosen the first week into the first week", async function() {
     const expected = [
       {
-        firstName: "bugsbunny",
+        realName: "bugsbunny",
         email: "bugs@madetech.com",
         slackUserId: "bb01"
       }
@@ -134,7 +134,7 @@ describe("DoTheDraw", function() {
   it("can put a luncher who has chosen only the second week into the second week", async function() {
     const expected = [
       {
-        firstName: "baebunny",
+        realName: "baebunny",
         slackUserId: "bb02",
         email: "bae@madetech.com"
       }
@@ -382,7 +382,7 @@ describe("DoTheDraw", function() {
 
 function userObject(luncher) {
   return {
-    firstName: luncher.firstName,
+    realName: luncher.realName,
     email: luncher.email,
     slackUserId: luncher.slackUserId
   };
