@@ -2,11 +2,17 @@ require("module-alias/register");
 
 const chai = require("chai");
 const sinon = require("sinon");
+
 const sinonChai = require("sinon-chai");
-const chaiAsPromised = require("chai-as-promised");
-const expect = chai.expect;
 chai.use(sinonChai);
+
+const chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
+
+const chaiNock = require('chai-nock');
+chai.use(chaiNock);
+
+const expect = chai.expect;
 
 const config = require("@app/config");
 

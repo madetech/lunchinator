@@ -1,6 +1,7 @@
 require("module-alias/register");
 const Slack = require("slack");
 const config = require("@app/config");
+const requestPromise = require("request-promise");
 
 class SlackGateway {
   async fetchUsers() {
@@ -13,7 +14,7 @@ class SlackGateway {
     }
 
     return response.members.filter(
-      user => user.profile.email && !user.deleted && !user.is_bot && !user.is_ultra_restricted
+      user => user.profile.email && !(user.deleted || user.is_bot || user.is_ultra_restricted || user.is_restricted)
     );
   }
 
@@ -53,19 +54,15 @@ class SlackGateway {
     return response;
   }
 
-  async fetchReactionsFromMessage({ timestamp, channel }) {
-    const response = await this._slackClient()
-      .reactions.get({
-        channel,
-        timestamp
-      })
-      .catch(err => null);
-
-    if (response === null) {
-      throw new SlackGatewayError("error fetching reactions.");
-    }
-
-    return response;
+  async sendInteractiveMessageResponse(responseURL, message) {
+    return requestPromise({ url: responseURL, method: "POST", json: true, body: {
+      replace_original: true,
+      blocks: message.blocks,
+      text: "",
+    }}).catch(err => {
+      console.log(err);
+      throw new SlackGatewayError("error sending reminder message", err.message);
+    });
   }
 
   _slackClient() {

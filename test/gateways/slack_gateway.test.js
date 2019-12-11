@@ -1,15 +1,21 @@
 const { expect, sinon } = require("../test_helper");
 const { FakeSlackClient } = require("../fakes");
 const { SlackGateway, SlackGatewayError } = require("@gateways");
+const nock = require('nock');
 
 let userList = [];
 let fakeSlackClient;
-
 describe("SlackGateway", function() {
   before(function() {
+    nock.disableNetConnect()
     fakeSlackClient = new FakeSlackClient({ token: "NOT_VALID" });
     SlackGateway.prototype._slackClient = () => fakeSlackClient;
   });
+
+  after(function() {
+    nock.cleanAll()
+    nock.enableNetConnect()
+  })
 
   it("can fetch all users from slack", async function() {
     userList = [
@@ -187,6 +193,59 @@ describe("SlackGateway", function() {
     ]);
   });
 
+  it("can filter users that are 'restricted'", async function() {
+    userList = [
+      {
+        id: "USLACKID1",
+        team_id: "TEAM_ID",
+        name: "Test Name",
+        deleted: false,
+        profile: {
+          email: "test1@example.com"
+        },
+        is_bot: false,
+        is_app_user: false,
+        is_restricted: true,
+        is_ultra_restricted: false,
+        updated: 1520258399
+      },
+      {
+        id: "USLACKID2",
+        team_id: "TEAM_ID",
+        name: "Bob",
+        deleted: false,
+        profile: {
+          email: "test@example.com"
+        },
+        is_bot: false,
+        is_app_user: false,
+        is_restricted: false,
+        is_ultra_restricted: false,
+        updated: 1550160376
+      }
+    ];
+
+    fakeSlackClient.stubUserList(userList);
+    const gateway = new SlackGateway();
+
+    expect(await gateway.fetchUsers()).to.eql([
+      {
+        id: "USLACKID2",
+        team_id: "TEAM_ID",
+        name: "Bob",
+        deleted: false,
+        profile: {
+          email: "test@example.com"
+        },
+        is_bot: false,
+        is_app_user: false,
+        is_restricted: false,
+        is_ultra_restricted: false,
+        updated: 1550160376
+      }
+    ]);
+  });
+
   it("can filter users that are 'ultra restricted'", async function() {
     userList = [
       {
@@ -328,41 +387,40 @@ describe("SlackGateway", function() {
     });
   });
 
-  it("can get reactions for a message", async function() {
-    const slackApiParams = { channel: "DM_CHANNEL_ID_1", timestamp: "1564484225.000400" };
-
+  it("can update Interactive Messages using there update url", () => {
     const gateway = new SlackGateway();
+    const slackMessageDummy = { blocks: [ {a: 1} ] };
 
-    const reactionsResponse = await gateway.fetchReactionsFromMessage(slackApiParams);
+    const requestNock = nock('https://www.example.com')
+      .post('/foo')
+      .reply(200, 'ok');
 
-    expect(reactionsResponse).to.eql({
-      ok: true,
-      type: "message",
-      channel: "DM_CHANNEL_ID_1",
-      message: {
-        type: "message",
-        subtype: "bot_message",
-        text: "Hello from Node!",
-        ts: "1564484225.000400",
-        username: "Lunchinator",
-        bot_id: "BOT_ID",
-        reactions: [
-          { name: "pizza", users: ["U2147483697"], count: 1 },
-          { name: "sushi", users: ["U2147483697"], count: 1 }
-        ]
-      }
-    });
-  });
-
-  it("can handle errors when fetching users", async function() {
-    const gateway = new SlackGateway();
-    fakeSlackClient.users.list = sinon.fake.rejects(new Error("errrrrr"));
-
-    await expect(gateway.fetchUsers()).to.be.rejectedWith(
-      SlackGatewayError,
-      "error fetching the users from slack."
+    gateway.sendInteractiveMessageResponse(
+      "https://www.example.com/foo",
+      slackMessageDummy
     );
-  });
+
+    return expect(requestNock).to.have.been.requestedWith({
+      replace_original: true,
+      text: "",
+      blocks: [ { a: 1 } ]
+    });
+  })
+
+  it("update Interactive Messages handles errors", async function() {
+    const gateway = new SlackGateway();
+    const slackMessageDummy = { blocks: [ {} ] };
+
+    const scope = nock('https://www.example.com')
+      .post('/foo')
+      .replyWithError('something awful happened')
+
+    await expect(
+      gateway.sendInteractiveMessageResponse("https://www.example.com", slackMessageDummy)
+    ).to.be.rejectedWith(
+      SlackGatewayError, "error sending reminder message"
+    );
+  })
 
   it("can handle errors when sending a message", async function() {
     const gateway = new SlackGateway();
@@ -373,17 +431,6 @@ describe("SlackGateway", function() {
     await expect(gateway.sendMessageWithBlocks(slackUser, message)).to.be.rejectedWith(
       SlackGatewayError,
       "error sending message."
-    );
-  });
-
-  it("can handle errors when fetching reactions", async function() {
-    const gateway = new SlackGateway();
-    fakeSlackClient.reactions.get = sinon.fake.rejects(new Error("errrrrr"));
-    const args = { channel: "x", timestamp: "x" };
-
-    await expect(gateway.fetchReactionsFromMessage(args)).to.be.rejectedWith(
-      SlackGatewayError,
-      "error fetching reactions."
     );
   });
 });
