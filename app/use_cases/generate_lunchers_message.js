@@ -29,7 +29,7 @@ class GenerateLunchersMessage {
           text: {
             type: "mrkdwn",
             text: `${r.emoji} ${r.date}   \<${r.direction}\|${r.name}\>    vegan${r.dietaries.vegan}  vegetarian ${r.dietaries.vegetarian}  meat${r.dietaries.meat}  halal${r.dietaries.halal}`
-          },
+          }
         },
         {
           type: "actions",
@@ -41,6 +41,16 @@ class GenerateLunchersMessage {
                 emoji: false,
                 text: "Available"
               },
+              value: lunchCycle.id + "-" + r.name
+            },
+            {
+              type: "button",
+              text: {
+                type: "plain_text",
+                emoji: false,
+                text: "Unavailable"
+              },
+              style: "danger",
               value: lunchCycle.id + "-" + r.name
             }
           ]

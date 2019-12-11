@@ -6,18 +6,14 @@ const { LunchCycle } = require("@domain");
 const restaurantList = [
   RestaurantFactory.getRestaurant({ name: "restaurant1", emoji: ":bowtie:", date: "12/03/2020" }),
   RestaurantFactory.getRestaurant({ name: "restaurant2", emoji: ":smile:", date: "19/03/2020" }),
-  RestaurantFactory.getRestaurant({
-    name: "restaurant3",
-    emoji: ":simple_smile:",
-    date: "26/03/2020"
-  }),
+  RestaurantFactory.getRestaurant({ name: "restaurant3", emoji: ":simple_smile:", date: "26/03/2020" }),
   RestaurantFactory.getRestaurant({ name: "restaurant4", emoji: ":laughing:", date: "02/04/2020" }),
   RestaurantFactory.getRestaurant({ name: "restaurant5", emoji: ":blush:", date: "09/04/2020" }),
   RestaurantFactory.getRestaurant({ name: "restaurant6", emoji: ":relaxed:", date: "16/04/2020" })
 ];
 
-function expectedRestaurantBlocks(restaurant, lunchCycle){
-  expectedBlocks = []
+function expectedRestaurantBlocks(restaurant, lunchCycle) {
+  expectedBlocks = [];
   restaurant.forEach(r => {
     expectedBlocks.push(
       {
@@ -38,6 +34,16 @@ function expectedRestaurantBlocks(restaurant, lunchCycle){
               text: "Available"
             },
             value: lunchCycle.id + "-" + r.name
+          },
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              emoji: false,
+              text: "Unavailable"
+            },
+            style: "danger",
+            value: lunchCycle.id + "-" + r.name
           }
         ]
       },
@@ -46,7 +52,7 @@ function expectedRestaurantBlocks(restaurant, lunchCycle){
       }
     );
   });
-  return expectedBlocks
+  return expectedBlocks;
 }
 
 describe("GenerateLunchersMessage", function() {
@@ -73,8 +79,8 @@ describe("GenerateLunchersMessage", function() {
         type: "divider"
       }
     ];
-    
-    expected = expected.concat(expectedRestaurantBlocks(restaurantList, lunchCycle))
+
+    expected = expected.concat(expectedRestaurantBlocks(restaurantList, lunchCycle));
 
     expected.push({
       type: "section",
@@ -106,8 +112,8 @@ describe("GenerateLunchersMessage", function() {
         type: "divider"
       }
     ];
-    
-    expected = expected.concat(expectedRestaurantBlocks(restaurantList, lunchCycle))
+
+    expected = expected.concat(expectedRestaurantBlocks(restaurantList, lunchCycle));
 
     expected.push({
       type: "section",

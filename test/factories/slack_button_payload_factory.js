@@ -1,4 +1,4 @@
-function slackButtonPayloadFactory(slack_user_id = "U0CA5", restaurant_name = "TheRestrauntName", lunch_cycle_id = "2") {
+function slackButtonPayloadFactory(slack_user_id = "U0CA5", restaurant_name = "TheRestrauntName", lunch_cycle_id = "2", available) {
     return testPayload = {
       type: "block_actions",
       team: {
@@ -26,7 +26,7 @@ function slackButtonPayloadFactory(slack_user_id = "U0CA5", restaurant_name = "T
           action_id: "gxi",
           text: {
             type: "plain_text",
-            text: "Approve",
+            text: `${available}`,
             emoji: true
           },
           value: lunch_cycle_id + "-" + restaurant_name,
