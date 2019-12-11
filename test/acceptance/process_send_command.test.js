@@ -24,8 +24,8 @@ describe("ReceiveSendLunchCycleSlashCommand", function() {
     SlackGateway.prototype._slackClient = () => fakeSlackClient;
 
     userList = [
-      { id: "U2147483697", profile: { email: "test1@example.com", first_name: "Test1" } },
-      { id: "U2147483698", profile: { email: "test2@example.com", first_name: "Test2" } }
+      { id: "U2147483697", profile: { email: "test1@example.com", real_name: "Test1" } },
+      { id: "U2147483698", profile: { email: "test2@example.com", real_name: "Test2" } }
     ];
     fakeSlackClient.stubUserList(userList);
   });
@@ -153,7 +153,7 @@ function ThenDirectMessagesAreSent() {
           text: {
             type: "mrkdwn",
             text:
-              `*Hey* ${userList[i].profile.first_name}! It’s time to enter the draw for the next ` +
+              `*Hey* ${userList[i].profile.real_name}! It’s time to enter the draw for the next ` +
               "cycle of company lunches.\n\n"
           }
         },

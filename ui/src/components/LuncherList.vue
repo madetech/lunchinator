@@ -21,7 +21,7 @@
             <v-img :src="item.avatar"></v-img>
           </v-list-item-avatar>
           <v-list-item-content>
-            <v-list-item-title v-html="item.firstName"></v-list-item-title>
+            <v-list-item-title v-html="item.real_name"></v-list-item-title>
             <v-list-item-subtitle v-if="twoLine || threeLine" v-html="item.email"></v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-icon v-if="canEdit">

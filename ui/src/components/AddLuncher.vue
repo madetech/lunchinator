@@ -47,9 +47,9 @@ export default {
       handler() {
         this.luncherItems = this.lunchers.map(l => {
           return {
-            text: `${l.profile.first_name} - (${l.profile.email})`,
+            text: `${l.profile.real_name} - (${l.profile.email})`,
             value: {
-              firstName: l.profile.first_name,
+              firstName: l.profile.real_name,
               email: l.profile.email,
               slackUserId: l.id
             }

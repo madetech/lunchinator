@@ -59,7 +59,7 @@ describe("SlackGateway", function() {
         name: "Test Name",
         deleted: false,
         profile: {
-          first_name: "Test"
+          real_name: "Test"
         },
         is_bot: false,
         is_app_user: false,

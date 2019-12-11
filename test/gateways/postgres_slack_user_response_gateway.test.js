@@ -7,7 +7,10 @@ describe("PostgresSlackUserResponseGateway", function() {
 
   const slackUser = {
     id: "U2147483697",
-    profile: { email: "test@example.com", first_name: "Test" }
+    profile: {
+      email: "test@example.com",
+      real_name: 'my name',
+    }
   };
   const slackMessageResponse = {
     ok: true,
@@ -43,7 +46,7 @@ describe("PostgresSlackUserResponseGateway", function() {
       new Luncher({
         slackUserId: "U2147483697",
         email: "test@example.com",
-        firstName: "Test",
+        realName: 'my name',
         messageChannel: "DM_CHANNEL_ID",
         messageId: "1564484225.000400",
         lunchCycleId: lunchCycle.id,

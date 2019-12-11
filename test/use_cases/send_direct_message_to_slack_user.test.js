@@ -16,7 +16,7 @@ describe("SendDirectMessageToSlackUser", function() {
       lunchCycleGateway: { getCurrent: sinon.fake.returns(lunchCycleDummy) }
     });
 
-    const slackUserDummy = { profile: { first_name: "Bob" } };
+    const slackUserDummy = { profile: { real_name: "Bob" } };
 
     const response = await useCase.execute({
       slackUser: slackUserDummy,
@@ -42,7 +42,7 @@ describe("SendDirectMessageToSlackUser", function() {
       lunchCycleGateway: { getCurrent: sinon.fake.returns(lunchCycleDummy) }
     });
 
-    const slackUserDummy = { profile: { first_name: "Bob" } };
+    const slackUserDummy = { profile: { real_name: "Bob" } };
 
     const response = await useCase.execute({
       slackUser: slackUserDummy,
