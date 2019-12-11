@@ -58,7 +58,8 @@ export default {
         }
       });
 
-      // would be nice to move this into server-side
+      const checkMark = "\u2714"
+      const xMark = "\u2716"
       this.allLunchers = response.data.map(user => {
         const item = {
           name: `${user.profile.first_name} (${user.profile.email})`
@@ -66,8 +67,11 @@ export default {
 
         const luncherAvailability = this.availabilities.filter(l => l.slackUserId === user.id);
         luncherAvailability.forEach(response => {
-          //todo check here to look at what the response was and use a x
-          item[response.restaurantName] = "\u2714";
+          if (response.available === true) {
+            item[response.restaurantName] = checkMark
+          } else {
+            item[response.restaurantName] = xMark
+          }
         })
         item.isNonResponder = luncherAvailability.length === 0;
 

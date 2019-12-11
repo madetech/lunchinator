@@ -47,7 +47,6 @@ describe("PostgresSlackUserResponseGateway", function() {
         messageChannel: "DM_CHANNEL_ID",
         messageId: "1564484225.000400",
         lunchCycleId: lunchCycle.id,
-        available: false
       })
     );
   });
