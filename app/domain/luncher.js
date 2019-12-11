@@ -9,6 +9,7 @@ class Luncher {
       messageId: dbObject.message_id,
       availableEmojis: dbObject.available_emojis,
       restaurantName: dbObject.restaurant_name,
+      available: dbObject.available
     });
   }
 
@@ -21,6 +22,7 @@ class Luncher {
     this.messageId = options.messageId;
     this.availableEmojis = options.availableEmojis || [];
     this.restaurantName = options.restaurantName;
+    this.available = options.available;
   }
 }
 
