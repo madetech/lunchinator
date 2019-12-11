@@ -14,7 +14,6 @@ describe("SlackGateway", function() {
 
   after(function() {
     nock.cleanAll()
-    nock.enableNetConnect()
   })
 
   it("can fetch all users from slack", async function() {
@@ -400,25 +399,25 @@ describe("SlackGateway", function() {
       slackMessageDummy
     );
 
-    return expect(requestNock).to.have.been.requestedWith({
+     return expect(requestNock).to.have.been.requestedWith({
       replace_original: true,
       text: "",
       blocks: [ { a: 1 } ]
     });
   })
 
-  it("update Interactive Messages handles errors", async function() {
+  it("update Interactive Messages handles errors", function() {
     const gateway = new SlackGateway();
     const slackMessageDummy = { blocks: [ {} ] };
 
-    const scope = nock('https://www.example.com')
+    nock('https://www.example.com')
       .post('/foo')
       .replyWithError('something awful happened')
 
-    await expect(
-      gateway.sendInteractiveMessageResponse("https://www.example.com", slackMessageDummy)
+    return expect(
+      gateway.sendInteractiveMessageResponse("https://www.example.com/foo", slackMessageDummy)
     ).to.be.rejectedWith(
-      SlackGatewayError, "error sending reminder message"
+      SlackGatewayError, "error sending reminder message: Error: something awful happened"
     );
   })
 
