@@ -40,6 +40,25 @@ describe("LuncherAvailabilityGateway", function() {
     expect(availabilities[0].available).to.eql(true);
   });
 
+  it('can get a list of lunchers', async function() {
+    let luncherAvailabilty = new PostgresLuncherAvailabilityGateway(config.db);
+
+    const lunchCycle = await setupLunchCycle();
+
+    await luncherAvailabilty.addAvailability({
+      lunch_cycle_id: lunchCycle.id,
+      slack_user_id: "DJWDYWUD124",
+      restaurant_name: lunchCycle.restaurants[0].name,
+      available: true
+    });
+
+    const availabilities = await luncherAvailabilty.getAvailableUsers({
+      lunch_cycle_id: lunchCycle.id
+    });
+    expect(availabilities[0].slackUserId).to.eql("DJWDYWUD124");
+    expect(availabilities[0].available).to.eql(true);
+  });
+
   it("can add many users availabilities", async function() {
     let luncherAvailabilty = new PostgresLuncherAvailabilityGateway(config.db);
 
@@ -102,6 +121,7 @@ describe("LuncherAvailabilityGateway", function() {
     expect(availableUsers[0].restaurantName).to.eql(restaurant1.name);
     expect(availableUsers[0].email).to.eql("bob@madetech.com");
     expect(availableUsers[0].firstName).to.eql("bob");
+    expect(availableUsers[0].available).to.eql(true);
   });
 
   it("get id of users that do not have availability", async function() {
