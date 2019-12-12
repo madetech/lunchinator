@@ -386,7 +386,7 @@ describe("SlackGateway", function() {
     });
   });
 
-  it("can update Interactive Messages using there update url", () => {
+  it("can update Interactive Messages using their update url", () => {
     const gateway = new SlackGateway();
     const slackMessageDummy = { blocks: [ {a: 1} ] };
 
@@ -417,7 +417,7 @@ describe("SlackGateway", function() {
     return expect(
       gateway.sendInteractiveMessageResponse("https://www.example.com/foo", slackMessageDummy)
     ).to.be.rejectedWith(
-      SlackGatewayError, "error sending reminder message: Error: something awful happened"
+      SlackGatewayError, "error sending updated message"
     );
   })
 

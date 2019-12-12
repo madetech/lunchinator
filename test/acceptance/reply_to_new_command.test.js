@@ -95,7 +95,7 @@ function ThenANewLunchCyclePreviewMessageIsCreated() {
               emoji: false,
               text: "Unavailable"
             },
-            style: "danger",
+            // style: "danger",
             value: lunchCycle.id + "-" + r.name
           }
         ]

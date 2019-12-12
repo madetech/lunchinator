@@ -1,6 +1,13 @@
+// const { GenerateLunchersMessage } = require("@use_cases")
+const { LunchCycle } = require("@domain")
+
+
 class ProcessLuncherResponse {
   constructor(options) {
     this.luncherAvailabilityGateway = options.luncherAvailabilityGateway;
+    this.lunchCycleGateway = options.lunchCycleGateway;
+    this.generateLunchersMessage = options.generateLunchersMessage;
+    this.slackGateway = options.slackGateway;
   }
 
   async execute(payload) {
@@ -9,6 +16,9 @@ class ProcessLuncherResponse {
     const restaurant_name = parsedValues.restaurant_name;
     const lunch_cycle_id = parsedValues.lunch_cycle_id;
     const button_name = payload.actions[0].text.text;
+    const responseURL = payload.response_url
+    const realName = payload.user.name
+
     let available;
 
     if (button_name == "Unavailable") {
@@ -23,6 +33,13 @@ class ProcessLuncherResponse {
       restaurant_name: restaurant_name,
       available: available
     });
+    
+    const lunchCycle = await this.lunchCycleGateway.findById(lunch_cycle_id)
+
+    const message = this.generateLunchersMessage.execute({ lunchCycle: lunchCycle, realName: realName, available: available })
+
+    const interactiveMessageReturn = await this.slackGateway.sendInteractiveMessageResponse(responseURL, message) 
+    console.log("INTERACTIVE MESS:", interactiveMessageReturn);  // todo // tested undefined, works with stub filled sort of
   }
   
 

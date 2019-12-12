@@ -2,12 +2,14 @@ const { RestaurantFactory, slackButtonPayloadFactory } = require("../factories")
 const { expect, clearPostgres } = require("../test_helper");
 const { LunchCycle, Luncher } = require("@domain");
 const config = require("@app/config");
-const { PostgresLuncherAvailabilityGateway, PostgresLunchCycleGateway } = require("@gateways");
-const { ProcessLuncherResponse } = require("@use_cases");
+const { PostgresLuncherAvailabilityGateway, PostgresLunchCycleGateway, SlackGateway } = require("@gateways");
+const { ProcessLuncherResponse, GenerateLunchersMessage } = require("@use_cases");
 
 let createdLunchCycle;
 describe("When a user presses an interactive button", function() {
   const availabiltyGateway = new PostgresLuncherAvailabilityGateway(config.db);
+  const slackGateway = new SlackGateway();
+
   const restaurant1 = RestaurantFactory.getRestaurant({
     name: "Restaurant-1"
   });
@@ -76,8 +78,12 @@ describe("When a user presses an interactive button", function() {
   async function WhenSentAButtonResponseOf(restaurant, available) {
     const usecase = new ProcessLuncherResponse({
       luncherAvailabilityGateway: availabiltyGateway,
-      lunchCycleDrawGateway: new PostgresLunchCycleGateway()
+      generateLunchersMessage: new GenerateLunchersMessage(),
+      lunchCycleGateway: new PostgresLunchCycleGateway(),
+      slackGateway: slackGateway,
+
     });
+
     let buttonName;
     if (available == true) {
       buttonName = "Available";

@@ -12,9 +12,71 @@ const restaurantList = [
   RestaurantFactory.getRestaurant({ name: "restaurant6", emoji: ":relaxed:", date: "16/04/2020" })
 ];
 
-function expectedRestaurantBlocks(restaurant, lunchCycle) {
+function expectedRestaurantBlocks(restaurant, lunchCycle, available) {
   expectedBlocks = [];
   restaurant.forEach(r => {
+                       
+    const button_unavailable_default = {
+        type: "button",
+        text: {
+          type: "plain_text",
+          emoji: false,
+          text: "Unavailable"
+        },
+        value: lunchCycle.id + "-" + r.name
+    }
+    
+    const button_available_default = {
+        type: "button",
+        text: {
+          type: "plain_text",
+          emoji: false,
+          text: "Available"
+        },
+        value: lunchCycle.id + "-" + r.name
+      }
+    
+    const button_available_primary = {
+        type: "button",
+        text: {
+          type: "plain_text",
+          emoji: false,
+          text: "Available"
+        },
+        style: "primary",
+        value: lunchCycle.id + "-" + r.name
+      }
+    
+    const button_unavailable_danger = {
+        type: "button",
+        text: {
+          type: "plain_text",
+          emoji: false,
+          text: "Unavailable"
+        },
+        style: "danger",
+        value: lunchCycle.id + "-" + r.name
+      }
+                       
+    let button_block
+
+    if (available === true) {
+      button_block = [
+        button_available_primary,
+        button_unavailable_default
+      ]
+    } else if (available === false) {
+      button_block = [
+        button_available_default,
+        button_unavailable_danger
+      ]
+    } else {
+      button_block = [
+        button_available_default,
+        button_unavailable_default
+      ]
+    }
+    
     expectedBlocks.push(
       {
         type: "section",
@@ -25,27 +87,7 @@ function expectedRestaurantBlocks(restaurant, lunchCycle) {
       },
       {
         type: "actions",
-        elements: [
-          {
-            type: "button",
-            text: {
-              type: "plain_text",
-              emoji: false,
-              text: "Available"
-            },
-            value: lunchCycle.id + "-" + r.name
-          },
-          {
-            type: "button",
-            text: {
-              type: "plain_text",
-              emoji: false,
-              text: "Unavailable"
-            },
-            style: "danger",
-            value: lunchCycle.id + "-" + r.name
-          }
-        ]
+        elements: button_block
       },
       {
         type: "divider"
@@ -65,7 +107,7 @@ describe("GenerateLunchersMessage", function() {
   it("can generate a lunch cycle message with a first name", function() {
     const slackRealName = "Barry Smith";
     const useCase = new GenerateLunchersMessage();
-    const response = useCase.execute({ lunchCycle: lunchCycle, realName: slackRealName });
+    const response = useCase.execute({ lunchCycle: lunchCycle, realName: slackRealName, available: true });
 
     let expected = [
       {
@@ -80,7 +122,7 @@ describe("GenerateLunchersMessage", function() {
       }
     ];
 
-    expected = expected.concat(expectedRestaurantBlocks(restaurantList, lunchCycle));
+    expected = expected.concat(expectedRestaurantBlocks(restaurantList, lunchCycle, true));
 
     expected.push({
       type: "section",
@@ -98,7 +140,7 @@ describe("GenerateLunchersMessage", function() {
     const noFirstName = null;
     const preview = "THIS IS A PREVIEW \n";
     const useCase = new GenerateLunchersMessage();
-    const response = useCase.execute({ lunchCycle: lunchCycle, firstName: noFirstName });
+    const response = useCase.execute({ lunchCycle: lunchCycle, firstName: noFirstName, available: true });
 
     let expected = [
       {
@@ -113,7 +155,7 @@ describe("GenerateLunchersMessage", function() {
       }
     ];
 
-    expected = expected.concat(expectedRestaurantBlocks(restaurantList, lunchCycle));
+    expected = expected.concat(expectedRestaurantBlocks(restaurantList, lunchCycle, true));
 
     expected.push({
       type: "section",
@@ -126,4 +168,67 @@ describe("GenerateLunchersMessage", function() {
 
     expect(response.blocks).to.be.eql(expected);
   });
+  
+  it('generates a message with available highlighted',function() {
+    const slackFirstName = "Barry";
+    const useCase = new GenerateLunchersMessage();
+    const response = useCase.execute({ lunchCycle: lunchCycle, realName: slackFirstName, available: true });
+
+    let expected = [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `\*Hey\* ${slackFirstName}! It’s time to enter the draw for the next cycle of company lunches.\n\n`
+        }
+      },
+      {
+        type: "divider"
+      }
+    ];
+
+    expected = expected.concat(expectedRestaurantBlocks(restaurantList, lunchCycle, true));
+
+    expected.push({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text:
+          ":green_heart: = Great          :orange_heart: = Some          :broken_heart: = None          :question: = Unknown"
+      }
+    });
+    expect(response.blocks).to.be.eql(expected)
+  })
+  
+it('generates a message with unavailable highlighted',function() {
+    const slackFirstName = "Barry";
+    const useCase = new GenerateLunchersMessage();
+    const response = useCase.execute({ lunchCycle: lunchCycle, realName: slackFirstName, available: false });
+
+    let expected = [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `\*Hey\* ${slackFirstName}! It’s time to enter the draw for the next cycle of company lunches.\n\n`
+        }
+      },
+      {
+        type: "divider"
+      }
+    ];
+
+    expected = expected.concat(expectedRestaurantBlocks(restaurantList, lunchCycle, false));
+
+    expected.push({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text:
+          ":green_heart: = Great          :orange_heart: = Some          :broken_heart: = None          :question: = Unknown"
+      }
+    });
+    expect(response.blocks).to.be.eql(expected)
+  })
+  
 });

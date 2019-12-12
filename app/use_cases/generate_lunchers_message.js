@@ -1,7 +1,7 @@
 const moment = require("moment");
 
 class GenerateLunchersMessage {
-  execute({ lunchCycle, realName }) {
+  execute({ lunchCycle, realName, available }) {
     const blocks = [];
     let preview = "";
     if (!realName) {
@@ -33,27 +33,7 @@ class GenerateLunchersMessage {
         },
         {
           type: "actions",
-          elements: [
-            {
-              type: "button",
-              text: {
-                type: "plain_text",
-                emoji: false,
-                text: "Available"
-              },
-              value: lunchCycle.id + "-" + r.name
-            },
-            {
-              type: "button",
-              text: {
-                type: "plain_text",
-                emoji: false,
-                text: "Unavailable"
-              },
-              style: "danger",
-              value: lunchCycle.id + "-" + r.name
-            }
-          ]
+          elements: toggleButtonContent(available, lunchCycle, r)
         },
         {
           type: "divider"
@@ -69,11 +49,71 @@ class GenerateLunchersMessage {
           ":green_heart: = Great          :orange_heart: = Some          :broken_heart: = None          :question: = Unknown"
       }
     });
-
     return {
       blocks: blocks
     };
   }
 }
 
+function toggleButtonContent(available, lunchCycle, restaurant) {
+
+  const button_unavailable_default = {
+        type: "button",
+        text: {
+          type: "plain_text",
+          emoji: false,
+          text: "Unavailable"
+        },
+        value: lunchCycle.id + "-" + restaurant.name
+    }
+    
+    const button_available_default = {
+        type: "button",
+        text: {
+          type: "plain_text",
+          emoji: false,
+          text: "Available"
+        },
+        value: lunchCycle.id + "-" + restaurant.name
+      }
+    
+    const button_available_primary = {
+        type: "button",
+        text: {
+          type: "plain_text",
+          emoji: false,
+          text: "Available"
+        },
+        style: "primary",
+        value: lunchCycle.id + "-" + restaurant.name
+      }
+    
+    const button_unavailable_danger = {
+        type: "button",
+        text: {
+          type: "plain_text",
+          emoji: false,
+          text: "Unavailable"
+        },
+        style: "danger",
+        value: lunchCycle.id + "-" + restaurant.name
+      }
+
+    if (available === true) {
+      return [
+        button_available_primary,
+        button_unavailable_default
+      ]
+    } else if (available === false) {
+      return [
+        button_available_default,
+        button_unavailable_danger
+      ]
+    } else {
+      return [
+        button_available_default,
+        button_unavailable_default
+      ]
+    }
+}
 module.exports = GenerateLunchersMessage;

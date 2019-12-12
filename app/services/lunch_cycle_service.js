@@ -36,6 +36,7 @@ class LunchCycleService {
     const slackGateway = new SlackGateway();
     const googleSheetGateway = new GoogleSheetGateway();
     const postgresLuncherAvailabilityGateway = new PostgresLuncherAvailabilityGateway(config.db);
+    const postgresLunchCycleGateway = new PostgresLunchCycleGateway()
 
     this.getCurrentUserAvailabilities = new GetCurrentUserAvailabilities({
       luncherAvailabilityGateway: postgresLuncherAvailabilityGateway,
@@ -86,7 +87,10 @@ class LunchCycleService {
       generateAnnouncementsMessage: new GenerateAnnouncementsMessage()
     });
     this.processLuncherResponse = new ProcessLuncherResponse({
-      luncherAvailabilityGateway: postgresLuncherAvailabilityGateway
+      luncherAvailabilityGateway: postgresLuncherAvailabilityGateway,
+      slackGateway: slackGateway,
+      lunchCycleGateway: postgresLunchCycleGateway
+      
     });
   }
 
