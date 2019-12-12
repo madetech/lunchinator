@@ -54,7 +54,7 @@ class DrawLunchers {
     .slice(0, config.LUNCHERS_PER_WEEK);
     
     return drawnLunchers.map(l => {
-      return { firstName: l.firstName, email: l.email, slackUserId: l.slackUserId };
+      return { realName: l.realName, email: l.email, slackUserId: l.slackUserId };
     });
   }
 

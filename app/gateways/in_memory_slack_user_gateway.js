@@ -9,7 +9,7 @@ class InMemorySlackUserResponseGateway {
     const luncher = new Luncher({
       slackUserId: slackUser.id,
       email: slackUser.profile.email,
-      firstName: slackUser.profile.first_name,
+      realName: slackUser.profile.real_name,
       messageChannel: slackMessageResponse.channel,
       messageId: slackMessageResponse.ts,
       lunchCycleId: lunchCycle.id,

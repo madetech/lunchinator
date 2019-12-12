@@ -16,7 +16,7 @@ describe("DrawLunchers", function() {
   it("can put a luncher who has chosen only the second week into the second week", async function() {
     const expected = [
       {
-        firstName: "baebunny",
+        realName: "baebunny",
         email: "bae@madetech.com",
         slackUserId: "bb02"
       }
@@ -31,14 +31,14 @@ describe("DrawLunchers", function() {
           {
             slackUserId: "bb01",
             lunchCycleId: 1,
-            firstName: "bugsbunny",
+            realName: "bugsbunny",
             restaurantName: "restaurant1",
             email: 'bugs@madetech.com'
           },
           {
             slackUserId: "bb02",
             lunchCycleId: 1,
-            firstName: "baebunny",
+            realName: "baebunny",
             restaurantName: "restaurant2",
             email: "bae@madetech.com"
           }
@@ -62,21 +62,21 @@ describe("DrawLunchers", function() {
             {
             slackUserId: "bb01",
             lunchCycleId: 1,
-            firstName: "bugsbunny",
+            realName: "bugsbunny",
             restaurantName: "restaurant1",
             email: 'bugs@madetech.com',
           },
           {
             slackUserId: "bb01",
             lunchCycleId: 1,
-            firstName: "bugsbunny",
+            realName: "bugsbunny",
             restaurantName: "restaurant2",
             email: 'bugs@madetech.com',
           },
           {
             slackUserId: "bb02",
             lunchCycleId: 1,
-            firstName: "baebunny",
+            realName: "baebunny",
             restaurantName: "restaurant1",
             email: "bae@madetech.com",
           }
@@ -86,15 +86,15 @@ describe("DrawLunchers", function() {
 
     const response = await useCase.execute();
 
-    expect(response.lunchCycleDraw[0].lunchers[0].firstName).to.be.eql("baebunny");
-    expect(response.lunchCycleDraw[1].lunchers[0].firstName).to.be.eql("bugsbunny");
+    expect(response.lunchCycleDraw[0].lunchers[0].realName).to.be.eql("baebunny");
+    expect(response.lunchCycleDraw[1].lunchers[0].realName).to.be.eql("bugsbunny");
     expect(response.lunchCycleDraw[0].lunchers.length).to.be.eql(1);
   });
   
   it("can put a luncher who has chosen the first week into the first week", async function() {
     const expected = [
       {
-        firstName: "bugsbunny",
+        realName: "bugsbunny",
         email: "bugs@madetech.com",
         slackUserId: "bb01"
       },
@@ -109,7 +109,7 @@ describe("DrawLunchers", function() {
           {
             slackUserId: "bb01",
             lunchCycleId: 1,
-            firstName: "bugsbunny",
+            realName: "bugsbunny",
             restaurantName: "restaurant1",
             email: 'bugs@madetech.com'
           }
@@ -124,7 +124,7 @@ describe("DrawLunchers", function() {
   it("can check luncher is available for two different restaurants in the one lunch cycle", async function() {
     const expected = [
       {
-        firstName: "bugsbunny",
+        realName: "bugsbunny",
         email: "bugs@madetech.com",
         slackUserId: "bb01"
       },
@@ -139,14 +139,14 @@ describe("DrawLunchers", function() {
           {
             slackUserId: "bb01",
             lunchCycleId: 1,
-            firstName: "bugsbunny",
+            realName: "bugsbunny",
             restaurantName: "restaurant1",
             email: 'bugs@madetech.com'
           },
           {
             slackUserId: "bb01",
             lunchCycleId: 1,
-            firstName: "bugsbunny",
+            realName: "bugsbunny",
             restaurantName: "restaurant2",
             email: 'bugs@madetech.com'
           },

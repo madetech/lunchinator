@@ -61,7 +61,7 @@ class SlackGateway {
       text: "",
     }}).catch(err => {
       console.log(err);
-      throw new SlackGatewayError("error sending reminder message", err.message);
+      throw new SlackGatewayError("error sending reminder message: " + err.message);
     });
   }
 

@@ -32,14 +32,14 @@ describe("GetCurrentUserAvailabilities", function() {
       {
         slackUserId: "bb01",
         lunchCycleId: 1,
-        firstName: "bugsbunny",
+        realName: "bugsbunny",
         restaurantName: "restaurant1",
         email: 'bugs@madetech.com'
       },
       {
         slackUserId: "bb02",
         lunchCycleId: 1,
-        firstName: "baebunny",
+        realName: "baebunny",
         restaurantName: "restaurant2",
         email: "bae@madetech.com"
       }

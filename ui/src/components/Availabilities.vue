@@ -62,7 +62,7 @@ export default {
       const xMark = "\u2716"
       this.allLunchers = response.data.map(user => {
         const item = {
-          name: `${user.profile.first_name} (${user.profile.email})`
+          name: `${user.profile.real_name} (${user.profile.email})`
         };
 
         const luncherAvailability = this.availabilities.filter(l => l.slackUserId === user.id);

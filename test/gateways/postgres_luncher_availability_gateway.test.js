@@ -115,12 +115,12 @@ describe("LuncherAvailabilityGateway", function() {
 
     const availableUsers = await luncherAvailabilty.getAvailableUsers({
       lunch_cycle_id: lunchCycle.id
-    }); // Returning slack id,first name,lunch cycle ID and restaurant name.
+    }); // Returning slack id,real name,lunch cycle ID and restaurant name.
     expect(availableUsers[0].slackUserId).to.eql("DJWDYWUD124");
     expect(availableUsers[0].lunchCycleId).to.eql(lunchCycle.id);
     expect(availableUsers[0].restaurantName).to.eql(restaurant1.name);
     expect(availableUsers[0].email).to.eql("bob@madetech.com");
-    expect(availableUsers[0].firstName).to.eql("bob");
+    expect(availableUsers[0].realName).to.eql("bob");
     expect(availableUsers[0].available).to.eql(true);
   });
 
@@ -150,7 +150,7 @@ describe("LuncherAvailabilityGateway", function() {
         id: "DJWDYWUD124",
         profile: {
           email: "bob@madetech.com",
-          first_name: "bob"
+          real_name: "bob"
         }
       },
       slackMessageResponse: {},

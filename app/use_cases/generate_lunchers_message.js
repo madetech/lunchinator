@@ -1,11 +1,11 @@
 const moment = require("moment");
 
 class GenerateLunchersMessage {
-  execute({ lunchCycle, firstName }) {
+  execute({ lunchCycle, realName }) {
     const blocks = [];
     let preview = "";
-    if (!firstName) {
-      firstName = "{first name}";
+    if (!realName) {
+      realName = "{full name}";
       preview = "THIS IS A PREVIEW \n";
     }
 
@@ -14,7 +14,7 @@ class GenerateLunchersMessage {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `${preview}\*Hey\* ${firstName}! It’s time to enter the draw for the next cycle of company lunches.\n\n`
+          text: `${preview}\*Hey\* ${realName}! It’s time to enter the draw for the next cycle of company lunches.\n\n`
         }
       },
       {
