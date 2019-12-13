@@ -33,7 +33,7 @@ class GenerateLunchersMessage {
         },
         {
           type: "actions",
-          elements: toggleButtonContent(available, lunchCycle, r)
+          elements: toggleButtonContent(available[r.name], lunchCycle, r)
         },
         {
           type: "divider"
@@ -56,64 +56,36 @@ class GenerateLunchersMessage {
 }
 
 function toggleButtonContent(available, lunchCycle, restaurant) {
+   
+  const buttons = [
+  {
+    type: "button",
+    text: {
+      type: "plain_text",
+      emoji: false,
+      text: "Available"
+    },
+    value: lunchCycle.id + "-" + restaurant.name
+  },
+  {
+    type: "button",
+    text: {
+      type: "plain_text",
+      emoji: false,
+      text: "Unavailable"
+    },
+    value: lunchCycle.id + "-" + restaurant.name
+  }
+    ]
 
-  const button_unavailable_default = {
-        type: "button",
-        text: {
-          type: "plain_text",
-          emoji: false,
-          text: "Unavailable"
-        },
-        value: lunchCycle.id + "-" + restaurant.name
-    }
-    
-    const button_available_default = {
-        type: "button",
-        text: {
-          type: "plain_text",
-          emoji: false,
-          text: "Available"
-        },
-        value: lunchCycle.id + "-" + restaurant.name
-      }
-    
-    const button_available_primary = {
-        type: "button",
-        text: {
-          type: "plain_text",
-          emoji: false,
-          text: "Available"
-        },
-        style: "primary",
-        value: lunchCycle.id + "-" + restaurant.name
-      }
-    
-    const button_unavailable_danger = {
-        type: "button",
-        text: {
-          type: "plain_text",
-          emoji: false,
-          text: "Unavailable"
-        },
-        style: "danger",
-        value: lunchCycle.id + "-" + restaurant.name
-      }
-
-    if (available === true) {
-      return [
-        button_available_primary,
-        button_unavailable_default
-      ]
-    } else if (available === false) {
-      return [
-        button_available_default,
-        button_unavailable_danger
-      ]
-    } else {
-      return [
-        button_available_default,
-        button_unavailable_default
-      ]
-    }
+  if (available === true) {
+    buttons[0]['style'] = 'primary'
+    return buttons
+  } else if (available === false) {
+    buttons[1]['style'] = 'danger'
+    return buttons
+  } else {
+    return buttons
+  }
 }
 module.exports = GenerateLunchersMessage;
