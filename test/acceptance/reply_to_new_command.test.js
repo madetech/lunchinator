@@ -51,7 +51,7 @@ function ThenANewLunchCyclePreviewMessageIsCreated() {
   let preview = "THIS IS A PREVIEW \n";
   let firstName = "{full name}";
   var useCase = new GenerateLunchersMessage();
-  const response = useCase.execute({ lunchCycle, firstName: null });
+  const response = useCase.execute({ lunchCycle, firstName: null, available: {} });
   message = response.blocks;
 
   const expected = [
