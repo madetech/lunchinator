@@ -1,6 +1,5 @@
 const { expect, sinon } = require("../test_helper");
 const { ProcessLuncherResponse } = require("@use_cases");
-const requestPromise = require("request-promise");
 
 describe("ProcessLuncherResponse", function() {
   it("calls the ProcessLuncherResponse usecase", async function() {
@@ -50,20 +49,14 @@ describe("ProcessLuncherResponse", function() {
     let testPayload = getTestPayloadFor("Available");
 
     await usecase.execute(JSON.parse(testPayload));
-    expect(findById).to.have.been.calledWith({
-      id: lunch_cycle_id   // Where is this lunch cycle id coming from?
-    });
+    expect(findById).to.have.been.calledWith(678000);
   });
 
 });
 
 function setUp() {
 	const executeOne = sinon.stub().returns(getResponseMessage());
-	const sendInteractiveMessageResponse = sinon.stub().returns(requestPromise({ url: responseURL, method: "POST", json: true, body: {
-      replace_original: true,
-      blocks: message.blocks,
-      text: "",
-    }})); // todo // This requestPromise fails 3 more tests - stub needs something???
+	const sendInteractiveMessageResponse = sinon.stub()
 	const findById = sinon.stub().returns(lunchCycleStub());
 	const addAvailability = sinon.stub();
 	const usecase = new ProcessLuncherResponse({

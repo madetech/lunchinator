@@ -90,7 +90,6 @@ class LunchCycleService {
       luncherAvailabilityGateway: postgresLuncherAvailabilityGateway,
       slackGateway: slackGateway,
       lunchCycleGateway: postgresLunchCycleGateway
-      
     });
   }
 

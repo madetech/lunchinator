@@ -1,5 +1,5 @@
 const { RestaurantFactory, slackButtonPayloadFactory } = require("../factories");
-const { expect, clearPostgres } = require("../test_helper");
+const { expect, clearPostgres, sinon } = require("../test_helper");
 const { LunchCycle, Luncher } = require("@domain");
 const config = require("@app/config");
 const { PostgresLuncherAvailabilityGateway, PostgresLunchCycleGateway, SlackGateway } = require("@gateways");
@@ -8,7 +8,7 @@ const { ProcessLuncherResponse, GenerateLunchersMessage } = require("@use_cases"
 let createdLunchCycle;
 describe("When a user presses an interactive button", function() {
   const availabiltyGateway = new PostgresLuncherAvailabilityGateway(config.db);
-  const slackGateway = new SlackGateway();
+  let slackGateway = sinon.createStubInstance(SlackGateway)
 
   const restaurant1 = RestaurantFactory.getRestaurant({
     name: "Restaurant-1"

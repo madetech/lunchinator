@@ -27,19 +27,19 @@ class ProcessLuncherResponse {
       available = true;
     }
 
-    await this.luncherAvailabilityGateway.addAvailability({
+    this.luncherAvailabilityGateway.addAvailability({
       lunch_cycle_id: lunch_cycle_id,
       slack_user_id: slack_user_id,
       restaurant_name: restaurant_name,
       available: available
     });
     
+    //get all current lunch cycle avalibltys for this user
+    
     const lunchCycle = await this.lunchCycleGateway.findById(lunch_cycle_id)
+    const message = this.generateLunchersMessage.execute({ lunchCycle: lunchCycle, realName: realName })
 
-    const message = this.generateLunchersMessage.execute({ lunchCycle: lunchCycle, realName: realName, available: available })
-
-    const interactiveMessageReturn = await this.slackGateway.sendInteractiveMessageResponse(responseURL, message) 
-    console.log("INTERACTIVE MESS:", interactiveMessageReturn);  // todo // tested undefined, works with stub filled sort of
+    this.slackGateway.sendInteractiveMessageResponse(responseURL, message) 
   }
   
 
