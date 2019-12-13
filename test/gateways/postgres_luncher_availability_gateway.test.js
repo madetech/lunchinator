@@ -58,6 +58,36 @@ describe("LuncherAvailabilityGateway", function() {
     expect(availabilities[0].slackUserId).to.eql("DJWDYWUD124");
     expect(availabilities[0].available).to.eql(true);
   });
+  
+    it('can get a users availabilitys by lunch cycle', async function() {
+    let luncherAvailabilty = new PostgresLuncherAvailabilityGateway(config.db);
+
+    const lunchCycle = await setupLunchCycle();
+
+    await luncherAvailabilty.addAvailability({
+      lunch_cycle_id: lunchCycle.id,
+      slack_user_id: "DJWDYWUD124",
+      restaurant_name: lunchCycle.restaurants[0].name,
+      available: true
+    });
+    await luncherAvailabilty.addAvailability({
+      lunch_cycle_id: lunchCycle.id,
+      slack_user_id: "ZSHDWHWDHWDD",
+      restaurant_name: lunchCycle.restaurants[0].name,
+      available: true
+    });
+
+    const availabilities = await luncherAvailabilty.getUserAvailability({
+      lunch_cycle_id: lunchCycle.id,
+      slack_user_id: "DJWDYWUD124"
+    });
+    
+    expect(availabilities.length).to.eq(1);
+    expect(availabilities[0].restaurantName).to.eql('Restaurant-foo');
+    expect(availabilities[0].slackUserId).to.eql("DJWDYWUD124");
+    expect(availabilities[0].available).to.eql(true);
+  });
+    
 
   it("can add many users availabilities", async function() {
     let luncherAvailabilty = new PostgresLuncherAvailabilityGateway(config.db);

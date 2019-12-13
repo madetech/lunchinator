@@ -22,6 +22,18 @@ class PostgresLuncherAvailabilityGateway {
       })
       .finally(() => client.end());
   }
+  
+  async getUserAvailability({ lunch_cycle_id, slack_user_id }) {
+    const client = await this._client();
+    const result = await client.query({
+      text: "SELECT * FROM availability WHERE lunch_cycle_id = $1 AND slack_user_id = $2",
+      values: [lunch_cycle_id, slack_user_id]
+    });
+    client.end();
+    return result.rows.map(luncher => {
+      return Luncher.newFromDb(luncher);
+    });
+  }
 
   async getAvailabilities({ lunch_cycle_id }) {
     //Everyone who has replied yes or no at least once
@@ -34,6 +46,7 @@ class PostgresLuncherAvailabilityGateway {
     client.end();
     return result.rows;
   }
+
 
   async getAvailableUsers({ lunch_cycle_id }) {
     // Everyone who could be a luncher AKA every MadeTech human
