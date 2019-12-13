@@ -145,16 +145,19 @@ describe("DoTheDraw", function() {
         restaurants: restaurants
       })
     );
+    
     await postgresSlackUserResponseGateway.create({
       slackUser: slackUsers[0],
       slackMessageResponse: {},
       lunchCycle
     });
+    
     await postgresSlackUserResponseGateway.create({
       slackUser: slackUsers[1],
       slackMessageResponse: {},
       lunchCycle
     });
+    
     await postgresLuncherAvailabilityGateway.addAvailability({
       lunch_cycle_id: lunchCycle.id,
       slack_user_id: slackUsers[0].id,

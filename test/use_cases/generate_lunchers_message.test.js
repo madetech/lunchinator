@@ -6,54 +6,8 @@ const { LunchCycle } = require("@domain");
 const restaurantList = [
   RestaurantFactory.getRestaurant({ name: "restaurant1", emoji: ":bowtie:", date: "12/03/2020" }),
   RestaurantFactory.getRestaurant({ name: "restaurant2", emoji: ":smile:", date: "19/03/2020" }),
-  RestaurantFactory.getRestaurant({ name: "restaurant3", emoji: ":simple_smile:", date: "26/03/2020" }),
-  RestaurantFactory.getRestaurant({ name: "restaurant4", emoji: ":laughing:", date: "02/04/2020" }),
-  RestaurantFactory.getRestaurant({ name: "restaurant5", emoji: ":blush:", date: "09/04/2020" }),
-  RestaurantFactory.getRestaurant({ name: "restaurant6", emoji: ":relaxed:", date: "16/04/2020" })
+  RestaurantFactory.getRestaurant({ name: "restaurant3", emoji: ":smile:", date: "23/03/2020" })
 ];
-
-function expectedRestaurantBlocks(restaurant, lunchCycle) {
-  expectedBlocks = [];
-  restaurant.forEach(r => {
-    expectedBlocks.push(
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `${r.emoji} ${r.date}   \<${r.direction}\|${r.name}\>    vegan${r.dietaries.vegan}  vegetarian ${r.dietaries.vegetarian}  meat${r.dietaries.meat}  halal${r.dietaries.halal}`
-        }
-      },
-      {
-        type: "actions",
-        elements: [
-          {
-            type: "button",
-            text: {
-              type: "plain_text",
-              emoji: false,
-              text: "Available"
-            },
-            value: lunchCycle.id + "-" + r.name
-          },
-          {
-            type: "button",
-            text: {
-              type: "plain_text",
-              emoji: false,
-              text: "Unavailable"
-            },
-            style: "danger",
-            value: lunchCycle.id + "-" + r.name
-          }
-        ]
-      },
-      {
-        type: "divider"
-      }
-    );
-  });
-  return expectedBlocks;
-}
 
 describe("GenerateLunchersMessage", function() {
   const lunchCycle = new LunchCycle({
@@ -65,7 +19,7 @@ describe("GenerateLunchersMessage", function() {
   it("can generate a lunch cycle message with a first name", function() {
     const slackRealName = "Barry Smith";
     const useCase = new GenerateLunchersMessage();
-    const response = useCase.execute({ lunchCycle: lunchCycle, realName: slackRealName });
+    const response = useCase.execute({ lunchCycle: new LunchCycle(), realName: slackRealName, available: null });
 
     let expected = [
       {
@@ -79,8 +33,6 @@ describe("GenerateLunchersMessage", function() {
         type: "divider"
       }
     ];
-
-    expected = expected.concat(expectedRestaurantBlocks(restaurantList, lunchCycle));
 
     expected.push({
       type: "section",
@@ -98,14 +50,38 @@ describe("GenerateLunchersMessage", function() {
     const noFirstName = null;
     const preview = "THIS IS A PREVIEW \n";
     const useCase = new GenerateLunchersMessage();
-    const response = useCase.execute({ lunchCycle: lunchCycle, firstName: noFirstName });
+    const response = useCase.execute({ lunchCycle: lunchCycle, firstName: noFirstName, available: true });
+
+    let expected = {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `${preview}\*Hey\* {full name}! It’s time to enter the draw for the next cycle of company lunches.\n\n`
+        }
+      };
+
+    expect(response.blocks[0]).to.be.eql(expected);
+  });
+  
+  it('shows the current availabllty by highlighting the corasponing',function() {
+    const slackFirstName = "Barry";
+    const useCase = new GenerateLunchersMessage();
+
+    const response = useCase.execute({
+      lunchCycle: lunchCycle,
+      realName: slackFirstName,
+      available: {
+        "restaurant1": true,
+        "restaurant2": false
+      }
+    });
 
     let expected = [
       {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `${preview}\*Hey\* {full name}! It’s time to enter the draw for the next cycle of company lunches.\n\n`
+          text: `\*Hey\* ${slackFirstName}! It’s time to enter the draw for the next cycle of company lunches.\n\n`
         }
       },
       {
@@ -113,7 +89,111 @@ describe("GenerateLunchersMessage", function() {
       }
     ];
 
-    expected = expected.concat(expectedRestaurantBlocks(restaurantList, lunchCycle));
+     expected = expected.concat(
+    [
+      {
+        text: {
+          text: ":bowtie: 12/03/2020   <googlemaps|restaurant1>    vegan:green_heart:  vegetarian :orange_heart:  meat:green_heart:  halal:question:",
+          type: "mrkdwn"
+        },
+        type: "section"
+      },
+      {
+        elements: [
+          {
+            style: "primary",
+            text: {
+              emoji: false,
+              text: "Available",
+              type: "plain_text"
+            },
+            type: "button",
+            value: "10-restaurant1"
+          },
+          {
+            text: {
+              emoji: false,
+              text: "Unavailable",
+              type: "plain_text",
+            },
+            type: "button",
+            value: "10-restaurant1",
+          }
+        ],
+        type: "actions"
+      },
+      {
+        type: "divider"
+      },
+      {
+        text: {
+          text: ":smile: 19/03/2020   <googlemaps|restaurant2>    vegan:green_heart:  vegetarian :orange_heart:  meat:green_heart:  halal:question:",
+          type: "mrkdwn"
+        },
+        type: "section"
+      },
+      {
+        elements: [
+          {
+            text: {
+              emoji: false,
+              text: "Available",
+              type: "plain_text"
+            },
+            type: "button",
+            value: "10-restaurant2"
+          },
+          {
+            style: "danger",
+            text: {
+              emoji: false,
+              text: "Unavailable",
+              type: "plain_text"
+            },
+            type: "button",
+            value: "10-restaurant2"
+          }
+        ],
+        type: "actions"
+      },
+      {
+        type: "divider"
+      },
+      {
+        text: {
+          text: ":smile: 23/03/2020   <googlemaps|restaurant3>    vegan:green_heart:  vegetarian :orange_heart:  meat:green_heart:  halal:question:",
+          type: "mrkdwn"
+        },
+        type: "section"
+      },
+      {
+        elements: [
+          {
+            text: {
+              emoji: false,
+              text: "Available",
+              type: "plain_text"
+            },
+            type: "button",
+            value: "10-restaurant3"
+          },
+          {
+            text: {
+              emoji: false,
+              text: "Unavailable",
+              type: "plain_text"
+            },
+            type: "button",
+            value: "10-restaurant3"
+          }
+        ],
+        type: "actions"
+      },
+      {
+        type: "divider"
+      },
+    ])
+
 
     expected.push({
       type: "section",
@@ -123,7 +203,6 @@ describe("GenerateLunchersMessage", function() {
           ":green_heart: = Great          :orange_heart: = Some          :broken_heart: = None          :question: = Unknown"
       }
     });
-
-    expect(response.blocks).to.be.eql(expected);
-  });
+    expect(response.blocks).to.be.eql(expected)
+  })
 });
