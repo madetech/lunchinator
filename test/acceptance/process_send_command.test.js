@@ -187,7 +187,6 @@ function ThenDirectMessagesAreSent() {
                 emoji: false,
                 text: "Unavailable"
               },
-              // style: "danger",
               value: "5-restaurant1"
             }
           ]
