@@ -27,7 +27,7 @@ class ProcessLuncherResponse {
       available = true;
     }
 
-    this.luncherAvailabilityGateway.addAvailability({
+    await this.luncherAvailabilityGateway.addAvailability({
       lunch_cycle_id: lunch_cycle_id,
       slack_user_id: slack_user_id,
       restaurant_name: restaurant_name,
@@ -37,9 +37,24 @@ class ProcessLuncherResponse {
     //get all current lunch cycle avalibltys for this user
     
     const lunchCycle = await this.lunchCycleGateway.findById(lunch_cycle_id)
-    const message = this.generateLunchersMessage.execute({ lunchCycle: lunchCycle, realName: realName })
+
+    const userAvalilbity = await this.luncherAvailabilityGateway.getUserAvailability({
+      lunch_cycle_id: lunchCycle.id,
+      slack_user_id: slack_user_id
+    })
+    const userAvalilbityMap = this._generateUserAvalilbityMap(userAvalilbity)
+
+    const message = this.generateLunchersMessage.execute({ lunchCycle: lunchCycle, realName: realName, available: userAvalilbityMap})
 
     this.slackGateway.sendInteractiveMessageResponse(responseURL, message) 
+  }
+  
+  _generateUserAvalilbityMap(userAvalilbityArray) {
+    const userAvalilbityMap = {}
+    userAvalilbityArray.forEach(userResponse => {
+      userAvalilbityMap[userResponse.restaurantName] = userResponse.available
+    });
+    return userAvalilbityMap
   }
   
 

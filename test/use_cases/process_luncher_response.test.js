@@ -43,6 +43,20 @@ describe("ProcessLuncherResponse", function() {
 		expect(sendInteractiveMessageResponse).to.have.been.calledWith(responseURL, message);
   });
 	
+	it("passes exsisting avalibiltys to generate message uscase", async function () {
+		const { usecase, generateLunchersMessageSpy } = setUp();
+		
+		let testPayload = getTestPayloadFor("Available");
+		
+		await usecase.execute(JSON.parse(testPayload));
+		expect(generateLunchersMessageSpy).to.have.been.calledWith({ lunchCycle: lunchCycleStub(), realName: "Amy McGee",																													
+			available: {
+				'TheRestaurantName': true,
+				'TheOtherName': false
+			}
+		})
+	});
+	
 	it("calls the ProcessLuncherResponse usecase with findByID having been called", async function() {
     const { usecase, findById } = setUp();
 
@@ -55,26 +69,31 @@ describe("ProcessLuncherResponse", function() {
 });
 
 function setUp() {
-	const executeOne = sinon.stub().returns(getResponseMessage());
+	const generateLunchersMessageSpy = sinon.stub().returns(getResponseMessage());
 	const sendInteractiveMessageResponse = sinon.stub()
 	const findById = sinon.stub().returns(lunchCycleStub());
 	const addAvailability = sinon.stub();
+	const getUserAvailability = sinon.stub().resolves([
+		{ restaurantName: 'TheRestaurantName', available: true },
+		{ restaurantName: 'TheOtherName', available: false }
+	]); 
 	const usecase = new ProcessLuncherResponse({
 		luncherAvailabilityGateway: {
-			addAvailability: addAvailability
+			addAvailability: addAvailability,
+			getUserAvailability: getUserAvailability
 		},
 		slackGateway: {
 			sendInteractiveMessageResponse: sendInteractiveMessageResponse
 		},
 		generateLunchersMessage: {
-			execute: executeOne
+			execute: generateLunchersMessageSpy
 		},
 		lunchCycleGateway: {
 			findById: findById
 		}
 		
 	});
-	return { usecase, addAvailability, sendInteractiveMessageResponse, findById };
+	return { usecase, addAvailability, sendInteractiveMessageResponse, findById, generateLunchersMessageSpy };
 }
 
 function getTestPayloadFor(buttonName) {
