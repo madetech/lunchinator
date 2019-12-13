@@ -89,6 +89,7 @@ class LunchCycleService {
     this.processLuncherResponse = new ProcessLuncherResponse({
       luncherAvailabilityGateway: postgresLuncherAvailabilityGateway,
       slackGateway: slackGateway,
+      generateLunchersMessage: this.generateLuncherMessage,
       lunchCycleGateway: postgresLunchCycleGateway
     });
   }

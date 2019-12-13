@@ -91,7 +91,6 @@ function setUp() {
 		lunchCycleGateway: {
 			findById: findById
 		}
-		
 	});
 	return { usecase, addAvailability, sendInteractiveMessageResponse, findById, generateLunchersMessageSpy };
 }

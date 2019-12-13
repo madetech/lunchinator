@@ -34,8 +34,6 @@ class ProcessLuncherResponse {
       available: available
     });
     
-    //get all current lunch cycle avalibltys for this user
-    
     const lunchCycle = await this.lunchCycleGateway.findById(lunch_cycle_id)
 
     const userAvalilbity = await this.luncherAvailabilityGateway.getUserAvailability({
