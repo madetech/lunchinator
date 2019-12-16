@@ -13,7 +13,7 @@
     "qs": "^6.7.0",
     "request-promise": "^4.2.5",
     "slack": "^11.0.2",
-    "vue": "^2.6.10",
+    "vue": "^2.6.11",
     "vuetify": "^2.0.0"
   },
   "engines": {
@@ -46,7 +46,7 @@
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",
     "vue-cli-plugin-vuetify": "^0.6.3",
-    "vue-template-compiler": "^2.6.10",
+    "vue-template-compiler": "^2.6.11",
     "vuetify-loader": "^1.2.2"
   },
   "scripts": {
