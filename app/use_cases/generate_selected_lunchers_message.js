@@ -1,7 +1,7 @@
 class GenerateSelectedLunchersMessage {
   execute({ lunchCycleWeek, luncher }) {
     const listOfLunchers = this.buildLunchersList({ lunchCycleWeek, luncher });
-    const message = `Congratulations ${luncher.realName} \:tada\: You have been selected to join the lunchers on \*${lunchCycleWeek.restaurant.date}\*. You will be going to \*${lunchCycleWeek.restaurant.name}\* along with:${listOfLunchers}`;
+    const message = `Congratulations <@${luncher.slackUserId}> \:tada\: You have been selected to join the lunchers on \*${lunchCycleWeek.restaurant.date}\*. You will be going to \*${lunchCycleWeek.restaurant.name}\* along with:${listOfLunchers}`;
 
     return { text: message };
   }
