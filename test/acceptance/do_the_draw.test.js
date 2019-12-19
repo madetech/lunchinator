@@ -224,6 +224,35 @@ describe("DoTheDraw", function() {
     expect(response.lunchCycleDraw[1].lunchers[0]).to.be.eql(userObject(luncher2));
   });
 
+
+  it("can ignores a luncher with no availablity", async function() {
+    sinon.stub(config, "LUNCHERS_PER_WEEK").get(() => 1);
+
+    const lunchCycle = await postgresLunchCycleGateway.create(
+      new LunchCycle({
+        restaurants: restaurants
+      })
+    );
+    await postgresSlackUserResponseGateway.create({
+      slackUser: slackUsers[0],
+      slackMessageResponse: {},
+      lunchCycle
+    });
+    await postgresLuncherAvailabilityGateway.addAvailability({
+      lunch_cycle_id: lunchCycle.id,
+      slack_user_id: slackUsers[0].id,
+      restaurant_name: restaurants[0].name,
+      available: false
+    });
+    const useCase = new DrawLunchers({
+      lunchCycleGateway: postgresLunchCycleGateway,
+      postgresLuncherAvailabilityGateway: postgresLuncherAvailabilityGateway
+    });
+    const response = await useCase.execute();
+
+    expect(response.lunchCycleDraw[0].lunchers).to.be.eql([]);
+  });
+
   it("can do the draw and set lunchers avalabilities for each week", async function() {
     sinon.stub(config, "LUNCHERS_PER_WEEK").get(() => 3);
 

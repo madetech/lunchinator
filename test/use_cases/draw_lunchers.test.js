@@ -33,14 +33,16 @@ describe("DrawLunchers", function() {
             lunchCycleId: 1,
             realName: "bugsbunny",
             restaurantName: "restaurant1",
-            email: 'bugs@madetech.com'
+            email: 'bugs@madetech.com',
+            available: false
           },
           {
             slackUserId: "bb02",
             lunchCycleId: 1,
             realName: "baebunny",
             restaurantName: "restaurant2",
-            email: "bae@madetech.com"
+            email: "bae@madetech.com",
+            available: true
           }
         ])
       }
@@ -48,6 +50,7 @@ describe("DrawLunchers", function() {
 
     const response = await useCase.execute();
 
+    expect(response.lunchCycleDraw[0].lunchers).to.be.eql([]);
     expect(response.lunchCycleDraw[1].lunchers).to.be.eql(expected);
   });
 
@@ -65,6 +68,7 @@ describe("DrawLunchers", function() {
             realName: "bugsbunny",
             restaurantName: "restaurant1",
             email: 'bugs@madetech.com',
+            available: true
           },
           {
             slackUserId: "bb01",
@@ -72,6 +76,7 @@ describe("DrawLunchers", function() {
             realName: "bugsbunny",
             restaurantName: "restaurant2",
             email: 'bugs@madetech.com',
+            available: true
           },
           {
             slackUserId: "bb02",
@@ -79,6 +84,7 @@ describe("DrawLunchers", function() {
             realName: "baebunny",
             restaurantName: "restaurant1",
             email: "bae@madetech.com",
+            available: true
           }
         ])
       }
@@ -111,7 +117,8 @@ describe("DrawLunchers", function() {
             lunchCycleId: 1,
             realName: "bugsbunny",
             restaurantName: "restaurant1",
-            email: 'bugs@madetech.com'
+            email: 'bugs@madetech.com',
+            available: true
           }
         ])
       }
@@ -141,14 +148,16 @@ describe("DrawLunchers", function() {
             lunchCycleId: 1,
             realName: "bugsbunny",
             restaurantName: "restaurant1",
-            email: 'bugs@madetech.com'
+            email: 'bugs@madetech.com',
+            available: true
           },
           {
             slackUserId: "bb01",
             lunchCycleId: 1,
             realName: "bugsbunny",
             restaurantName: "restaurant2",
-            email: 'bugs@madetech.com'
+            email: 'bugs@madetech.com',
+            available: true
           },
         ])
       }
@@ -156,5 +165,38 @@ describe("DrawLunchers", function() {
     const response = await useCase.execute();
 
     expect(response.lunchCycleDraw[0].lunchers).to.be.eql(expected);
+  });
+
+  it("ignores lunchers that are not available", async function() {
+    const useCase = new DrawLunchers({
+      lunchCycleGateway: {
+        getCurrent: sinon.fake.resolves(new LunchCycle({ restaurants: restaurants }))
+      },
+      postgresLuncherAvailabilityGateway: {
+        getAvailableUsers: sinon.fake.resolves([
+          {
+            slackUserId: "bb01",
+            lunchCycleId: 1,
+            realName: "bugsbunny",
+            restaurantName: "restaurant1",
+            email: 'bugs@madetech.com',
+            available: false
+          },
+          {
+            slackUserId: "bb02",
+            lunchCycleId: 1,
+            realName: "baebunny",
+            restaurantName: "restaurant2",
+            email: "bae@madetech.com",
+            available: false
+          }
+        ])
+      }
+    });
+
+    const response = await useCase.execute();
+
+    expect(response.lunchCycleDraw[0].lunchers).to.be.eql([]);
+    expect(response.lunchCycleDraw[1].lunchers).to.be.eql([]);
   });
 });

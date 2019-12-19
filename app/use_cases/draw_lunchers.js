@@ -11,6 +11,8 @@ class DrawLunchers {
   async execute() {
     const lunchCycle = await this.lunchCycleGateway.getCurrent();
     let allRespondedUsers = await this.postgresLuncherAvailabilityGateway.getAvailableUsers({ lunch_cycle_id: lunchCycle.id });
+    allRespondedUsers = allRespondedUsers.filter(a => a.available === true);
+
     let totalAvailabilitiesHash = this.getTotalAvailabilitiesHash(allRespondedUsers)
 
     const lunchCycleDraw = [];
