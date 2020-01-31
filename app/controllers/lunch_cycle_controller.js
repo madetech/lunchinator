@@ -51,9 +51,9 @@ router.post("/availability", async function(req, res) {
     users = users.filter(u => config.DEV_MESSAGE_RECEIVERS.indexOf(u.profile.email) > -1);
   }
 
-  await lunchCycleService.sendMessagesToSlackUsers(users);
+  lunchCycleService.sendMessagesToSlackUsers(users);
 
-  res.send("message sent to all users.");
+  res.send("Sending direct messages sent to all users...");
 });
 
 router.post("/send_reminder", async function(req, res) {
