@@ -19,6 +19,8 @@ if (envs.VALID_SLACK_USER_IDS) {
 
 if (envs.DEV_MESSAGE_RECEIVERS) {
   envs.DEV_MESSAGE_RECEIVERS = envs.DEV_MESSAGE_RECEIVERS.split(",");
+} else {
+  envs.DEV_MESSAGE_RECEIVERS = []
 }
 
 envs.db = {
