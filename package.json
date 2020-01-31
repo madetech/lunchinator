@@ -38,7 +38,7 @@
     "eslint-plugin-vue": "^5.0.0",
     "mocha": "^6.2.2",
     "nock": "^10.0.6",
-    "nyc": "^14.1.1",
+    "nyc": "^15.0.0",
     "prettier": "^1.19.1",
     "prettier-eslint": "^9.0.0",
     "sass": "^1.17.4",
