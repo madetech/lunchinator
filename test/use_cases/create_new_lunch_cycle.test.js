@@ -3,6 +3,7 @@ const { expect, sinon, config } = require("../test_helper");
 const { RestaurantFactory } = require("../factories");
 const { LunchCycle } = require("@domain");
 const { CreateNewLunchCycle } = require("@use_cases");
+const timekeeper = require('timekeeper');
 
 describe("CreateNewLunchCycle", function() {
   it("creates a new lunch cycle", async function() {
@@ -35,11 +36,14 @@ describe("CreateNewLunchCycle", function() {
   it("can calculate the correct start date", async function() {
     sinon.stub(config, "WEEKS_BEFORE_CYCLE_STARTS").get(() => 1);
 
-    const expectedDate = moment
-      .utc()
-      .startOf("isoWeek")
-      .add(4, "days")
-      .add(config.WEEKS_BEFORE_CYCLE_STARTS, "week");
+    // set system time to 28 jan 2020
+    var currentTime = new Date(2020, 0, 28);
+    timekeeper.freeze(currentTime);
+
+    var nextFriday = new Date(2020, 1, 7);
+    const expectedDate = moment(nextFriday).utc()
+
+    debugger
 
     const expectedRestaurants = [
       RestaurantFactory.getRestaurant({
@@ -58,5 +62,37 @@ describe("CreateNewLunchCycle", function() {
         starts_at: expectedDate.format()
       })
     );
+    timekeeper.reset();
+  });
+
+  it("can calculate the correct start date", async function() {
+    sinon.stub(config, "WEEKS_BEFORE_CYCLE_STARTS").get(() => 3);
+
+    // set system time to 28 jan 2020
+    var currentTime = new Date(2020, 0, 28);
+    timekeeper.freeze(currentTime);
+
+    const expectedDate = moment(new Date(2020, 1, 21)).utc()
+
+    debugger
+
+    const expectedRestaurants = [
+      RestaurantFactory.getRestaurant({
+        date: expectedDate.format("DD/MM/YYYY")
+      })
+    ];
+
+    const lunchCycleGatewaySpy = { create: sinon.fake.resolves({}) };
+    const useCase = new CreateNewLunchCycle({ lunchCycleGateway: lunchCycleGatewaySpy });
+
+    await useCase.execute({ restaurants: [RestaurantFactory.getRestaurant()] });
+
+    expect(lunchCycleGatewaySpy.create).to.have.been.calledWith(
+      new LunchCycle({
+        restaurants: expectedRestaurants,
+        starts_at: expectedDate.format()
+      })
+    );
+    timekeeper.reset();
   });
 });

@@ -14,11 +14,11 @@ class CreateNewLunchCycle {
       };
     }
 
-    const startsAt = moment
+    // get the next friday n number of weeks from now
+    const startsAt = moment()
       .utc()
-      .startOf("isoWeek")
-      .add(4, "days")
-      .add(config.WEEKS_BEFORE_CYCLE_STARTS, "week");
+      .add(config.WEEKS_BEFORE_CYCLE_STARTS, 'weeks')
+      .isoWeekday("Friday");
 
     if (!startsAt || !this.isValidDate(startsAt)) {
       return {
