@@ -9434,10 +9434,10 @@ vuetify-loader@^1.4.3:
   dependencies:
     loader-utils "^1.2.0"
 
-vuetify@^2.0.0:
-  version "2.0.9"
-  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.0.9.tgz#8b33393e530261d77224b808f37d590b8cf21bad"
-  integrity sha512-cXtsJXQT7pdkyojRkWoPi8PixQGbdUEkpWYaPamrxd33eLoOvLr7vIFN2tRERuB8nTBkgKiCHh2/ml/l0s/gDg==
+vuetify@^2.2.19:
+  version "2.2.19"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.2.19.tgz#826f6899267a0f867aff56aff0cf000d07a421e7"
+  integrity sha512-6o+wdB77FBTkZsFlF8g3W5paG6CsFWtxv6gjkovOQ1P0nggTX8AbIGYIX7xHiOqG+PvBsoIfOEt2E/x6U/d45g==
 
 watchpack@^1.6.0:
   version "1.6.0"
