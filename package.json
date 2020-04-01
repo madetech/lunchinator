@@ -8,7 +8,7 @@
     "google-spreadsheet": "^2.0.8",
     "module-alias": "^2.2.0",
     "moment": "^2.24.0",
-    "node-pg-migrate": "^3.21.1",
+    "node-pg-migrate": "^4.4.0",
     "pg": "^7.18.2",
     "qs": "^6.7.0",
     "request-promise": "^4.2.5",
