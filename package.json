@@ -41,7 +41,7 @@
     "nyc": "^15.1.0",
     "prettier": "^2.0.5",
     "prettier-eslint": "^10.1.1",
-    "sass": "^1.26.7",
+    "sass": "^1.26.8",
     "sass-loader": "^7.1.0",
     "sinon": "^9.0.2",
     "sinon-chai": "^3.5.0",
