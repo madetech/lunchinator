@@ -42,7 +42,7 @@
     "prettier": "^2.0.5",
     "prettier-eslint": "^11.0.0",
     "sass": "^1.26.10",
-    "sass-loader": "^9.0.1",
+    "sass-loader": "^9.0.2",
     "sinon": "^9.0.2",
     "sinon-chai": "^3.5.0",
     "timekeeper": "^2.2.0",
