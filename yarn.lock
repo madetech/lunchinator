@@ -2448,10 +2448,10 @@ chai-http@^4.3.0:
     qs "^6.5.1"
     superagent "^3.7.0"
 
-chai-nock@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/chai-nock/-/chai-nock-1.2.0.tgz#51e91e24b01abd06efbcfdf004c3a06e2cca56bf"
-  integrity sha512-UlI3Pc6W7aYkT2SQfoOivk919ewsmUkJP3qJbVxl7p2KEvfNwHR7thQucChh2FduYRahpe46HNPwjSw2U2/Lig==
+chai-nock@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/chai-nock/-/chai-nock-1.2.1.tgz#aa2286dd6cebd732d7fdc2382eb3b8dba1dba3de"
+  integrity sha512-MXEkenBDA/XOdR4D6vEDwtWNjpp3FPOUm38kYW9+4DaTVm4Ht6YcR10mFyL/eRWVPRfaFNunfFaN7Vck5RmW6Q==
   dependencies:
     chai "^4.2.0"
     deep-equal "^1.0.1"
