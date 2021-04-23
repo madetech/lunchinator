@@ -10277,10 +10277,10 @@ vuetify-loader@^1.6.0:
     file-loader "^4.0.0"
     loader-utils "^1.2.0"
 
-vuetify@^2.0.0:
-  version "2.0.9"
-  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.0.9.tgz#8b33393e530261d77224b808f37d590b8cf21bad"
-  integrity sha512-cXtsJXQT7pdkyojRkWoPi8PixQGbdUEkpWYaPamrxd33eLoOvLr7vIFN2tRERuB8nTBkgKiCHh2/ml/l0s/gDg==
+vuetify@^2.4.10:
+  version "2.4.10"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.4.10.tgz#e3989f3c3fa49dbb62534ba3aeca8dc890e43bab"
+  integrity sha512-ic/qg2dtXdWpCxQteyErBcBpzPvk/66u+RJOw57spZvd4BkhDUjUcOGWAruePfWmwnRryCNvpjbLZRjdt8k5BA==
 
 watchpack@^1.6.0:
   version "1.6.0"
